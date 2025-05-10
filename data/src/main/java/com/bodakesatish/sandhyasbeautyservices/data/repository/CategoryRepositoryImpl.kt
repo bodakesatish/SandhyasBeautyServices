@@ -1,0 +1,61 @@
+package com.bodakesatish.sandhyasbeautyservices.data.repository
+
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.CategoryMapper.mapFromDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.CategoryMapper.mapToDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceMapper.mapFromDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceMapper.mapToDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CategoryDao
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServicesDao
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
+import com.bodakesatish.sandhyasbeautyservices.domain.repository.CategoryRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class CategoryRepositoryImpl @Inject constructor(
+    private val categoryDao: CategoryDao,
+    private val serviceDao: ServicesDao
+) : CategoryRepository {
+
+    override suspend fun insertOrUpdateCategory(customer: Category): Long {
+        return categoryDao.insertOrUpdate(customer.mapFromDomainModel())
+    }
+
+    override suspend fun deleteCategory(customerId: Int) {
+        return categoryDao.delete(customerId)
+    }
+
+    override fun getCategoryList(): Flow<List<Category>> {
+        return categoryDao.getCategoryList().map { customers ->
+            customers.map { customer ->
+                customer.mapToDomainModel()
+            }
+        }
+    }
+
+    override suspend fun getCategoryById(customerId: Long): Category? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertOrUpdateService(service: Service): Long {
+        return serviceDao.insertOrUpdateService(service.mapFromDomainModel())
+    }
+
+    override suspend fun deleteService(serviceId: Int) {
+        return serviceDao.deleteService(serviceId)
+    }
+
+    override fun getServiceList(): Flow<List<Service>> {
+        return serviceDao.getServiceList().map { services ->
+            services.map { service ->
+                service.mapToDomainModel()
+            }
+        }
+    }
+
+    override suspend fun getServiceById(serviceId: Long): Service? {
+        TODO("Not yet implemented")
+    }
+
+}

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Sandhyas Beauty Services</string>
+    <string name="title_activity_bottom_navigation">A Sandhyas Beauty Services</string>
+    <string name="title_home">Dashboard</string>
+    <string name="title_dashboard">Customer</string>
+    <string name="title_notifications">Services</string>
+    <string name="title_add_customer">New Customer</string>
+    <string name="title_customer_list">Customer List</string>
+    <string name="title_add_category">New Category</string>
+    <string name="title_category_list">Category List</string>
+    <string name="title_add_service">New Service</string>
+    <string name="title_service_list">Service List</string>
+    <string name="title_add_appointment">New Appointment</string>
+</resources>
