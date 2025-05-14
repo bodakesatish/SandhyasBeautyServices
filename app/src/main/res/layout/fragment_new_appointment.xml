@@ -36,24 +36,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ev_category_name"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Category Name"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ev_customer_list">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:longClickable="false" />
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ev_appointment_date"
@@ -66,7 +48,7 @@
             android:hint="Select Date (*)"
             app:layout_constraintEnd_toStartOf="@+id/ev_appointment_time"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ev_category_name" >
+            app:layout_constraintTop_toBottomOf="@+id/ev_customer_list" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -91,7 +73,7 @@
             android:hint="Select Time (*)"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ev_appointment_date"
-            app:layout_constraintTop_toBottomOf="@+id/ev_category_name"
+            app:layout_constraintTop_toBottomOf="@+id/ev_customer_list"
              >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -111,8 +93,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            android:padding="16dp"
-            android:drawableTop="@drawable/add_circle_24"
+            android:padding="8dp"
+            android:drawableEnd="@drawable/add_circle_24"
             android:text="Select Services"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ev_appointment_date" />
@@ -137,8 +119,8 @@
                     android:id="@+id/tvHeaderServicesBill"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
                     android:text="Services"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -149,8 +131,8 @@
                     android:id="@+id/tvHeaderServicesAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
                     android:text="Amount"
                     android:textSize="18sp"
                     android:textStyle="bold"

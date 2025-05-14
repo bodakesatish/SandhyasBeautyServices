@@ -5,6 +5,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.mapper.AppointmentMapper.map
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.CategoryMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.CustomerMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceMapper.mapToDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.AppointmentsDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CustomerDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServiceDetailDao
@@ -16,6 +17,7 @@ import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentServices
 import com.bodakesatish.sandhyasbeautyservices.domain.model.CategoriesWithServices
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetail
+import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -38,6 +40,9 @@ class AppointmentRepositoryImpl @Inject constructor(
     ): Long {
 
         val appointmentId = appointmentDao.insertOrUpdate(appointment.mapFromDomainModel())
+        if(appointment.id != 0) {
+            serviceDetailDao.deleteServicesByAppointment(appointmentId)
+        }
 
         for (serviceId in selectedServicesWithDetails) {
             val service = serviceDao.getServiceById(serviceId)
@@ -56,21 +61,36 @@ class AppointmentRepositoryImpl @Inject constructor(
         return appointmentId
     }
 
-    override suspend fun getServiceDetailsForAppointment(appointmentId: Int): Flow<List<Int>> {
-        return serviceDetailDao.getServiceIdsForAppointment(appointmentId.toLong())
+    override suspend fun getServiceDetailsForAppointment(appointmentId: Int): Flow<List<ServiceDetailWithService>> {
+        return serviceDetailDao.getServiceDetailsWithServiceForAppointment(appointmentId).map {
+            it.map { serviceDetailWithService ->
+                serviceDetailWithService.mapToDomainModel()
+            }
+        }
     }
 
     override fun getAllAppointments(): Flow<List<AppointmentCustomer>> {
-        return customerDao.getAppointmentCustomerList().map { appointmentCustomerEntityList ->
-            appointmentCustomerEntityList.filter { appointmentCustomerEntity ->
-                appointmentCustomerEntity.appointments.isNotEmpty()
-            }.map { appointmentCustomerEntity ->
+        return appointmentDao.getAppointmentCustomerList().map { appointmentCustomerEntityList ->
+            appointmentCustomerEntityList.map {
                 AppointmentCustomer(
-                    customer = appointmentCustomerEntity.customer.mapToDomainModel(),
-                    appointment = appointmentCustomerEntity.appointments.get(0).mapToDomainModel()
+                    customer = it.customer.mapToDomainModel(),
+                    appointment = it.appointment.mapToDomainModel()
                 )
             }
         }
+
+
+
+//        return customerDao.getAppointmentCustomerList().map { appointmentCustomerEntityList ->
+//            appointmentCustomerEntityList.filter { appointmentCustomerEntity ->
+//                appointmentCustomerEntity.appointments.isNotEmpty()
+//            }.map { appointmentCustomerEntity ->
+//                AppointmentCustomer(
+//                    customer = appointmentCustomerEntity.customer.mapToDomainModel(),
+//                    appointment = appointmentCustomerEntity.appointments.get(0).mapToDomainModel()
+//                )
+//            }
+//        }
     }
 
     override fun getAppointmentDetail(appointmentId: Int): Flow<AppointmentServices> {
@@ -96,6 +116,12 @@ class AppointmentRepositoryImpl @Inject constructor(
             .map { appointmentsEntity -> appointmentsEntity?.mapToDomainModel() }
             .firstOrNull() // Or singleOrNull() - this operator is applied when collecting the Flow
             .let { appointment -> flowOf(appointment) } // Wrap the result back into a Flow if needed
+    }
+
+    override fun getAppointment(appointmentId: Int): Flow<Appointment> {
+        return appointmentDao.getAppointmentById(appointmentId).map {
+            it!!.mapToDomainModel()
+        }
     }
 
 }

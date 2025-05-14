@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceDetailEntity
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceDetailWithServiceData
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -33,5 +35,11 @@ interface ServiceDetailDao {
     """)
     fun getServiceIdsForAppointment(appointmentId: Long): Flow<List<Int>>
 
+    // In your DAO
+    @Query("SELECT sd.*, s.* FROM ${ServiceDetailEntity.TABLE_NAME} sd JOIN ${ServiceEntity.TABLE_NAME} s ON sd.serviceId = s.id WHERE sd.appointmentId = :appointmentId")
+    fun getServiceDetailsWithServiceForAppointment(appointmentId: Int): Flow<List<ServiceDetailWithServiceData>>
+
+    @Query("DELETE FROM ${ServiceDetailEntity.TABLE_NAME} WHERE ${ServiceDetailEntity.Columns.APPOINTMENT_ID} = :appointmentId")
+    fun deleteServicesByAppointment(appointmentId: Long)
 
 }

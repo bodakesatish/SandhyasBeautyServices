@@ -2,6 +2,7 @@ package com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowSelectedServiceBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
@@ -28,9 +29,11 @@ class SelectedServicesAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>(
         }
     }
 
+    // Use DiffUtil for efficient updates
     fun setData(data: List<Service>) {
-        itemList = data
-        notifyItemRangeChanged(0, data.size)
+        val diffResult = DiffUtil.calculateDiff(ServiceDiffCallback(this.itemList, data))
+        this.itemList = data
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setOnClickListener(onBatchSelected: ((Service)) -> Unit) {
@@ -54,5 +57,27 @@ class SelectedServicesAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>(
             }
         }
 
+    }
+
+    // DiffUtil.Callback for your Service list
+    class ServiceDiffCallback(
+        private val oldList: List<Service>,
+        private val newList: List<Service>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            // Check if the items represent the same logical entity (compare service IDs)
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            // Check if the visual representation of the item has changed
+            // Compare relevant properties like name, price, etc.
+            // Assuming 'Service' is a data class and equals() compares content
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }

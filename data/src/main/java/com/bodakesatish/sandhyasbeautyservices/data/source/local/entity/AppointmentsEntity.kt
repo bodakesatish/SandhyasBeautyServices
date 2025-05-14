@@ -2,10 +2,20 @@ package com.bodakesatish.sandhyasbeautyservices.data.source.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = AppointmentsEntity.TABLE_NAME)
+@Entity(
+    tableName = AppointmentsEntity.TABLE_NAME,
+    foreignKeys = [
+        ForeignKey(
+            entity = CustomerEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["customerId"],
+            onDelete = ForeignKey.CASCADE // Optional: Define what happens on customer deletion
+        )]
+)
 data class AppointmentsEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(Columns.ID)

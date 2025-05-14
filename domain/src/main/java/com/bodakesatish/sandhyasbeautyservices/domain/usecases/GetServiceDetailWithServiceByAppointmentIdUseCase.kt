@@ -5,7 +5,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetSelectedServicesUseCase @Inject constructor(
+class GetServiceDetailWithServiceByAppointmentIdUseCase @Inject constructor(
     private val appointmentRepository: AppointmentRepository
 ) {
     suspend operator fun invoke(appointmentId: Int) = appointmentRepository.getServiceDetailsForAppointment(appointmentId)
