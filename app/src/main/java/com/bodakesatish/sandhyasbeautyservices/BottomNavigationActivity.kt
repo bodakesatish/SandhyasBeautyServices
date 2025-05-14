@@ -1,6 +1,7 @@
 package com.bodakesatish.sandhyasbeautyservices
 
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,6 +10,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bodakesatish.sandhyasbeautyservices.databinding.ActivityBottomNavigationBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.text.toFloat
 
 @AndroidEntryPoint
 class BottomNavigationActivity : AppCompatActivity() {
@@ -33,5 +35,23 @@ class BottomNavigationActivity : AppCompatActivity() {
         )
         //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            //setFragmentTitle(destination.id)
+            if (destination.id == R.id.navigation_home || destination.id == R.id.navigation_dashboard || destination.id == R.id.navigation_category_list) {
+                //binding.navView.visibility = View.VISIBLE
+                binding.navView.animate().translationY(0f).alpha(1f).setDuration(300)
+                    .withStartAction {
+                        binding.navView.visibility = View.VISIBLE
+                    }
+            } else {
+                //binding.navView.visibility = View.GONE
+                binding.navView.animate().translationY(binding.navView.height.toFloat()).alpha(0f)
+                    .setDuration(300).withEndAction {
+                        binding.navView.visibility = View.GONE
+                    }
+            }
+        }
+
     }
 }

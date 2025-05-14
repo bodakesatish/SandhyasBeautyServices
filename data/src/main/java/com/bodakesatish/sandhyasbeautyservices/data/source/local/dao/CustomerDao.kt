@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.AppointmentCustomer
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CustomerEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -25,5 +26,8 @@ interface CustomerDao {
 
     @Query("SELECT * FROM ${CustomerEntity.TABLE_NAME} WHERE ${CustomerEntity.Columns.ID} = :customerId")
     suspend fun getCustomerById(customerId: Long): CustomerEntity?
+
+    @Query("SELECT * FROM ${CustomerEntity.TABLE_NAME}")
+    fun getAppointmentCustomerList(): Flow<List<AppointmentCustomer>>
 
 }

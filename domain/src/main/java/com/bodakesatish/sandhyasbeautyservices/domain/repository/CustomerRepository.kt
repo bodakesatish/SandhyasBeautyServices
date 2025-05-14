@@ -8,5 +8,5 @@ interface CustomerRepository {
     suspend fun update(customer: Customer): Long
     suspend fun delete(customerId: Int)
     fun getCustomerList(): Flow<List<Customer>>
-    suspend fun getCustomerById(customerId: Long): Customer?
+    suspend fun getCustomerById(customerId: Int): Customer?
 }

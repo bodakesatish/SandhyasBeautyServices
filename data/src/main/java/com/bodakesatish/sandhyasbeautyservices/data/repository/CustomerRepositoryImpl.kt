@@ -33,8 +33,8 @@ class CustomerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCustomerById(customerId: Long): Customer? {
-        TODO("Not yet implemented")
+    override suspend fun getCustomerById(customerId: Int): Customer? {
+        return customerDao.getCustomerById(customerId.toLong())?.mapToDomainModel()
     }
 
 }

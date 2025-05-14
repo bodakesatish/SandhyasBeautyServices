@@ -14,7 +14,7 @@ data class CategoryEntity(
 ) {
 
     companion object {
-        const val TABLE_NAME = "service_category"
+        const val TABLE_NAME = "category"
     }
 
     internal object Columns {

@@ -3,6 +3,7 @@ package com.bodakesatish.sandhyasbeautyservices.data.source.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(tableName = AppointmentsEntity.TABLE_NAME)
 data class AppointmentsEntity(
@@ -12,13 +13,13 @@ data class AppointmentsEntity(
     @ColumnInfo(Columns.CUSTOMER_ID)
     val customerId: Int,
     @ColumnInfo(Columns.APPOINTMENT_DATE)
-    val appointmentDate: String,
+    val appointmentDate: Date,
     @ColumnInfo(Columns.APPOINTMENT_TIME)
-    val appointmentTime: String,
+    val appointmentTime: Date,
     @ColumnInfo(Columns.APPOINTMENT_PLANNED_TIME)
-    val appointmentPlannedTime: String,
+    val appointmentPlannedTime: Date,
     @ColumnInfo(Columns.APPOINTMENT_COMPLETED_TIME)
-    val appointmentCompletedTime: String,
+    val appointmentCompletedTime: Date,
     @ColumnInfo(Columns.TOTAL_BILL_AMOUNT)
     val totalBillAmount: Double,
     @ColumnInfo(Columns.APPOINTMENT_STATUS)

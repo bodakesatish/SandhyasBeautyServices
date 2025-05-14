@@ -13,7 +13,7 @@
 
         <action
             android:id="@+id/action_fragment_appointment_dashboard_to_fragment_new_appointment"
-            app:destination="@+id/navigation_service_list"/>
+            app:destination="@+id/navigation_new_appointment"/>
 
     </fragment>
 
@@ -21,7 +21,11 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.customerlist.CustomerListFragment"
         android:label="@string/title_customer_list"
-        tools:layout="@layout/fragment_customer_list" />
+        tools:layout="@layout/fragment_customer_list" >
+        <action
+            android:id="@+id/action_fragment_customer_list_to_fragment_new_customer"
+            app:destination="@+id/navigation_add_customer"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -33,13 +37,23 @@
         android:id="@+id/navigation_add_customer"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.customer.FragmentAddOrUpdateCustomer"
         android:label="@string/title_add_customer"
-        tools:layout="@layout/fragment_customer_add" />
+        tools:layout="@layout/fragment_customer_add" >
+        <argument
+            android:name="customer"
+            app:argType="com.bodakesatish.sandhyasbeautyservices.domain.model.Customer"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_category_list"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.category.CategoryListFragment"
         android:label="@string/title_category_list"
         tools:layout="@layout/fragment_category_list" >
+
+        <action
+            android:id="@+id/action_fragment_category_list_to_fragment_edit_category"
+            app:destination="@+id/navigation_add_category"/>
 
         <action
             android:id="@+id/action_fragment_category_list_to_fragment_service_list"
@@ -51,14 +65,24 @@
         android:id="@+id/navigation_add_category"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.category.FragmentAddOrUpdateCategory"
         android:label="@string/title_add_customer"
-        tools:layout="@layout/fragment_customer_add" />
+        tools:layout="@layout/fragment_customer_add">
+
+        <argument
+            android:name="category"
+            app:argType="com.bodakesatish.sandhyasbeautyservices.domain.model.Category"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_service_list"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.services.ServiceListFragment"
         android:label="@string/title_service_list"
         tools:layout="@layout/fragment_service_list" >
-
+        <action
+            android:id="@+id/action_fragment_service_list_to_fragment_new_service"
+            app:destination="@+id/navigation_add_service"/>
         <argument
             android:name="category"
             app:argType="com.bodakesatish.sandhyasbeautyservices.domain.model.Category" />
@@ -69,14 +93,27 @@
         android:id="@+id/navigation_add_service"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.services.FragmentAddOrUpdateService"
         android:label="@string/title_add_service"
-        tools:layout="@layout/fragment_add_edit_service" />
+        tools:layout="@layout/fragment_add_edit_service" >
+        <argument
+            android:name="service"
+            app:argType="com.bodakesatish.sandhyasbeautyservices.domain.model.Service"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="category"
+            app:argType="com.bodakesatish.sandhyasbeautyservices.domain.model.Category" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_new_appointment"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointments.FragmentNewAppointment"
         android:label="@string/title_add_appointment"
         tools:layout="@layout/fragment_new_appointment" >
-
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
     </fragment>
 
 </navigation>

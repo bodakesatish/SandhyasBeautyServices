@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowAppointmentBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 
 class AppointmentsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var itemList: List<Appointment> = emptyList()
-    var onBatchSelected: ((Appointment) -> Unit)? = null
+    private var itemList: List<AppointmentCustomer> = emptyList()
+    var onBatchSelected: ((AppointmentCustomer) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding =
@@ -29,12 +31,12 @@ class AppointmentsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    fun setData(data: List<Appointment>) {
+    fun setData(data: List<AppointmentCustomer>) {
         itemList = data
         notifyItemRangeChanged(0, data.size)
     }
 
-    fun setOnClickListener(onBatchSelected: ((Appointment)) -> Unit) {
+    fun setOnClickListener(onBatchSelected: ((AppointmentCustomer)) -> Unit) {
         this.onBatchSelected = onBatchSelected
     }
 
@@ -45,10 +47,11 @@ class AppointmentsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class AppointmentViewHolder(val binding: ListRowAppointmentBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(data: Appointment, position: Int) {
+        fun bind(data: AppointmentCustomer, position: Int) {
 
-            binding.tv1.text = "${position+1}. ${data.customerId}"
-
+            binding.tv1.text = "${position+1}"
+            binding.tv2.text = "${data.customer.firstName}  ${data.customer.lastName}"
+            binding.tv3.text = DateHelper.getFormattedDate(data.appointment.appointmentDate, "dd-MMM-yyyy")
             binding.root.setOnClickListener {
                 onBatchSelected?.invoke(data)
             }

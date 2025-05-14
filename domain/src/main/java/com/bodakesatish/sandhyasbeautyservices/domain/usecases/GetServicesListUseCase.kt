@@ -8,5 +8,5 @@ import javax.inject.Singleton
 class GetServicesListUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) {
-    operator fun invoke() = categoryRepository.getServiceList()
+    operator fun invoke(categoryId: Int) = categoryRepository.getServiceList(categoryId)
 }

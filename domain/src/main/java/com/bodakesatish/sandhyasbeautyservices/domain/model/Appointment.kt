@@ -1,13 +1,15 @@
 package com.bodakesatish.sandhyasbeautyservices.domain.model
 
+import java.util.Date
+
 data class Appointment(
-    val id: Int,
-    val customerId: Int,
-    val appointmentDate: String,
-    val appointmentTime: String,
-    val appointmentPlannedTime: String,
-    val appointmentCompletedTime: String,
-    val totalBillAmount: Double,
-    val appointmentStatus: String,
-    val paymentMode: String
+    var id: Int = 0,
+    var customerId: Int = 0,
+    var appointmentDate: Date = Date(),
+    var appointmentTime: Date = Date(),
+    var appointmentPlannedTime: Date = Date(),
+    var appointmentCompletedTime: Date = Date(),
+    var totalBillAmount: Double = 0.0,
+    val appointmentStatus: String = "PENDING",
+    var paymentMode: String = "ONLINE"
 )

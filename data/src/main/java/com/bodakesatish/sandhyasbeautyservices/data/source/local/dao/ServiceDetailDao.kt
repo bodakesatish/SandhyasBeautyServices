@@ -26,4 +26,12 @@ interface ServiceDetailDao {
     @Query("SELECT * FROM ${ServiceDetailEntity.TABLE_NAME} WHERE ${ServiceDetailEntity.Columns.APPOINTMENT_ID} = :appointmentId")
     suspend fun getServiceDetailsByAppointmentId(appointmentId: Long): ServiceDetailEntity?
 
+    @Query("""
+        SELECT ${ServiceDetailEntity.Columns.SERVICE_ID}
+        FROM ${ServiceDetailEntity.TABLE_NAME}
+        WHERE appointmentId = :appointmentId
+    """)
+    fun getServiceIdsForAppointment(appointmentId: Long): Flow<List<Int>>
+
+
 }

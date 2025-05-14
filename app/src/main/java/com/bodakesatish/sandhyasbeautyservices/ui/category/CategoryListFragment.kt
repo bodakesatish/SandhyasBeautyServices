@@ -61,7 +61,8 @@ class CategoryListFragment : Fragment() {
         val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // Handle the back button event
             // e.g., navigate to the previous screen or pop the back stack
-            requireActivity().finish()
+            //requireActivity().finish()
+            findNavController().popBackStack()
         }
 
         // You can enable/disable the callback based on certain conditions
@@ -69,18 +70,24 @@ class CategoryListFragment : Fragment() {
     }
 
     private fun initView() {
-//        binding.headerGeneric.tvHeader.text = "List of Customers"
-//        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
+        binding.headerGeneric.tvHeader.text = "All Category"
     }
 
     private fun initListeners() {
         binding.btnNewCategory.setOnClickListener {
             findNavController().navigate(R.id.navigation_add_category)
         }
-        customerAdapter.setOnClickListener {
-            val action = CategoryListFragmentDirections.actionFragmentCategoryListToFragmentServiceList(it)
+        customerAdapter.setOnClickListener { category ->
+            val action = CategoryListFragmentDirections.actionFragmentCategoryListToFragmentServiceList(category)
             findNavController().navigate(action)
         }
+        customerAdapter.setOnLongClickListener { category ->
+            val action = CategoryListFragmentDirections.actionFragmentCategoryListToFragmentEditCategory(category)
+            findNavController().navigate(action)
+        }
+//        binding.headerGeneric.btnBack.setOnClickListener {
+//            findNavController().popBackStack()
+//        }
     }
 
     private fun initObservers() {
@@ -98,12 +105,12 @@ class CategoryListFragment : Fragment() {
     private fun initData() {
         binding.rvCategoryList.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.rvCategoryList.adapter = customerAdapter
-        binding.rvCategoryList.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL
-            )
-        )
+//        binding.rvCategoryList.addItemDecoration(
+//            DividerItemDecoration(
+//                requireContext(),
+//                DividerItemDecoration.VERTICAL
+//            )
+//        )
     }
 
     override fun onResume() {

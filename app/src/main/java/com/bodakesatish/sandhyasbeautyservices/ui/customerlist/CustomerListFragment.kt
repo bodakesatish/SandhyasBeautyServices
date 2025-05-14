@@ -69,8 +69,8 @@ class CustomerListFragment : Fragment() {
     }
 
     private fun initView() {
-//        binding.headerGeneric.tvHeader.text = "List of Customers"
-//        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
+        binding.headerGeneric.tvHeader.text = "List of Customers"
+        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
     }
 
     private fun initListeners() {
@@ -78,8 +78,8 @@ class CustomerListFragment : Fragment() {
             findNavController().navigate(R.id.navigation_add_customer)
         }
         customerAdapter.setOnClickListener {
-//            val action = FragmentCustomerListDirections.actionFragmentCustomerListToFragmentAddOrUpdateCustomer(it)
-//            findNavController().navigate(action)
+            val action = CustomerListFragmentDirections.actionFragmentCustomerListToFragmentNewCustomer(it)
+            findNavController().navigate(action)
         }
     }
 

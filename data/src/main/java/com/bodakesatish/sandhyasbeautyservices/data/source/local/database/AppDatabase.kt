@@ -2,6 +2,8 @@ package com.bodakesatish.sandhyasbeautyservices.data.source.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.convertors.DateConverter
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.AppointmentsDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CategoryDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CustomerEntity
@@ -14,6 +16,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.Appointm
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CategoryEntity
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceDetailEntity
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceEntity
+import com.bodakesatish.swadhyaycommerceclasses.data.source.local.convertors.BooleanConverter
 
 @Database(
     entities = [
@@ -26,6 +29,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceE
     ],
     version = 1
 )
+@TypeConverters(DateConverter::class, BooleanConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun myModelDao(): MyModelDao
     abstract fun customerDao(): CustomerDao

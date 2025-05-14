@@ -6,6 +6,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceMapper.mapFrom
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CategoryDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServicesDao
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CategoriesWithServices
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.CategoryRepository
@@ -46,8 +47,8 @@ class CategoryRepositoryImpl @Inject constructor(
         return serviceDao.deleteService(serviceId)
     }
 
-    override fun getServiceList(): Flow<List<Service>> {
-        return serviceDao.getServiceList().map { services ->
+    override fun getServiceList(categoryId: Int): Flow<List<Service>> {
+        return serviceDao.getServiceListByCategoryId(categoryId).map { services ->
             services.map { service ->
                 service.mapToDomainModel()
             }
@@ -56,6 +57,19 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun getServiceById(serviceId: Long): Service? {
         TODO("Not yet implemented")
+    }
+
+    override fun getCategoriesWithServices(): Flow<List<CategoriesWithServices>> {
+        return categoryDao.getCategoriesWithServices().map { categoryWithServices ->
+            categoryWithServices.map {
+                CategoriesWithServices(
+                    category = it.category.mapToDomainModel(),
+                    services = it.services.map { serviceEntity ->
+                        serviceEntity.mapToDomainModel()
+                    }
+                )
+            }
+        }
     }
 
 }

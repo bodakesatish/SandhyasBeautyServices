@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +30,8 @@ class ViewModelAppointmentDashboard @Inject constructor(
 
     private val tag = this.javaClass.simpleName
 
-    private val _categoryList = MutableStateFlow<List<Appointment>>(emptyList())
-    val appointmentList: StateFlow<List<Appointment>> = _categoryList.asStateFlow()
+    private val _categoryList = MutableStateFlow<List<AppointmentCustomer>>(emptyList())
+    val appointmentList: StateFlow<List<AppointmentCustomer>> = _categoryList.asStateFlow()
 
     init {
         Log.d(tag, "$tag->init")

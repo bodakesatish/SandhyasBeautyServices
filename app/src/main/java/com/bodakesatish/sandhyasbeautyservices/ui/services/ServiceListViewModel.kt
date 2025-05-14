@@ -35,11 +35,11 @@ class ServiceListViewModel @Inject constructor(
         Log.d(tag, "$tag->init")
     }
 
-    fun getCategoryList() {
+    fun getCategoryList(categoryId: Int) {
         Log.d(tag, "$tag->getCategoryList")
         viewModelScope.launch(Dispatchers.IO) {
 
-            getServicesListUseCase.invoke().collect { list ->
+            getServicesListUseCase.invoke(categoryId).collect { list ->
                 _serviceList.value = list
                 Log.d(tag, "In $tag $list")
             }

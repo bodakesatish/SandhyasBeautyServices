@@ -2,7 +2,11 @@ package com.bodakesatish.sandhyasbeautyservices.data.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.database.AppDatabase
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CategoryEntity
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +27,27 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             DATABASE_NAME
+        ).addCallback(object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+
+                db.execSQL(
+                    "INSERT INTO ${
+                        CategoryEntity.TABLE_NAME
+                    } (${CategoryEntity.Columns.ID}, ${CategoryEntity.Columns.CATEGORY_NAME}) VALUES " +
+                            "(1,'Skin Care Services'),(2, 'Waxing Services'),(3,'Hair Style')"
+                )
+                db.execSQL(
+                    "INSERT INTO ${
+                        ServiceEntity.TABLE_NAME
+                    } (${ServiceEntity.Columns.ID}, ${ServiceEntity.Columns.CATEGORY_ID}, ${ServiceEntity.Columns.SERVICE_NAME}, ${ServiceEntity.Columns.NORMAL_PRICE}) VALUES " +
+                            "(1,1,'Back Facial',250.0),(2,1,'Spa Facial',350.0),(3,1,'Detox Facial',450.0)," +
+                            "(4,2,'Lip/Chin Waxing',100.0),(5,2,'Eyebrow Waxing',100.0),(6,2,'Full Face Waxing',300.0),"+
+                            "(7,3,'Normal Hair Color',300.0),(8,3,'Haircut',100.0),(9,3,'Premium Hair Color',600.0)"
+                )
+            }
+        }
+
         ).build()
     }
 

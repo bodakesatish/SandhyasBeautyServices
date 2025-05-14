@@ -11,7 +11,7 @@ object CustomerMapper : Mapper<CustomerEntity, Customer> {
             lastName = lastName,
             phone = phone,
             address = address,
-            age = age,
+            dob = dob,
         )
     }
 
@@ -22,7 +22,7 @@ object CustomerMapper : Mapper<CustomerEntity, Customer> {
             lastName = lastName,
             phone = phone,
             address = address,
-            age = age,
+            dob = dob,
         )
     }
 

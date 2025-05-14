@@ -1,0 +1,3 @@
+package com.bodakesatish.sandhyasbeautyservices.domain.model
+
+interface BaseModel

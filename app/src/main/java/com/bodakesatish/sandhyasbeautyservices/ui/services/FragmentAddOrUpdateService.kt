@@ -9,10 +9,17 @@ import androidx.activity.addCallback
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAddEditServiceBinding
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FragmentAddOrUpdateService : Fragment() {
@@ -27,8 +34,11 @@ class FragmentAddOrUpdateService : Fragment() {
 
     private val tag = this.javaClass.simpleName
 
+    private var categoryList: List<Category> = emptyList()
 
-//    val args : FragmentAddOrUpdateCustomerArgs by navArgs()
+    val args : FragmentAddOrUpdateServiceArgs by navArgs()
+
+    var category = Category()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,24 +47,52 @@ class FragmentAddOrUpdateService : Fragment() {
     ): View {
         _binding = FragmentAddEditServiceBinding.inflate(inflater, container, false)
         val root: View = binding.root
-//        args.customer?.let {
-//            viewModel.customer = it
-//        }
+        args.category?.let {
+           category = it
+        }
+        args.service?.let {
+            viewModel.service = it
+        }
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initView()
         initHeader()
         initListeners()
         initObservers()
         initData()
+        onBackPressed()
 
     }
 
-    private fun initHeader() {
+    private fun initView() {
+        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
+    }
 
+
+    private fun onBackPressed() {
+        // This callback will only be called when FragmentCustomerList is at least Started.
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // Handle the back button event
+            // e.g., navigate to the previous screen or pop the back stack
+            //requireActivity().finish()
+            findNavController().popBackStack()
+        }
+
+        // You can enable/disable the callback based on certain conditions
+        // callback.isEnabled = someCondition
+    }
+
+
+    private fun initHeader() {
+        if(viewModel.service.id == 0) {
+            binding.headerGeneric.tvHeader.text = "Add your service to " + category.categoryName
+        } else {
+            binding.headerGeneric.tvHeader.text = "Update service - " + category.categoryName
+        }
     }
 
     private fun initListeners() {
@@ -64,34 +102,32 @@ class FragmentAddOrUpdateService : Fragment() {
         }
 
         binding.evServicePrice.editText?.doAfterTextChanged { editable ->
-            viewModel.service.servicePrice = editable?.toString()?.toDouble() ?: 0.0
+            if(editable?.isNotEmpty() == true) {
+                viewModel.service.servicePrice = editable?.toString()?.toDouble() ?: 0.0
+            }
         }
 
         binding.btnNewService.setOnClickListener {
-            if(binding.evServiceName.editText.toString().isEmpty()) {
+            if (binding.evServiceName.editText.toString().isEmpty()) {
                 showSnackBar("Enter Service Name")
-            }
-            else if(binding.evServicePrice.editText.toString().isEmpty()) {
+            } else if (binding.evServicePrice.editText.toString().isEmpty()) {
                 showSnackBar("Enter Service Price")
             } else {
                 viewModel.addOrUpdateService()
             }
         }
 
+        binding.headerGeneric.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         viewModel.customerResponse.observe(viewLifecycleOwner) {
-            showSnackBar("Category added successfully")
-            navigateToCustomerListScreen()
+            if(it) {
+                showSnackBar("Service added successfully")
+                navigateToCustomerListScreen()
+            }
         }
 
-        // This callback will only be called when FragmentAddOrUpdateCustomer is at least Started.
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // Handle the back button event
-            // e.g., navigate to the previous screen or pop the back stack
-            navigateToCustomerListScreen()
-        }
-
-        // You can enable/disable the callback based on certain conditions
-        // callback.isEnabled = someCondition
     }
 
     private fun initObservers() {
@@ -99,13 +135,18 @@ class FragmentAddOrUpdateService : Fragment() {
     }
 
     private fun initData() {
+          viewModel.service.categoryId = category.id
+          if(viewModel.service.id != 0 ) {
+              binding.evServiceName.editText?.setText(viewModel.service.serviceName)
+              binding.evServicePrice.editText?.setText(viewModel.service.servicePrice.toString())
+          }
 //        binding.evCustomerName.editText?.setText(viewModel.customer.name)
 //        binding.evCustomerPhone.editText?.setText(viewModel.customer.phone.toString())
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i(tag , "$tag->onDestroyView")
+        Log.i(tag, "$tag->onDestroyView")
         _binding = null
     }
 
@@ -113,7 +154,7 @@ class FragmentAddOrUpdateService : Fragment() {
         findNavController().popBackStack()
     }
 
-    private fun showSnackBar(message : String) {
+    private fun showSnackBar(message: String) {
         Snackbar.make(
             requireView(),
             message,

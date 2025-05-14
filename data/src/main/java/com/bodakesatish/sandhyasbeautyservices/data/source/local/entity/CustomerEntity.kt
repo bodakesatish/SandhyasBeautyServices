@@ -3,6 +3,7 @@ package com.bodakesatish.sandhyasbeautyservices.data.source.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(tableName = CustomerEntity.TABLE_NAME)
 data class CustomerEntity(
@@ -17,8 +18,8 @@ data class CustomerEntity(
     val phone: String,
     @ColumnInfo(Columns.ADDRESS)
     val address: String,
-    @ColumnInfo(Columns.AGE)
-    val age: Int
+    @ColumnInfo(Columns.DATE_OF_BIRTH)
+    val dob: Date
 ) {
 
     companion object {
@@ -31,6 +32,6 @@ data class CustomerEntity(
         internal const val LAST_NAME = "last_name"
         internal const val PHONE = "phone"
         internal const val ADDRESS = "address"
-        internal const val AGE = "age"
+        internal const val DATE_OF_BIRTH = "dob"
     }
 }

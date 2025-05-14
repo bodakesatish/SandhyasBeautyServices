@@ -70,8 +70,8 @@ class FragmentAppointmentsRecord : Fragment() {
     }
 
     private fun initView() {
-//        binding.headerGeneric.tvHeader.text = "List of Customers"
-//        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
+        binding.headerGeneric.tvHeader.text = "List of Appointments"
+        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
     }
 
     private fun initListeners() {
@@ -79,8 +79,8 @@ class FragmentAppointmentsRecord : Fragment() {
             findNavController().navigate(R.id.navigation_new_appointment)
         }
         customerAdapter.setOnClickListener {
-//            val action = FragmentCustomerListDirections.actionFragmentCustomerListToFragmentAddOrUpdateCustomer(it)
-//            findNavController().navigate(action)
+            val action = FragmentAppointmentsRecordDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(it.appointment.id)
+            findNavController().navigate(action)
         }
     }
 

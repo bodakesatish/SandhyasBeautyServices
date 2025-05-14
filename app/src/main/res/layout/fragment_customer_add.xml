@@ -9,6 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <include
+            android:id="@+id/header_generic"
+            layout="@layout/header_generic" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ev_patient_first_name"
@@ -18,13 +21,15 @@
             android:layout_margin="16dp"
             android:hint="Enter Customer First Name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/header_generic">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:longClickable="false" />
+                android:longClickable="false"
+                android:focusableInTouchMode="true"
+                android:focusable="true"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,15 +93,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:hint="Enter Age"
+            android:hint="Enter Date of Birth"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ev_customer_address">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:longClickable="false" />
+                android:clickable="false"
+                android:focusable="false"
+                android:inputType="none"
+                android:longClickable="false"  />
 
         </com.google.android.material.textfield.TextInputLayout>
 

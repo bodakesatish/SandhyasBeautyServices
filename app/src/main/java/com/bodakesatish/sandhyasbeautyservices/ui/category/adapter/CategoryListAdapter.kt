@@ -4,14 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowCategoryBinding
-import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowCustomerBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 
 class CategoryListAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var itemList: List<Category> = emptyList()
-    var onBatchSelected: ((Category) -> Unit)? = null
+    var onClickedCategory: ((Category) -> Unit)? = null
+    var onLongPressedCategory: ((Category) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding =
@@ -35,8 +34,12 @@ class CategoryListAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemRangeChanged(0, data.size)
     }
 
-    fun setOnClickListener(onBatchSelected: ((Category)) -> Unit) {
-        this.onBatchSelected = onBatchSelected
+    fun setOnClickListener(onClickedCategory: ((Category)) -> Unit) {
+        this.onClickedCategory = onClickedCategory
+    }
+
+    fun setOnLongClickListener(onLongPressedCategory: ((Category)) -> Unit) {
+        this.onLongPressedCategory = onLongPressedCategory
     }
 
     override fun getItemCount(): Int {
@@ -48,10 +51,15 @@ class CategoryListAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun bind(data: Category, position: Int) {
 
-            binding.tvCategoryName.text = "${position+1}. ${data.categoryName + 1}"
+            binding.tvCategoryName.text = data.categoryName
 
             binding.root.setOnClickListener {
-                onBatchSelected?.invoke(data)
+                onClickedCategory?.invoke(data)
+            }
+
+            binding.root.setOnLongClickListener {
+                onLongPressedCategory?.invoke(data)
+                true
             }
         }
 

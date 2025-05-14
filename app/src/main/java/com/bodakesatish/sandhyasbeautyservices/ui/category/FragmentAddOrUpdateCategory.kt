@@ -10,6 +10,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAddEditCategoryBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,8 +29,7 @@ class FragmentAddOrUpdateCategory : Fragment() {
 
     private val tag = this.javaClass.simpleName
 
-
-//    val args : FragmentAddOrUpdateCustomerArgs by navArgs()
+    val args : FragmentAddOrUpdateCategoryArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +38,9 @@ class FragmentAddOrUpdateCategory : Fragment() {
     ): View {
         _binding = FragmentAddEditCategoryBinding.inflate(inflater, container, false)
         val root: View = binding.root
-//        args.customer?.let {
-//            viewModel.customer = it
-//        }
+        args.category?.let {
+            viewModel.category = it
+        }
         return root
     }
 
@@ -50,11 +51,29 @@ class FragmentAddOrUpdateCategory : Fragment() {
         initListeners()
         initObservers()
         initData()
+        onBackPressed()
 
     }
 
-    private fun initHeader() {
+    private fun onBackPressed() {
+        // This callback will only be called when FragmentCustomerList is at least Started.
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // Handle the back button event
+            // e.g., navigate to the previous screen or pop the back stack
+            //requireActivity().finish()
+            findNavController().popBackStack()
+        }
 
+        // You can enable/disable the callback based on certain conditions
+        // callback.isEnabled = someCondition
+    }
+
+    private fun initHeader() {
+        binding.headerGeneric.tvHeader.text = "All Category"
+        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
+        if(viewModel.category.id != 0) {
+            binding.headerGeneric.tvHeader.text = "Edit Category"
+        }
     }
 
     private fun initListeners() {
@@ -62,7 +81,9 @@ class FragmentAddOrUpdateCategory : Fragment() {
         binding.evCategoryName.editText?.doAfterTextChanged { editable ->
             viewModel.category.categoryName = editable?.toString() ?: ""
         }
-
+        binding.headerGeneric.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
         binding.btnAddCategory.setOnClickListener {
             if(binding.evCategoryName.editText.toString().isEmpty()) {
                 showSnackBar("Enter Category Name")
@@ -91,8 +112,10 @@ class FragmentAddOrUpdateCategory : Fragment() {
     }
 
     private fun initData() {
-//        binding.evCustomerName.editText?.setText(viewModel.customer.name)
-//        binding.evCustomerPhone.editText?.setText(viewModel.customer.phone.toString())
+        if(viewModel.category.id != 0) {
+            binding.btnAddCategory.text = "Update Category"
+            binding.evCategoryName.editText?.setText(viewModel.category.categoryName)
+        }
     }
 
     override fun onDestroyView() {

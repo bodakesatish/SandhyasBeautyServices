@@ -12,14 +12,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentServiceListBinding
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.bodakesatish.sandhyasbeautyservices.ui.services.adapter.ServiceListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlin.getValue
 
 @AndroidEntryPoint
 class ServiceListFragment : Fragment() {
@@ -33,6 +36,8 @@ class ServiceListFragment : Fragment() {
     private val viewModel: ServiceListViewModel by viewModels()
 
     private var customerAdapter: ServiceListAdapter = ServiceListAdapter()
+
+    private var category = Category()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,25 +65,31 @@ class ServiceListFragment : Fragment() {
         val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // Handle the back button event
             // e.g., navigate to the previous screen or pop the back stack
-            requireActivity().finish()
+            //requireActivity().finish()
+            findNavController().popBackStack()
         }
 
         // You can enable/disable the callback based on certain conditions
         // callback.isEnabled = someCondition
     }
 
+
     private fun initView() {
-//        binding.headerGeneric.tvHeader.text = "List of Customers"
-//        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
+        binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
+        binding.headerGeneric.tvHeader.text = category.categoryName +" Services"
     }
 
     private fun initListeners() {
         binding.btnNewService.setOnClickListener {
-            findNavController().navigate(R.id.navigation_add_service)
+            val action = ServiceListFragmentDirections.actionFragmentServiceListToFragmentNewService(category)
+            findNavController().navigate(action)
         }
         customerAdapter.setOnClickListener {
-//            val action = FragmentCustomerListDirections.actionFragmentCustomerListToFragmentAddOrUpdateCustomer(it)
-//            findNavController().navigate(action)
+            val action = ServiceListFragmentDirections.actionFragmentServiceListToFragmentNewService(category,it)
+            findNavController().navigate(action)
+        }
+        binding.headerGeneric.btnBack.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
@@ -95,6 +106,11 @@ class ServiceListFragment : Fragment() {
     }
 
     private fun initData() {
+
+        val args: ServiceListFragmentArgs by navArgs()
+        category = args.category
+        viewModel.getCategoryList(category.id)
+        binding.headerGeneric.tvHeader.setText(category.categoryName)
         binding.rvServiceList.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.rvServiceList.adapter = customerAdapter
@@ -108,7 +124,7 @@ class ServiceListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.getCategoryList()
+
     }
 
     override fun onDestroyView() {
