@@ -42,4 +42,8 @@ interface ServiceDetailDao {
     @Query("DELETE FROM ${ServiceDetailEntity.TABLE_NAME} WHERE ${ServiceDetailEntity.Columns.APPOINTMENT_ID} = :appointmentId")
     fun deleteServicesByAppointment(appointmentId: Long)
 
+    // In your DAO
+    @Query("SELECT sd.*, s.* FROM ${ServiceDetailEntity.TABLE_NAME} sd JOIN ${ServiceEntity.TABLE_NAME} s ON sd.serviceId = s.id WHERE sd.appointmentId = :appointmentId")
+    suspend fun getServiceDetailsWithServiceForAppointment1(appointmentId: Int): List<ServiceDetailWithServiceData>
+
 }

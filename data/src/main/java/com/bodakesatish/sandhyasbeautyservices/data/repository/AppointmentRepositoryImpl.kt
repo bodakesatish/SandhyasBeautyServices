@@ -100,9 +100,13 @@ class AppointmentRepositoryImpl @Inject constructor(
             // emitted by the Flow into an Appointment
             // Map the entity to a domain model, handling the case where the entity is null
             .map{ appointmentsEntity ->
+                val services = serviceDetailDao.getServiceDetailsWithServiceForAppointment1(appointmentId).map {
+                    it.mapToDomainModel()
+                }
                 AppointmentServices(
                     customer = customerDao.getCustomerById(appointmentsEntity!!.customerId.toLong())!!.mapToDomainModel(),
-                    appointment = appointmentsEntity.mapToDomainModel()
+                    appointment = appointmentsEntity.mapToDomainModel(),
+                    services = services
                 )
 
             }

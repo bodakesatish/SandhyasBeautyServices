@@ -1,6 +1,5 @@
 package com.bodakesatish.sandhyasbeautyservices.ui.appointments.dialog
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentSelectServicesDialogBinding
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.ViewModelNewAppointment
+import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.ServiceDialogAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +23,7 @@ class SelectServicesDialogFragment : DialogFragment() {
     private lateinit var serviceAdapter: ServiceDialogAdapter
 
     interface OnServicesSubmittedListener {
-        fun onServicesSubmitted()
+        fun onServicesSubmitted(selectedServices: List<Service>)
     }
 
     var onServicesSubmittedListener: OnServicesSubmittedListener? = null
@@ -33,13 +34,6 @@ class SelectServicesDialogFragment : DialogFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState).apply {
-            // Optional: Set dialog properties (e.g., no title)
-            // window?.requestFeature(Window.FEATURE_NO_TITLE)
-        }
     }
 
     override fun onCreateView(
@@ -54,44 +48,21 @@ class SelectServicesDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerViewServices.layoutManager = LinearLayoutManager(requireContext())
-        serviceAdapter = ServiceDialogAdapter()
-        binding.recyclerViewServices.adapter = serviceAdapter
+        binding.rvServicesList.layoutManager = LinearLayoutManager(requireContext())
+        serviceAdapter = ServiceDialogAdapter { updatedService ->
+            // Call a new ViewModel function to update the state based on the updated service
+            viewModel.updateServiceSelectionState(updatedService)
 
-        binding.buttonSubmit.setOnClickListener {
-            viewModel.categoryWithServiceList = serviceAdapter.itemList
-            onServicesSubmittedListener?.onServicesSubmitted()
+        }
+        binding.rvServicesList.adapter = serviceAdapter
+
+        binding.btnSelectService.setOnClickListener {
+            val selectedServices = serviceAdapter.getSelectedServices()
+            onServicesSubmittedListener?.onServicesSubmitted(selectedServices)
             dismiss()
         }
 
-        serviceAdapter.setData(viewModel.categoryWithServiceList)
-
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                //viewModel.categoryWithServiceList.collect { categoryWithServices ->
-//                    // Update UI with the received data
-//                    //serviceAdapter.setData(data)
-//                    val items = mutableListOf<CategoryWithServiceViewItem>()
-//
-//                    for (categoryWithService in viewModel.categoryWithServiceList) {
-//                        val category = Category(categoryWithService.id, categoryWithService.categoryName)
-//                        val categoryService = CategoryWithServiceViewItem.CategoryHeader(category)
-//                        items.add(categoryService)
-//                        for (service in categoryWithService.services) {
-//                            items.add(CategoryWithServiceViewItem.ServiceItem(service))
-//                        }
-//                    }
-//                    serviceAdapter.submitList(items)
-//
-////                    val items = mutableListOf<ServiceDialogItem>()
-////                    groupedServices.forEach { (category, services) ->
-////                        items.add(ServiceDialogItem.CategoryHeader(category))
-////                        services.forEach { items.add(ServiceDialogItem.ServiceItem(it)) }
-////                    }
-////                    serviceAdapter.submitList(items)
-//               // }
-//            }
-//        }
+        serviceAdapter.setData(viewModel.categoryWithServiceListFlow.value as ArrayList<CategoryWithServiceViewItem>)
 
     }
 

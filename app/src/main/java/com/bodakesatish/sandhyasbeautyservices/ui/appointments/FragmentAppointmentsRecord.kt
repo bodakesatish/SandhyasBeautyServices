@@ -1,6 +1,5 @@
 package com.bodakesatish.sandhyasbeautyservices.ui.appointments
 
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater

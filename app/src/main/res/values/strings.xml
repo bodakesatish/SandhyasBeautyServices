@@ -11,4 +11,8 @@
     <string name="title_add_service">New Service</string>
     <string name="title_service_list">Service List</string>
     <string name="title_add_appointment">New Appointment</string>
+    <string name="new_appointment_title">New Appointment</string>
+    <string name="create_appointment_button">Create Appointment</string>
+    <string name="edit_appointment_title">Edit Appointment</string>
+    <string name="update_appointment_button">Update Appointment</string>
 </resources>

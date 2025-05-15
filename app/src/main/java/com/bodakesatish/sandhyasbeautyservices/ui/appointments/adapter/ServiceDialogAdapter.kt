@@ -8,7 +8,9 @@ import com.bodakesatish.sandhyasbeautyservices.databinding.ItemServiceDialogBind
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 
-class ServiceDialogAdapter() :
+class ServiceDialogAdapter(
+    private val onServiceSelectedChange: (Service) -> Unit // Add a lambda for the callback
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {//(ServiceItemDiffCallback()) {
 
     var itemList = ArrayList<CategoryWithServiceViewItem>()
@@ -30,7 +32,7 @@ class ServiceDialogAdapter() :
                     parent,
                     false
                 )
-                ServiceViewHolder(binding)
+                ServiceViewHolder(binding,onServiceSelectedChange)
             }
 
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
@@ -68,6 +70,15 @@ class ServiceDialogAdapter() :
         notifyDataSetChanged()
     }
 
+    fun getSelectedServices() : List<Service> {
+        val selectedArrayList = ArrayList<Service>()
+        itemList.filterIsInstance<CategoryWithServiceViewItem.ServiceItem>()
+            .filter { it.service.isSelected }
+            .forEach { selectedArrayList.add(it.service) }
+
+        return selectedArrayList
+    }
+
     class CategoryViewHolder(private val binding: ItemCategoryHeaderDialogBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(category: Category) {
@@ -76,7 +87,8 @@ class ServiceDialogAdapter() :
     }
 
     class ServiceViewHolder(
-        private val binding: ItemServiceDialogBinding
+        private val binding: ItemServiceDialogBinding,
+        private val onServiceSelectedChange: (Service) -> Unit // Pass the lambda to the ViewHolder
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(service: Service) {
@@ -84,7 +96,12 @@ class ServiceDialogAdapter() :
             binding.textViewServicePrice.text = "$${service.servicePrice}"
             binding.checkBoxService.setOnCheckedChangeListener { _, isChecked ->
                 service.isSelected = isChecked // Update the isSelected property
+                // Instead, create a new Service object with the updated state
+                val updatedService = service.copy(isSelected = isChecked)
+                // Call the callback with the updated service
+                onServiceSelectedChange.invoke(updatedService)
             }
+            // Set initial state
             binding.checkBoxService.isChecked = service.isSelected // Set initial state if needed
         }
     }
