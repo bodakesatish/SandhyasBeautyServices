@@ -337,7 +337,6 @@ class FragmentNewAppointment : Fragment() {
 
     }
 
-    // Basic validation (can be expanded)
     private fun validateInput(): Boolean {
         return viewModel.selectedCustomerFlow.value != null &&
                 viewModel.selectedServicesListFlow.value.isNotEmpty() &&
