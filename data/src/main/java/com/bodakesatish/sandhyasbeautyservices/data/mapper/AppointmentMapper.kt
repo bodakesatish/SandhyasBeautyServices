@@ -10,10 +10,7 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
             customerId = customerId,
             appointmentDate = appointmentDate,
             appointmentTime = appointmentTime,
-            appointmentPlannedTime = appointmentPlannedTime,
-            appointmentCompletedTime = appointmentCompletedTime,
             totalBillAmount = totalBillAmount,
-            appointmentStatus = appointmentStatus,
             paymentMode = paymentMode
         )
     }
@@ -24,10 +21,7 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
             customerId = customerId,
             appointmentDate = appointmentDate,
             appointmentTime = appointmentTime,
-            appointmentPlannedTime = appointmentPlannedTime,
-            appointmentCompletedTime = appointmentCompletedTime,
             totalBillAmount = totalBillAmount,
-            appointmentStatus = appointmentStatus,
             paymentMode = paymentMode
         )
     }

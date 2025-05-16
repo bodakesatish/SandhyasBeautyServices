@@ -15,4 +15,40 @@
     <string name="create_appointment_button">Create Appointment</string>
     <string name="edit_appointment_title">Edit Appointment</string>
     <string name="update_appointment_button">Update Appointment</string>
+    <!-- Labels for filter sections -->
+    <string name="filter_label_date_range">Date Range</string>
+    <string name="filter_label_customer_name">Customer Name</string>
+    <string name="filter_label_appointment_status">Appointment Status</string>
+    <string name="filter_label_payment_status">Payment Status</string>
+
+    <!-- Hints for input fields -->
+    <string name="filter_hint_start_date">Start Date</string>
+    <string name="filter_hint_end_date">End Date</string>
+    <string name="filter_hint_customer_name">Enter customer name</string>
+    <string name="filter_hint_appointment_status">Select status</string>
+    <string name="filter_hint_payment_status">Select payment status</string>
+
+    <!-- Dialog Title and Actions (used in Kotlin) -->
+    <string name="title_filter_appointments">Filter Appointments</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_clear_filters">Clear Filters</string>
+
+    <!-- Option for dropdowns to select "All" / no specific filter -->
+    <string name="filter_all_option">All</string>
+
+    <!-- Other strings from your FragmentAppointmentsRecord that might be relevant -->
+    <string name="title_appointments_record">Appointments Record</string>
+    <string name="action_filter">Filter</string> <!-- Used on the main screen button -->
+    <string name="no_appointments_found">No appointments found.</string>
+    <string name="no_appointments_found_for_filters">No appointments match your current filters.</string>
+    <string name="error_fetching_appointments">Could not load appointments.</string>
+    <string name="action_new_appointment">New Appointment</string>
+
+    <string name="date_range_today">Today</string>
+    <string name="date_range_tomorrow">Tomorrow</string>
+    <string name="date_range_this_week">This Week</string>
+    <string name="date_range_all_time">All Time</string>
+    <string name="title_list_of_appointments">List of Appointments</string>
+
 </resources>

@@ -47,8 +47,8 @@ class AppointmentsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun bind(data: AppointmentCustomer, position: Int) {
 
-            binding.tv1.text = "${position+1}"
-            binding.tv2.text = "${data.customer.firstName}  ${data.customer.lastName}"
+            binding.tvNumber.text = "${position+1}"
+            binding.tvCustomerName.text = "${data.customer.firstName}  ${data.customer.lastName}"
             binding.tv3.text = DateHelper.getFormattedDate(data.appointment.appointmentDate, "dd-MMM-yyyy")
             binding.root.setOnClickListener {
                 onBatchSelected?.invoke(data)
