@@ -75,8 +75,8 @@ class FragmentAppointmentsRecord : Fragment() {
 
     private fun initListeners() {
         binding.btnNewAppointment.setOnClickListener {
-            findNavController().navigate(R.id.navigation_new_appointment)
-        }
+            val action = FragmentAppointmentsRecordDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(0)
+            findNavController().navigate(action)        }
         customerAdapter.setOnClickListener {
             val action = FragmentAppointmentsRecordDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(it.appointment.id)
             findNavController().navigate(action)

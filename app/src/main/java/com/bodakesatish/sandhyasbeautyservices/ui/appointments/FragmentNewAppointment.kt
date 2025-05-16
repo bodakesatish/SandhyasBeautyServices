@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,10 +20,8 @@ import androidx.viewbinding.ViewBinding
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentNewAppointmentBinding
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemLayoutBinding
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
-import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.SelectedServicesAdapter
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.dialog.SelectServicesDialogFragment
@@ -35,7 +34,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.Date
 import kotlin.collections.filter
@@ -49,10 +47,10 @@ class FragmentNewAppointment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    // ViewModel scoped to the Activity (assuming it's intended to be shared if navigating back/forth)    private val viewModel: ViewModelNewAppointment by viewModels(ownerProducer = { requireActivity() })
+    // ViewModel scoped to the Activity (assuming it's intended to be shared if navigating back/forth)
     private val viewModel: ViewModelNewAppointment by viewModels(ownerProducer = { requireActivity() })
 
-    private val tag = this.javaClass.simpleName
+    private val tag = "Beauty->" + this.javaClass.simpleName
 
     private lateinit var selectedServicesAdapter: SelectedServicesAdapter
 
@@ -75,20 +73,16 @@ class FragmentNewAppointment : Fragment() {
         selectedServicesAdapter = SelectedServicesAdapter()
 
         // Set the appointmentId from navigation arguments
-        viewModel.setAppointmentId(args.appointmentId)
+        // Only set if it's a non-zero ID (for edit mode)
+        if (args.appointmentId != 0) {
+            viewModel.setAppointmentId(args.appointmentId)
+        }
 
         setupViews()
         setupListeners()
         observeViewModel()
-
+        setupFragmentResultListeners() // Set up the listener for dialog results
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-       // customerListPopupWindow?.dismiss() // Dismiss popup window to prevent window leaks
-    }
-
 
     private fun setupViews() {
         if (args.appointmentId == 0) {
@@ -114,11 +108,11 @@ class FragmentNewAppointment : Fragment() {
         }
 
         binding.btnNewAppointment.setOnClickListener {
-            // Consider adding validation here before creating/updating
-            // if (validateInput()) {
-            viewModel.createNewAppointment() // Or updateAppointment() based on ID
+            viewModel.createNewAppointment()
+//            if (args.appointmentId == 0) {
+//                viewModel.createNewAppointment()
 //            } else {
-//                showSnackBar("Please fill in all required fields.")
+//                viewModel.updateAppointment()
 //            }
         }
 
@@ -138,84 +132,81 @@ class FragmentNewAppointment : Fragment() {
             showCustomerList(it)
         }
 
+        // Remove this test button listener if it's not needed for production
+        binding.btTest.setOnClickListener {
+            // Example: Triggering a ViewModel update or check
+            Log.d(tag, "Test button clicked")
+            viewModel.updateServiceSelectionState()
+        }
+
+    }
+
+    private fun setupFragmentResultListeners() {
+        // Listen for the result from the SelectServicesDialogFragment
+        setFragmentResultListener(SelectServicesDialogFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
+            // Ensure we handle the correct request key
+            if (requestKey == SelectServicesDialogFragment.REQUEST_KEY_SELECTED_SERVICES) {
+                val selectedServices =
+                    bundle.getSerializable(SelectServicesDialogFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
+                selectedServices?.let {
+                    Log.i(tag, "Received Selected Services from Dialog: $it")
+                    // Update the ViewModel with the new list of selected services
+                    // This assumes you have a function in your ViewModel to handle this update
+                    val selectedServicesIds = it.map { service -> service.id }.toSet()
+                    viewModel.updateCategoryServiceSelection(selectedServicesIds)
+                }
+            }
+        }
     }
 
     private fun observeViewModel() {
+
+
+        // Observe the manually selected customer when it's set from the dropdown
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Observe the combined appointment and customer details for initial loading (edit mode)
-                launch {
-                    viewModel.appointmentDetailsFlow.filterNotNull().collectLatest { details ->
-                        Log.d(tag, "Observed Appointment Details: $details")
-                        details?.let {
-                            // Update UI fields with initial appointment details
-                            binding.evAppointmentDate.editText?.setText(
-                                DateHelper.getFormattedDate(
-                                    it.appointment.appointmentDate,
-                                    DateHelper.DATE_FORMAT_dd_MMM_yyyy
-                                )
-                            )
-                            binding.evAppointmentTime.editText?.setText(DateHelper.formatTime(it.appointment.appointmentTime))
-                            // Update the customer field based on the loaded customer
-                            it.customer?.let { customer ->
-                                binding.evCustomerList.editText?.setText("${customer.firstName} ${customer.lastName}")
-                                // ViewModel's selectedCustomerFlow is updated in observeAppointmentDetails in ViewModel
-                            } ?: run {
-                                binding.evCustomerList.editText?.setText("") // Clear customer field if not found
-                            }
-
-                            // The selected services list and total amount will be updated
-                            // by observing selectedServicesListFlow and selectedServicesTotalAmount StateFlows below.
-
-//                            updateUiWithAppointmentDetails(
-//                                it.appointment,
-//                                it.customer,
-//                                it.serviceDetailsWithServices
-//                            )
-                        } ?: run {
-                            // Handle null state, e.g., for a new appointment or data not found
-                            if (args.appointmentId != 0) {
-                                // If in edit mode but appointment not found
-                                showSnackBar("Appointment not found.")
-                                navigateToPreviousScreen()
-                            } else {
-                                // For a new appointment, the UI should be clear initially.
-                                // This is handled by the default values in the ViewModel's StateFlows.
-                                // No need to explicitly call clearAppointmentUi() here if StateFlows are reset.
-                            }
-                        }
-                    }
+                viewModel.selectedCustomerFlow.collectLatest { selectedCustomer ->
+                    Log.d(tag, "Observed Manually Selected Customer: $selectedCustomer")
+                    // Update the customer list text field based on the manually selected customer
+                    binding.evCustomerList.editText?.setText(
+                        selectedCustomer?.let { "${it.firstName} ${it.lastName}" } ?: ""
+                    )
                 }
+            }
+        }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedServicesTotalAmount.collectLatest { totalAmount ->
+                    Log.d(tag, "Observed Total Services Amount: $totalAmount")
+                    binding.tvValueTotalBill?.setText(String.format("%.2f", totalAmount))
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 // Observe the list of selected services for the RecyclerView
                 launch {
                     viewModel.categoryWithServiceListFlow.collectLatest { allServices ->
-                        Log.d(tag, "Observed All Services List: ${allServices.size}")
-                        val selectedServices = allServices.filterIsInstance<CategoryWithServiceViewItem.ServiceItem>().filter { it.service.isSelected }.map { it.service }
-                        Log.d(tag, "Observed Selected Services List: ${selectedServices.size}")
-                        selectedServicesAdapter.setData(selectedServices)
-                    }
-                }
-
-                // Observe the total amount of selected services
-                launch {
-                    viewModel.selectedServicesTotalAmount.collectLatest { totalAmount ->
-                        Log.d(tag, "Observed Total Services Amount: $totalAmount")
-                        binding.tvValueTotalBill?.setText(String.format("%.2f", totalAmount))
-                    }
-                }
-
-                // Observe the manually selected customer when it's set from the dropdown
-                launch {
-                    viewModel.selectedCustomerFlow.collectLatest { selectedCustomer ->
-                        Log.d(tag, "Observed Manually Selected Customer: $selectedCustomer")
-                        // Update the customer list text field based on the manually selected customer
-                        binding.evCustomerList.editText?.setText(
-                            selectedCustomer?.let { "${it.firstName} ${it.lastName}" } ?: ""
+                        Log.d(
+                            tag,
+                            "Observed categoryWithServiceListFlow update. Size: ${allServices.size}"
                         )
+                        // Filter for selected services and update the SelectedServicesAdapter
+                        val selectedServices = allServices
+                            .filterIsInstance<CategoryWithServiceViewItem.ServiceItem>()
+                            .filter { it.service.isSelected }
+                            .map { it.service }
+                        selectedServicesAdapter.submitList(selectedServices)
+                        Log.d(tag, "Selected Services for RV: ${selectedServices.size}")
                     }
                 }
+            }
+        }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 // Observe for save result (success or failure)
                 launch {
                     viewModel.saveResult.collectLatest { success ->
@@ -227,9 +218,49 @@ class FragmentNewAppointment : Fragment() {
                         }
                     }
                 }
-
             }
         }
+
+
+        // Observe the combined appointment and customer details for initial loading (edit mode)
+        // Observe the combined appointment and customer details for initial loading (edit mode)
+        // Only collect this once if appointmentId is not 0
+        if (args.appointmentId != 0) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch {
+                        viewModel.appointmentDetailsFlow
+                            .filterNotNull() // Ensure we only process non-null details
+                            .collectLatest { details ->
+                                Log.d(tag, "Observed Appointment Details: $details")
+                                // Update UI fields with initial appointment details
+                                binding.evAppointmentDate.editText?.setText(
+                                    DateHelper.getFormattedDate(
+                                        details.appointment.appointmentDate,
+                                        DateHelper.DATE_FORMAT_dd_MMM_yyyy
+                                    )
+                                )
+                                binding.evAppointmentTime.editText?.setText(
+                                    DateHelper.formatTime(
+                                        details.appointment.appointmentTime
+                                    )
+                                )
+                                // Update the customer field based on the loaded customer
+                                details.customer?.let { customer ->
+                                    binding.evCustomerList.editText?.setText(customer.firstName + " " + customer.lastName)
+                                }
+                                // The selected services for the RecyclerView are handled by the categoryWithServiceListFlow observer
+                                // because the viewModel.updateSelectedServicesFromDialog() is called from the dialog result.
+
+                                // Update total bill amount
+                                binding.tvValueTotalBill.text =
+                                    "$${details.appointment.totalBillAmount}"
+                            }
+                    }
+                }
+            }
+        }
+
     }
 
     private fun navigateToPreviousScreen() {
@@ -244,55 +275,53 @@ class FragmentNewAppointment : Fragment() {
         ).show()
     }
 
+    // Function to show the customer list as a popup window
     private fun showCustomerList(anchorView: View) {
-        // Use the customerListFlow from the ViewModel
+        // Get the current list from StateFlow
         val customerList = viewModel.customerListFlow.value
-        if (customerList.isNotEmpty()) {
-            val appArrayAdapter = AppArrayAdapter(
-                requireContext(),
-                customerList // Use the value from the StateFlow
-            ) { listBinding: ViewBinding, customer: Customer ->
-                (listBinding as ItemLayoutBinding).itemNameTextView.text =
-                    customer.firstName + " " + customer.lastName
-            }
-            AppListPopupWindow.showListPopupWindow(
-                anchorView,
-                appArrayAdapter
-            ) { position ->
-                // Get the selected customer from the local customerList variable
-                val selectedCustomer = customerList[position]
-                binding.evCustomerList.editText?.setText(selectedCustomer.firstName + " " + selectedCustomer.lastName)
-                // Update the selected customer in the ViewModel using your dedicated function
-                viewModel.selectCustomer(selectedCustomer) // Assuming you have a selectCustomer function in your ViewModel
-                Toast.makeText(requireContext(), selectedCustomer.firstName, Toast.LENGTH_SHORT)
-                    .show()
-            }
-        } else {
-            showSnackBar("No customers available.")
+        if (customerList.isEmpty()) {
+            Toast.makeText(requireContext(), "No customers available", Toast.LENGTH_SHORT).show()
+            return
         }
-
+        val appArrayAdapter = AppArrayAdapter(
+            requireContext(),
+            customerList // Use the value from the StateFlow
+        ) { listBinding: ViewBinding, customer: Customer ->
+            (listBinding as ItemLayoutBinding).itemNameTextView.text =
+                customer.firstName + " " + customer.lastName
+        }
+        AppListPopupWindow.showListPopupWindow(
+            anchorView,
+            appArrayAdapter
+        ) { position ->
+            // Get the selected customer from the local customerList variable
+            val selectedCustomer = customerList[position]
+            // Update the selected customer in the ViewModel using your dedicated function
+            viewModel.selectCustomer(selectedCustomer) // Assuming you have a selectCustomer function in your ViewModel
+        }
     }
 
+    // Function to show the service selection dialog
     private fun showServiceDialog() {
-        // Pass the current categoryWithServiceListFlow value to the dialog.
-        // The dialog will update the selection state internally and return the selected services.
-        val dialog = SelectServicesDialogFragment()
-//        dialog.isCancelable = false
-        dialog.onServicesSubmittedListener =
-            object : SelectServicesDialogFragment.OnServicesSubmittedListener {
-                override fun onServicesSubmitted(selectedServices: List<Service>) {
-                    // When the dialog returns the selected services, update the ViewModel
-                    viewModel.updateSelectedServicesFromDialog(selectedServices)
-                }
-            }
-        dialog.show(
-            childFragmentManager,
-            "AddBillDialogFragment"
-        ) // Or childFragmentManager if in a Fragment
+        // Get the current list of all services with their selection state from the ViewModel
+        val currentServicesList = viewModel.categoryWithServiceListFlow.value
+        // Create and show the dialog, passing the current list of services
+        val dialog = SelectServicesDialogFragment().newInstance(currentServicesList)
+        dialog.show(childFragmentManager, "SelectServicesDialog")
     }
 
-    private fun updateServicesTotalPrice() {
-        binding.tvValueTotalBill.text = viewModel.selectedServicesTotalAmount.toString() + " Rs."
+    private fun selectDatePicker() {
+
+        AppDatePicker.showDatePicker(
+            childFragmentManager,
+            viewModel.currentAppointment.value.appointmentDate,
+            "Select Start Date",
+        ) { selectedDate, formattedDate -> // Handle the selected time here
+
+            viewModel.currentAppointment.value.appointmentDate =
+                DateHelper.formatDate(selectedDate.time)
+            binding.evAppointmentDate.editText?.setText(formattedDate)
+        }
     }
 
     private fun selectTimePicker() {
@@ -308,26 +337,18 @@ class FragmentNewAppointment : Fragment() {
 
     }
 
-    private fun selectDatePicker() {
-
-        AppDatePicker.showDatePicker(
-            childFragmentManager,
-            viewModel.currentAppointment.value.appointmentDate,
-            "Select Start Date",
-        ) { selectedDate, formattedDate -> // Handle the selected time here
-            viewModel.currentAppointment.value.appointmentDate = DateHelper.formatDate(selectedDate.time)
-            binding.evAppointmentDate.editText?.setText(formattedDate)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // Consider if this is the desired behavior - it will clear data even on configuration changes
-        viewModel.clearAppointmentData() // Implement this function in your ViewModel
+    // Basic validation (can be expanded)
+    private fun validateInput(): Boolean {
+        return viewModel.selectedCustomerFlow.value != null &&
+                viewModel.selectedServicesListFlow.value.isNotEmpty() &&
+                !binding.evAppointmentDate.editText?.text.isNullOrEmpty() &&
+                !binding.evAppointmentTime.editText?.text.isNullOrEmpty()
     }
 
     override fun onDestroy() {
+        viewModel.clearData()
         super.onDestroy()
         Log.i(tag, "$tag->onDestroy")
     }
+
 }

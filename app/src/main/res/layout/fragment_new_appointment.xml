@@ -178,6 +178,7 @@
             app:layout_constraintTop_toBottomOf="@+id/cardServiceBills" />
 
 
+
         <Button
             android:id="@+id/btn_new_appointment"
             android:layout_width="0dp"
@@ -190,6 +191,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvLabelTotalBill" />
+
+        <Button
+            android:id="@+id/bt_test"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:padding="16dp"
+            android:text="Test"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_new_appointment" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

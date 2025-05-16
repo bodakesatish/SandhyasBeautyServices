@@ -3,81 +3,63 @@ package com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowSelectedServiceBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 
-class SelectedServicesAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SelectedServicesAdapter() : ListAdapter<Service, SelectedServicesAdapter.AppointmentViewHolder>(ServiceDiffCallback()) {
 
-    private var itemList: List<Service> = emptyList()
-    var onBatchSelected: ((Service) -> Unit)? = null
+    // No need for a separate itemList variable; ListAdapter manages the list internally.
+    // No need for a separate setData function; use submitList() provided by ListAdapter.
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
         val binding =
             ListRowSelectedServiceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AppointmentViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
-        when (holder) {
-
-            is AppointmentViewHolder -> {
-                holder.bind(itemList[position], position)
-            }
-
-        }
+    override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
+        // getItem(position) is provided by ListAdapter to get the item at the current position.
+        val service = getItem(position)
+        holder.bind(service)
     }
 
-    // Use DiffUtil for efficient updates
-    fun setData(data: List<Service>) {
-        val diffResult = DiffUtil.calculateDiff(ServiceDiffCallback(this.itemList, data))
-        this.itemList = data
-        diffResult.dispatchUpdatesTo(this)
-    }
+    // No need for getItemCount(); ListAdapter handles this.
+    // No need for setOnClickListener(); it's passed in the constructor.
 
-    fun setOnClickListener(onBatchSelected: ((Service)) -> Unit) {
-        this.onBatchSelected = onBatchSelected
-    }
+    // ViewHolder can be an inner class or a top-level class.
+    // If it doesn't need access to SelectedServicesAdapter's members other than what's passed,
+    // it could even be a static nested class (by removing `inner`).
 
-    override fun getItemCount(): Int {
-        return itemList.size
-    }
+    inner class AppointmentViewHolder(
+        private val binding: ListRowSelectedServiceBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-    inner class AppointmentViewHolder(val binding: ListRowSelectedServiceBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(data: Service, position: Int) {
-
-            binding.tvServiceName.text = data.serviceName
-            binding.tvServicePrice.text = "${data.servicePrice} Rs."
-
+        // The 'position' parameter is often not needed in bind if the click listener
+        // already receives the specific 'Service' object.
+        fun bind(service: Service) {
+            binding.tvServiceName.text = service.serviceName
+            binding.tvServicePrice.text = "${service.servicePrice} Rs." // Consider using string resources for "Rs."
             binding.root.setOnClickListener {
-                onBatchSelected?.invoke(data)
+              //  onItemClicked(service)
             }
         }
-
     }
 
-    // DiffUtil.Callback for your Service list
-    class ServiceDiffCallback(
-        private val oldList: List<Service>,
-        private val newList: List<Service>
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize(): Int = oldList.size
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            // Check if the items represent the same logical entity (compare service IDs)
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
+    // DiffUtil.ItemCallback is used with ListAdapter.
+    // It can be a companion object or a separate top-level class.
+    private class ServiceDiffCallback : DiffUtil.ItemCallback<Service>() {
+        override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean {
+            // Check if the items represent the same logical entity (e.g., compare unique IDs)
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            // Check if the visual representation of the item has changed
-            // Compare relevant properties like name, price, etc.
-            // Assuming 'Service' is a data class and equals() compares content
-            return oldList[oldItemPosition] == newList[newItemPosition]
+        override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean {
+            // Check if the visual representation of the item has changed.
+            // If 'Service' is a data class, its auto-generated equals() will compare all properties.
+            return oldItem == newItem
         }
     }
+
 }

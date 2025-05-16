@@ -12,7 +12,6 @@ import com.bodakesatish.sandhyasbeautyservices.domain.usecases.CreateNewAppointm
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentDetailUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCategoriesWithServicesUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCustomerListUseCase
-import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetServiceDetailWithServiceByAppointmentIdUseCase
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +33,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
@@ -59,6 +59,7 @@ class ViewModelNewAppointment @Inject constructor(
     val selectedCustomerFlow: StateFlow<Customer?> = _selectedCustomerFlow.asStateFlow()
 
     // StateFlow to hold the current appointment data (for both new and edit mode)
+    // This holds the non-service related appointment details.
     private val _currentAppointment = MutableStateFlow(
         Appointment(
             id = 0,
@@ -70,13 +71,15 @@ class ViewModelNewAppointment @Inject constructor(
     )
     val currentAppointment: StateFlow<Appointment> = _currentAppointment.asStateFlow()
 
+    // StateFlow to hold the list of all categories and services with their selection state.
+    // This is the main source of truth for the service selection UI in the dialog.
     private val _categoryWithServiceListFlow =
         MutableStateFlow<List<CategoryWithServiceViewItem>>(emptyList())
     val categoryWithServiceListFlow: StateFlow<List<CategoryWithServiceViewItem>> =
         _categoryWithServiceListFlow.asStateFlow()
 
-    // StateFlow to hold the list of selected services(derived from _categoryWithServiceListFlow) for the RecyclerView
-    // StateFlow to hold the list of selected services (derived from _categoryWithServiceListFlow)
+    // StateFlow to hold the list of *currently selected* services (derived from _categoryWithServiceListFlow)
+    // This flow simplifies getting just the selected Service objects.
     val selectedServicesListFlow: StateFlow<List<Service>> =
         _categoryWithServiceListFlow.map { list ->
             list.filterIsInstance<CategoryWithServiceViewItem.ServiceItem>()
@@ -106,10 +109,10 @@ class ViewModelNewAppointment @Inject constructor(
     // Combines Appointment, Customer, and selected ServiceDetailsWithService
     @OptIn(ExperimentalCoroutinesApi::class)
     val appointmentDetailsFlow: StateFlow<AppointmentDetails?> =
-        _appointmentId
-            .filterNotNull() // Only proceed if appointmentId is not null
+        _appointmentId // Trigger on any change to _appointmentId, including null
             .flatMapLatest { id ->
-                if (id == 0) {
+                if (id == null || id == 0) {
+                    // For a new or cleared appointment, emit null
                     // For a new appointment, emit null initially
                     flowOf(null)
                 } else {
@@ -124,16 +127,17 @@ class ViewModelNewAppointment @Inject constructor(
                             val customer =
                                 customerList.find { it.id == appointmentAndCustomer.customer.id }
 
-                            val services = appointmentAndCustomer.services
+                            val servicesDetailsWithServices = appointmentAndCustomer.services
 
                             // Now combine the result with the service details
                             combine(
                                 flowOf(appointmentAndCustomer.appointment), // Emit the appointment
                                 flowOf(customer), // Emit the found customer
-                                flowOf(services)
+                                flowOf(servicesDetailsWithServices)
                             ) { appointment, foundCustomer, services ->
-                                updateSelectedServices(services)
-                                if (appointment != null && foundCustomer != null) {
+                                val selectedServiceIds = services.map { it.serviceId }.toSet()
+                                updateCategoryServiceSelection(selectedServiceIds) // Update the main list
+                                if (foundCustomer != null) {
                                     AppointmentDetails(
                                         appointment = appointment,
                                         customer = foundCustomer,
@@ -146,7 +150,9 @@ class ViewModelNewAppointment @Inject constructor(
                         } else {
                             flowOf(null) // Appointment not found
                         }
-                    }.flatMapLatest { it ?: flowOf(null) } // Flatten the nested flow
+                    }.flatMapLatest {
+                        it ?: flowOf(null)
+                    } // Flatten the nested flow
                 }
             }
             .stateIn(
@@ -214,23 +220,7 @@ class ViewModelNewAppointment @Inject constructor(
                     }.toSet()
 
                     updateCategoryServiceSelection(selectedServiceIds)
-                    // The selectedServicesListFlow and selectedServicesTotalAmount
-                    // are derived from _categoryWithServiceListFlow and will update automatically
-                    // after updateCategoryServiceSelection is called.
-
-//                    // Update the list of selected services and calculate total
-//                    val selectedServices =
-//                        it.serviceDetailsWithServices.map { serviceDetailWithService ->
-//                            Service(
-//                                id = serviceDetailWithService.serviceId,
-//                                serviceName = serviceDetailWithService.serviceName,
-//                                servicePrice = serviceDetailWithService.servicePrice
-//                            )
-//                        }
-//                    updateSelectedServicesList(selectedServices)
-//                    calculateSelectedServicesTotalAmount()
                 }
-                // If details is null (new appointment), currentAppointment remains default
             }
         }
     }
@@ -240,19 +230,6 @@ class ViewModelNewAppointment @Inject constructor(
         _selectedCustomerFlow.value = customer
         // Update the appointment's customer ID in the currentAppointment StateFlow
         _currentAppointment.value = _currentAppointment.value.copy(customerId = customer?.id ?: 0)
-    }
-
-    // Function to handle the list of services selected from the dialog
-    // When the dialog confirms selection, update the main categoryWithServiceListFlow
-    fun updateSelectedServicesFromDialog(selectedServices: List<Service>) {
-        // Get the IDs of the services selected in the dialog
-        val selectedServiceIds = selectedServices.map { it.id }.toSet()
-
-        // Update the isSelected state in the main categoryWithServiceListFlow
-        updateCategoryServiceSelection(selectedServiceIds)
-
-        // _selectedServicesListFlow and selectedServicesTotalAmount
-        // will be updated automatically because they are derived from _categoryWithServiceListFlow.
     }
 
     // Function to handle the list of services selected from the dialog
@@ -269,7 +246,7 @@ class ViewModelNewAppointment @Inject constructor(
     }
 
     // Internal function to update the selection state within categoryWithServiceListFlow
-    private fun updateCategoryServiceSelection(selectedIds: Set<Int>) {
+    internal fun updateCategoryServiceSelection(selectedIds: Set<Int>) {
         Log.d(tag, "ViewModel: updateCategoryServiceSelection called with selectedIds: $selectedIds")
         val updatedList = _categoryWithServiceListFlow.value.map { item ->
             if (item is CategoryWithServiceViewItem.ServiceItem) {
@@ -285,50 +262,6 @@ class ViewModelNewAppointment @Inject constructor(
         Log.d(tag, "ViewModel: Emitting new _categoryWithServiceListFlow with ${updatedList.size} items.")
         _categoryWithServiceListFlow.value = updatedList
         Log.d(tag, "ViewModel: _categoryWithServiceListFlow value updated.")
-    }
-
-
-    // Function to handle the list of services selected from the dialog
-//    // When updating selected services, create a new list:
-//    fun updateSelectedServices(selectedServices: List<Service>) {
-//        _selectedServicesListFlow.value = selectedServices
-//        calculateSelectedServicesTotalAmount()
-//    }
-
-    // Function to reset the ViewModel's state for a new appointment
-    fun resetForNewAppointment() {
-        Log.d(tag, "$tag->resetForNewAppointment")
-        // Reset the appointment ID to indicate a new appointment
-        _appointmentId.value = 0
-
-        // Reset the mutable state for the new/edited appointment data
-        _currentAppointment.value = Appointment(
-            id = 0, // 0 indicates a new appointment
-            customerId = 0,
-            appointmentDate = DateHelper.formatDate(Date()), // Default to current date
-            appointmentTime = Date(), // Default to current time
-            totalBillAmount = 0.0,
-        )
-
-        // Clear the manually selected customer
-        _selectedCustomerFlow.value = null
-
-        // Reset the selection state in the main categoryWithServiceListFlow
-        // by setting isSelected to false for all ServiceItems.
-        updateCategoryServiceSelection(emptySet())
-
-        // The derived flows (selectedServicesListFlow and selectedServicesTotalAmount)
-        // will automatically update based on the reset categoryWithServiceListFlow.
-    }
-
-    // Function to update the appointment date (called from UI)
-    fun updateAppointmentDate(date: Date) {
-        _currentAppointment.value = _currentAppointment.value.copy(appointmentDate = date)
-    }
-
-    // Function to update the appointment time (called from UI)
-    fun updateAppointmentTime(time: Date) {
-        _currentAppointment.value = _currentAppointment.value.copy(appointmentTime = time)
     }
 
     // Function to create a new appointment
@@ -391,194 +324,22 @@ class ViewModelNewAppointment @Inject constructor(
         }
     }
 
-    fun clearAppointmentData() {
-        _appointmentId.value = null
-        _selectedCustomerFlow.value = null
-        _selectedCustomerFlow.value = null
-        //_selectedServicesListFlow.value = emptyList()
-        // Clear other relevant data
-        updateCategoryServiceSelection(emptySet())
-
-//        selectedServicesTotalAmount = 0.0
-//        currentAppointment = Appointment(
-//            id = 0, // 0 indicates a new appointment
-//            customerId = 0,
-//            appointmentDate = DateHelper.formatDate(Date()), // Default to current date
-//            appointmentTime = Date(), // Default to current time
-//            totalBillAmount = 0.0,
-//        )
-    }
-
-//    // ... rest of your ViewModel functions (createNewAppointment, getCustomerList, getCategoriesWithServices, etc.)
-//    fun getSelectedServicesIds(): List<Int> {
-//        //return _selectedServicesListFlow.value.map { it.id }
-//        _selectedServicesTotalAmount.value = 0.0
-//        val services = mutableListOf<Int>()
-//        var totalAmount = 0.0
-//        for (service in _categoryWithServiceListFlow.value) {
-//            if (service is CategoryWithServiceViewItem.ServiceItem && service.service.isSelected) {
-//                services.add(service.service.id)
-//                totalAmount += service.service.servicePrice
-//            }
-//        }
-//        _selectedServicesTotalAmount.value = totalAmount
-//        return services
-//    }
-
-//    fun createNewAppointmentOld() {
-//        Log.d(tag, "In $tag createNewAppointmentUseCase")
-//        //  currentAppointment.paymentMode = "PENDING"
-//        val selectedServicesWithDetails = getSelectedServicesIds()
-//        // currentAppointment.totalBillAmount = selectedServicesTotalAmount
-//
-//        viewModelScope.launch(Dispatchers.IO) {
-////            val id = createNewAppointmentUseCase.invoke(
-////                selectedCustomer,
-////                currentAppointment,
-////                selectedServicesWithDetails
-////            )
-//            // Log.d(tag, "In $tag $id")
-//            viewModelScope.launch(Dispatchers.Main) {
-//                _saveResult.emit(true)
-//            }
-//        }
-//    }
-
-    // Inside your ViewModelNewAppointment class
-
-    // Assuming these StateFlows are declared as suggested before:
-    // private val _currentAppointment = MutableStateFlow(...)
-    // val currentAppointment: StateFlow<Appointment> = _currentAppointment.asStateFlow()
-    //
-    // private val _selectedCustomerFlow = MutableStateFlow<Customer?>(null)
-    // val selectedCustomerFlow: StateFlow<Customer?> = _selectedCustomerFlow.asStateFlow()
-    //
-    // private val _selectedServicesTotalAmount = MutableStateFlow(0.0)
-    // val selectedServicesTotalAmount: StateFlow<Double> = _selectedServicesTotalAmount.asStateFlow()
-    //
-    // private val _selectedServicesListFlow = MutableStateFlow<List<Service>>(emptyList())
-    // val selectedServicesListFlow: StateFlow<List<Service>> = _selectedServicesListFlow.asStateFlow()
-    //
-    // private val _saveResult = MutableSharedFlow<Boolean>()
-    // val saveResult: SharedFlow<Boolean> = _saveResult.asSharedFlow()
-
-//    fun createNewAppointment() {
-//        Log.d(tag, "In $tag createNewAppointment")
-//
-//        // Get the current values from StateFlows
-//        val appointmentToSave = _currentAppointment.value.copy(
-//            // Update paymentMode and totalBillAmount based on current state
-//            paymentMode = "PENDING", // Or get this from UI state if applicable
-//            totalBillAmount = _selectedServicesTotalAmount.value // Use the StateFlow value for the total
-//        )
-//
-//        val selectedCustomer = _selectedCustomerFlow.value
-//        val selectedServiceIds = _selectedServicesListFlow.value.map { it.id }
-//
-//        // Validate necessary data before proceeding
-//        if (selectedCustomer == null) {
-//            Log.e(tag, "Customer is not selected, cannot create appointment.")
-//            // Consider emitting a different event type or logging an error for the UI
-//            // _saveResult.emit(false) could be called here as well, or a specific error flow
-//            return
-//        }
-//
-//        if (selectedServiceIds.isEmpty()) {
-//            Log.e(tag, "No services selected, cannot create appointment.")
-//            // Handle case where no services are selected
-//            // _saveResult.emit(false) could be called here
-//            return
-//        }
-//
-//        // Launch a coroutine in the viewModelScope, using Dispatchers.IO for database operations
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                // Call the UseCase to create the new appointment
-//                // The UseCase should handle database transactions and insertions
-//                val newAppointmentId = createNewAppointmentUseCase.invoke(
-//                    selectedCustomer,
-//                    appointmentToSave,
-//                    selectedServiceIds
-//                )
-//                Log.d(tag, "New appointment created with ID: $newAppointmentId")
-//
-//                // Emit success on the main dispatcher
-//                viewModelScope.launch(Dispatchers.Main) {
-//                    _saveResult.emit(true)
-//                }
-//
-//            } catch (e: Exception) {
-//                // Handle any exceptions during the save process
-//                Log.e(tag, "Error creating new appointment", e)
-//
-//                // Emit failure on the main dispatcher
-//                viewModelScope.launch(Dispatchers.Main) {
-//                    _saveResult.emit(false)
-//                }
-//
-//                // You might want to emit a more specific error state or message
-//                // depending on your UI's needs.
-//            }
-//        }
-//    }
-
-//    fun getSelectedServicesIdsOfAppointment() {
-//        _selectedServicesTotalAmount.value = 0.0
-//        viewModelScope.launch(Dispatchers.IO) {
-//            getSelectedServicesDetails.invoke(_currentAppointment.value.id).collect { list ->
-//                var totalAmount = 0.0
-//                for (service in _categoryWithServiceListFlow.value) {
-//                    if (service is CategoryWithServiceViewItem.ServiceItem &&
-//                        list.any { it.serviceId == service.service.id }
-//                    ) {
-//                        service.service.isSelected = true
-//                        totalAmount += service.service.servicePrice
-//                    } else if (service is CategoryWithServiceViewItem.ServiceItem) {
-//                        service.service.isSelected = false
-//                    }
-//                }
-//                _selectedServicesTotalAmount.value = totalAmount
-//            }
-//        }
-//    }
-
-//    fun getSelectedServices(): MutableList<Service> {
-//        selectedServicesTotalAmount = 0.0
-//        val services = mutableListOf<Service>()
-//        for (service in categoryWithServiceList) {
-//            if (service is CategoryWithServiceViewItem.ServiceItem && service.service.isSelected) {
-//                services.add(service.service)
-//                selectedServicesTotalAmount += service.service.servicePrice
-//            }
-//        }
-//        _selectedServicesListFlow.value = services
-//        return services
-//    }
-
-//    fun updateSelectedServicesWithCategoryServices() {
-//        selectedServicesTotalAmount = 0.0
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val selectedIds = selectedServicesListFlow.value.map { it.id }.toIntArray()
-//            for (service in categoryWithServiceList) {
-//                if (service is CategoryWithServiceViewItem.ServiceItem &&
-//                    selectedIds.contains(service.service.id)
-//                ) {
-//                    service.service.isSelected = true
-//                    selectedServicesTotalAmount += service.service.servicePrice
-//                } else if (service is CategoryWithServiceViewItem.ServiceItem) {
-//                    service.service.isSelected = false
-//                }
-//            }
-//        }
-//    }
-
     override fun onCleared() {
         super.onCleared()
         Log.i(tag, "$tag->onCleared")
     }
 
-    fun setCategoryWithServiceListFlow(items: ArrayList<CategoryWithServiceViewItem>) {
-        //_categoryWithServiceListFlow.value = items
+    fun updateServiceSelectionState() {
+        val updatedList = _categoryWithServiceListFlow.value.map {  item ->
+            if (item is CategoryWithServiceViewItem.CategoryHeader) {
+                // If it's the service that was updated, replace it with the updatedService
+                val updatedCategory = item.category.copy(categoryDescription = "${Calendar.getInstance().timeInMillis}")
+                item.copy(category = updatedCategory)
+            } else {
+                item // Keep other items as they are
+            }
+        }
+        _categoryWithServiceListFlow.value = updatedList
     }
 
     fun updateServiceSelectionState(updatedService: Service) {
@@ -593,6 +354,64 @@ class ViewModelNewAppointment @Inject constructor(
         }
         // Emit the new list to the StateFlow
         _categoryWithServiceListFlow.value = updatedList
+
+    }
+
+    // **New function to clear the ViewModel's state**
+    fun clearData() {
+        Log.d(tag, "$tag->clearData: Clearing ViewModel data.")
+        _appointmentId.value = null // Reset appointment ID
+        _selectedCustomerFlow.value = null // Clear selected customer
+        _currentAppointment.value = Appointment( // Reset current appointment to initial state
+            id = 0,
+            customerId = 0,
+            appointmentDate = DateHelper.formatDate(Date()),
+            appointmentTime = Date(),
+            totalBillAmount = 0.0
+        )
+        // Reset the service list to its initial state (all services unselected)
+        viewModelScope.launch {
+            val currentCategorizedList = _categoryWithServiceListFlow.value
+            if (currentCategorizedList.isEmpty()) {
+                // If the list is somehow empty (e.g., initial load failed or cleared before),
+                // we might need to reload it to get the structure.
+                // Or, if you are certain loadCategoriesWithServices always populates it,
+                // you might skip this and assume it's populated.
+                // For safety, let's ensure it has the base structure if you want to clear selections.
+                // However, simpler is to just map existing items to unselected.
+                Log.d(tag, "$tag->clearData: _categoryWithServiceListFlow is empty, cannot clear selections effectively without structure.")
+                // Optionally, you could call loadCategoriesWithServices() here if you want to fully reset
+                // and ensure all services are present and unselected.
+                // For now, we'll proceed assuming it has items if it's not empty.
+            }
+
+            val updatedList = currentCategorizedList.map { item ->
+                if (item is CategoryWithServiceViewItem.ServiceItem) {
+                    // Create a NEW Service instance with isSelected = false
+                    val unselectedService = item.service.copy(isSelected = false)
+                    // Create a NEW ServiceItem containing the NEW unselectedService
+                    item.copy(service = unselectedService)
+                } else {
+                    item // Keep CategoryHeader items as they are
+                }
+            }
+            _categoryWithServiceListFlow.value = updatedList // Emit the new list
+
+            // The derived flows (selectedServicesListFlow, selectedServicesTotalAmount)
+            // will now correctly update because the `Service` objects inside
+            // _categoryWithServiceListFlow are new instances, triggering the .map
+            // and .sumOf operations in their definitions.
+
+            // You can log after the value is set and coroutine context switches,
+            // or use collect on the derived flows if you need to be absolutely sure
+            // for logging immediately after.
+            Log.d(tag, "$tag->clearData: _categoryWithServiceListFlow updated. Checking derived flows...")
+            Log.d(tag, "$tag->Selected Services.${selectedServicesListFlow.value}")
+            Log.d(tag, "$tag->Selected Amount.${selectedServicesTotalAmount.value}")
+        }
+        // _saveResult doesn't need explicit clearing as it's a SharedFlow for one-time events
+        // Derived flows (selectedServicesListFlow, selectedServicesTotalAmount) will update automatically
+        // based on the reset _categoryWithServiceListFlow.
 
     }
 
