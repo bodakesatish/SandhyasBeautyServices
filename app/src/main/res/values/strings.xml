@@ -50,5 +50,10 @@
     <string name="date_range_this_week">This Week</string>
     <string name="date_range_all_time">All Time</string>
     <string name="title_list_of_appointments">List of Appointments</string>
+    <string name="showing_appointments_for_today">showing appointments for today</string>
+
+     <string name="status_not_available">Status Not Available</string>
+     <string name="status_unknown">Unknown</string>
+    <string name="currency_symbol_pkr">₹</string>
 
 </resources>

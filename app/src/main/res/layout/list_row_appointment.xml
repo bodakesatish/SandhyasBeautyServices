@@ -1,45 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:background="?android:attr/selectableItemBackground"
+    android:clipToPadding="false"
+    android:paddingStart="8dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
 
+    <!-- Status indicator bar on the left -->
+    <View
+        android:id="@+id/view_status_indicator"
+        android:layout_width="5dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/colorScheduled" />
+
+    <!-- Number (Optional) -->
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="1. "
-        android:textColor="@color/colorName"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="8dp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_customer_name"
+        app:layout_constraintStart_toEndOf="@id/view_status_indicator"
+        tools:text="1." />
 
+    <!-- Customer Name -->
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_customer_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:layout_marginStart="8dp"
-        android:text="Satish"
-        android:textSize="16sp"
-        android:textColor="@color/colorName"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_appointment_status_card"
         app:layout_constraintStart_toEndOf="@+id/tv_number"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Very Long Customer Name Here" />
 
+    <!-- Date & Time Icon -->
+    <ImageView
+        android:id="@+id/iv_datetime_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toStartOf="@+id/tv_customer_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_customer_name"
+        app:srcCompat="@drawable/ic_calendar_month"
+        app:tint="?android:attr/textColorSecondary" />
+
+    <!-- Date & Time Text -->
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_3"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_appointment_datetime"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="15-May-2025"
-        android:textSize="12sp"
-        android:textColor="@color/colorName"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceListItemSecondary"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_datetime_icon"
+        app:layout_constraintEnd_toStartOf="@+id/tv_total_amount"
+        app:layout_constraintStart_toEndOf="@+id/iv_datetime_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_datetime_icon"
+        tools:text="25 Dec 2024, 02:30 PM" />
+
+    <!-- Services Summary (Optional) -->
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_appointment_services_summary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="13sp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_number"
-        app:layout_constraintTop_toBottomOf="@+id/tv_customer_name" />
+        app:layout_constraintEnd_toStartOf="@+id/iv_payment_status_icon"
+        app:layout_constraintStart_toStartOf="@+id/iv_datetime_icon"
+        app:layout_constraintTop_toBottomOf="@+id/iv_datetime_icon"
+        tools:text="Haircut, Beard Trim, Facial Treatment, Another Service" /> <!-- Set to gone in adapter if no services -->
+
+    <!-- Appointment Status (in a CardView for better visual separation) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tv_appointment_status_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_customer_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_customer_name"
+        app:strokeWidth="1dp"
+        tools:cardBackgroundColor="@android:color/transparent"
+        tools:strokeColor="@color/colorScheduled">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_appointment_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="3dp"
+            android:textAllCaps="true"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="Scheduled"
+            tools:textColor="@color/colorScheduled" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Total Amount (Optional) -->
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_total_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_appointment_datetime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_appointment_datetime"
+        tools:text="$120.50" /> <!-- Set to gone in adapter if no amount -->
+
+    <!-- Payment Status Icon (Optional) -->
+    <ImageView
+        android:id="@+id/iv_payment_status_icon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_total_amount"
+        app:layout_constraintEnd_toStartOf="@+id/tv_total_amount"
+        app:layout_constraintTop_toTopOf="@+id/tv_total_amount"
+        tools:srcCompat="@drawable/ic_payment_paid"
+        tools:tint="@color/colorPaid" /> <!-- Set to gone or change icon/tint in adapter -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.SortOrder
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentListUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetFilteredAppointmentListUseCase

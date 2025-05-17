@@ -47,5 +47,45 @@ object DateHelper {
         return simpleDateFormat.format(currentDate)
     }
 
+    fun getCurrentMonthStartDateInMillis(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, 1) // First day of the current month
+        return getStartOfDayInMillis(calendar.timeInMillis)
+    }
+
+    fun getCurrentMonthEndDateInMillis(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // Last day of current month
+        return getEndOfDayInMillis(calendar.timeInMillis)
+    }
+
+    // Ensure you have these or similar:
+    fun getStartOfDayInMillis(timeInMillis: Long): Long {
+        val calendar = Calendar.getInstance().apply {
+            this.timeInMillis = timeInMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.timeInMillis
+    }
+
+    fun getEndOfDayInMillis(timeInMillis: Long): Long {
+        val calendar = Calendar.getInstance().apply {
+            this.timeInMillis = timeInMillis
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        return calendar.timeInMillis
+    }
+
+    fun getFormattedDate(date: Date): String { // Or (dateInMillis: Long)
+        // Your existing formatting logic
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return sdf.format(date)
+    }
 
 }

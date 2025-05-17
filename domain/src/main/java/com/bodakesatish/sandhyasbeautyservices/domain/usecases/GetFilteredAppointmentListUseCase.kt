@@ -5,8 +5,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.PaymentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.SortOrder
 import kotlinx.coroutines.Dispatchers

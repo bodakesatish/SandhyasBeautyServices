@@ -3,23 +3,25 @@ package com.bodakesatish.sandhyasbeautyservices.domain.repository
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentServices
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import kotlinx.coroutines.flow.Flow
 
-// Define these enums in your DOMAIN module
-enum class AppointmentStatus {
-    SCHEDULED,
-    COMPLETED,
-    CANCELLED,
-    PENDING // Add all relevant statuses for your domain
-}
+//// Define these enums in your DOMAIN module
+//enum class AppointmentStatus {
+//    SCHEDULED,
+//    COMPLETED,
+//    CANCELLED,
+//    PENDING // Add all relevant statuses for your domain
+//}
 
-enum class PaymentStatus {
-    PAID,
-    UNPAID,
-    PARTIALLY_PAID // Add all relevant statuses for your domain
-}
+//enum class PaymentStatus {
+//    PAID,
+//    UNPAID,
+//    PARTIALLY_PAID // Add all relevant statuses for your domain
+//}
 
 enum class AppointmentSortBy {
     DATE,

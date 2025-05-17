@@ -14,12 +14,12 @@ import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceD
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentServices
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepository
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.SortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -150,6 +150,10 @@ class AppointmentRepositoryImpl @Inject constructor(
             AppointmentStatus.CANCELLED -> "CANCELLED"
             AppointmentStatus.PENDING -> "PENDING"
             // Ensure all domain statuses are handled
+            AppointmentStatus.CONFIRMED -> "CONFIRMED"
+            AppointmentStatus.IN_PROGRESS -> "IN_PROGRESS"
+            AppointmentStatus.NO_SHOW -> "NO_SHOW"
+            AppointmentStatus.UNKNOWN -> "UNKNOWN"
         }
     }
 
@@ -159,6 +163,10 @@ class AppointmentRepositoryImpl @Inject constructor(
             PaymentStatus.UNPAID -> "UNPAID"
             PaymentStatus.PARTIALLY_PAID -> "PARTIALLY_PAID"
             // Ensure all domain payment statuses are handled
+            PaymentStatus.REFUNDED -> "REFUNDED"
+            PaymentStatus.FAILED -> "FAILED"
+            PaymentStatus.PENDING_CONFIRMATION -> "PENDING_CONFIRMATION"
+            PaymentStatus.UNKNOWN -> "UNKNOWN"
         }
     }
 

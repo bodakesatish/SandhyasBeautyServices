@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Theme/General Colors-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#008577</color>
@@ -12,4 +13,24 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="light_gray">#69787575</color>
+
+    <!-- Appointment Status Colors -->
+    <color name="colorScheduled">#FF03A9F4</color>       <!-- Light Blue -->
+    <color name="colorScheduledText">#FF01579B</color>    <!-- Darker Blue for text -->
+    <color name="colorCompleted">#FF4CAF50</color>       <!-- Green -->
+    <color name="colorCompletedText">#FF1B5E20</color>   <!-- Darker Green for text -->
+    <color name="colorCancelled">#FFF44336</color>       <!-- Red -->
+    <color name="colorCancelledText">#FFB71C1C</color>   <!-- Darker Red for text -->
+    <color name="colorInProgress">#FFFF9800</color>      <!-- Orange -->
+    <color name="colorInProgressText">#FFE65100</color>  <!-- Darker Orange for text -->
+
+    <!-- Payment Status Colors -->
+    <color name="colorPaid">#FF4CAF50</color>           <!-- Green (can be same as completed) -->
+    <color name="colorUnpaid">#FFFFC107</color>         <!-- Amber/Yellow -->
+    <color name="colorRefunded">#FF607D8B</color>       <!-- Blue Grey -->
+
+    <!-- You can also define text colors to go ON these backgrounds if you use them as solid fills -->
+    <!-- e.g., <color name="colorOnScheduled">@color/white</color> -->
+
+     <color name="textColorSecondary">#BDBDBD</color>   Grey 400
 </resources>

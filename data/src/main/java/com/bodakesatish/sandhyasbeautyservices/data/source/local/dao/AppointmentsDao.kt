@@ -9,8 +9,8 @@ import androidx.room.Update
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.AppointmentCustomer
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.AppointmentsEntity
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CustomerEntity
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.repository.PaymentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
