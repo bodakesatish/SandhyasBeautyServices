@@ -127,7 +127,9 @@ class FragmentNewAppointment : Fragment() {
         }
 
         binding.btnNewAppointment.setOnClickListener {
-            viewModel.createNewAppointment()
+            if(validateInput()) {
+                viewModel.createNewAppointment()
+            }
 //            if (args.appointmentId == 0) {
 //                viewModel.createNewAppointment()
 //            } else {
@@ -385,10 +387,39 @@ class FragmentNewAppointment : Fragment() {
     }
 
     private fun validateInput(): Boolean {
-        return viewModel.selectedCustomerFlow.value != null &&
-                viewModel.selectedServicesListFlow.value.isNotEmpty() &&
-                !binding.evAppointmentDate.editText?.text.isNullOrEmpty() &&
-                !binding.evAppointmentTime.editText?.text.isNullOrEmpty()
+
+        if (viewModel.selectedCustomerFlow.value == null) {
+            Toast.makeText(context, "Please select a customer.", Toast.LENGTH_SHORT).show()
+            //binding.tilCustomerList.error = "Required" // Show error on TextInputLayout
+            return false
+        } else {
+          // binding.tilCustomerList.error = null // Clear error
+        }
+
+        if (binding.evAppointmentDate.editText?.text.isNullOrEmpty()) {
+            Toast.makeText(context, "Please select a date.", Toast.LENGTH_SHORT).show()
+          //  binding.tilAppointmentDate.error = "Required"
+            return false
+        } else {
+          // binding.tilAppointmentDate.error = null
+        }
+
+        if (binding.evAppointmentTime.editText?.text.isNullOrEmpty()) {
+            Toast.makeText(context, "Please select a time.", Toast.LENGTH_SHORT).show()
+         //   binding.tilAppointmentTime.error = "Required"
+            return false
+        } else {
+         //   binding.tilAppointmentTime.error = null
+        }
+
+        if (viewModel.selectedServicesListFlow.value.isEmpty()) {
+            Toast.makeText(context, "Please add at least one service.", Toast.LENGTH_SHORT).show()
+            // Potentially highlight the "Add/Edit Services" button or the card
+            return false
+        }
+
+
+        return true
     }
 
     override fun onDestroy() {
