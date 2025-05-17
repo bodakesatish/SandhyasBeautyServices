@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
@@ -21,6 +22,8 @@ import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentNewAppointmentBinding
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemLayoutBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentMode
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
 import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.SelectedServicesAdapter
@@ -35,7 +38,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import kotlin.collections.filter
 
 @AndroidEntryPoint
@@ -49,12 +55,22 @@ class FragmentNewAppointment : Fragment() {
 
     // ViewModel scoped to the Activity (assuming it's intended to be shared if navigating back/forth)
     private val viewModel: ViewModelNewAppointment by viewModels(ownerProducer = { requireActivity() })
+    private val calendar = Calendar.getInstance()
+
+    // Dummy data for demonstration - replace with ViewModel data and observe
+    private var customersList: List<Customer> = listOf(
+        Customer(id = 1, firstName = "Alice ", lastName = "Smith", phone = "555-0101", dob = Date()),
+        Customer(id = 2, firstName = "Alice1 ", lastName = "Smith1", phone = "555-01011", dob = Date()),
+    )
 
     private val tag = "Beauty->" + this.javaClass.simpleName
 
     private lateinit var selectedServicesAdapter: SelectedServicesAdapter
 
     val args: FragmentNewAppointmentArgs by navArgs()
+
+    private var selectedCustomer: Customer? = null
+    private var selectedServices = mutableListOf<Service>() // Manage selected services
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,19 +85,18 @@ class FragmentNewAppointment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize the adapter here
-        selectedServicesAdapter = SelectedServicesAdapter()
-
+        setupHeader()
+        setupPaymentDropDowns()
+        setupViews()
+        setupListeners()
+        observeViewModel()
+        setupFragmentResultListeners() // Set up the listener for dialog results
         // Set the appointmentId from navigation arguments
         // Only set if it's a non-zero ID (for edit mode)
         if (args.appointmentId != 0) {
             viewModel.setAppointmentId(args.appointmentId)
         }
 
-        setupViews()
-        setupListeners()
-        observeViewModel()
-        setupFragmentResultListeners() // Set up the listener for dialog results
     }
 
     private fun setupViews() {
@@ -93,14 +108,18 @@ class FragmentNewAppointment : Fragment() {
             binding.btnNewAppointment.setText(getString(R.string.update_appointment_button))
         }
         binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
-        binding.rvSelectedServiceList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvSelectedServiceList.adapter = selectedServicesAdapter
+
+        selectedServicesAdapter = SelectedServicesAdapter { service ->
+            viewModel.removeCategoryServiceSelection(service)
+//            updateTotalBill()
+        }
+        binding.rvSelectedServiceList.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = selectedServicesAdapter
+        }
     }
 
     private fun setupListeners() {
-        binding.headerGeneric.btnBack.setOnClickListener {
-            navigateToPreviousScreen()
-        }
 
         // Handle system back button
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -141,6 +160,13 @@ class FragmentNewAppointment : Fragment() {
 
     }
 
+    private fun setupHeader() {
+        binding.headerGeneric.tvHeader.text = getString(R.string.new_appointment_title) // Use string resource
+        binding.headerGeneric.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
     private fun setupFragmentResultListeners() {
         // Listen for the result from the SelectServicesDialogFragment
         setFragmentResultListener(SelectServicesDialogFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
@@ -156,6 +182,24 @@ class FragmentNewAppointment : Fragment() {
                     viewModel.updateCategoryServiceSelection(selectedServicesIds)
                 }
             }
+        }
+    }
+
+    private fun setupPaymentDropDowns() {
+        // Payment Mode
+        val paymentModesDisplay = PaymentMode.entries.map { it.name } // Use displayName
+        val paymentModeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, paymentModesDisplay)
+        binding.actvPaymentMode.setAdapter(paymentModeAdapter)
+        if (paymentModesDisplay.isNotEmpty()) {
+            binding.actvPaymentMode.setText(paymentModesDisplay.first(), false) // Set default, no filter
+        }
+
+        // Payment Status
+        val paymentStatusesDisplay = PaymentMode.entries.map { it.name } // Use displayName
+        val paymentStatusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, paymentStatusesDisplay)
+        binding.actvPaymentStatus.setAdapter(paymentStatusAdapter)
+        if (paymentStatusesDisplay.isNotEmpty()) {
+            binding.actvPaymentStatus.setText(paymentStatusesDisplay.first(), false) // Set default, no filter
         }
     }
 
@@ -180,6 +224,7 @@ class FragmentNewAppointment : Fragment() {
                 viewModel.selectedServicesTotalAmount.collectLatest { totalAmount ->
                     Log.d(tag, "Observed Total Services Amount: $totalAmount")
                     binding.tvValueTotalBill?.setText(String.format("%.2f", totalAmount))
+
                 }
             }
         }
@@ -199,6 +244,8 @@ class FragmentNewAppointment : Fragment() {
                             .filter { it.service.isSelected }
                             .map { it.service }
                         selectedServicesAdapter.submitList(selectedServices)
+                        binding.cardServiceBills.visibility = if (selectedServices.isNotEmpty()) View.VISIBLE else View.GONE
+
                         Log.d(tag, "Selected Services for RV: ${selectedServices.size}")
                     }
                 }
@@ -307,7 +354,7 @@ class FragmentNewAppointment : Fragment() {
         val currentServicesList = viewModel.categoryWithServiceListFlow.value
         // Create and show the dialog, passing the current list of services
         val dialog = SelectServicesDialogFragment().newInstance(currentServicesList)
-        dialog.show(childFragmentManager, "SelectServicesDialog")
+        dialog.show(parentFragmentManager, "SelectServicesDialog")
     }
 
     private fun selectDatePicker() {

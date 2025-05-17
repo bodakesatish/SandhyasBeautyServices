@@ -5,60 +5,55 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowSelectedServiceBinding
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
+import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowSelectedServiceBinding // Generated binding class
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Service // Your Service model
 
-class SelectedServicesAdapter() : ListAdapter<Service, SelectedServicesAdapter.AppointmentViewHolder>(ServiceDiffCallback()) {
+class SelectedServicesAdapter(
+    private val onRemoveClicked: (Service) -> Unit // Lambda for remove action
+) : ListAdapter<Service, SelectedServicesAdapter.ServiceViewHolder>(ServiceDiffCallback()) {
 
-    // No need for a separate itemList variable; ListAdapter manages the list internally.
-    // No need for a separate setData function; use submitList() provided by ListAdapter.
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
-        val binding =
-            ListRowSelectedServiceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AppointmentViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceViewHolder {
+        val binding = ListRowSelectedServiceBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return ServiceViewHolder(binding, onRemoveClicked)
     }
 
-    override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
-        // getItem(position) is provided by ListAdapter to get the item at the current position.
+    override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         val service = getItem(position)
         holder.bind(service)
     }
 
-    // No need for getItemCount(); ListAdapter handles this.
-    // No need for setOnClickListener(); it's passed in the constructor.
-
-    // ViewHolder can be an inner class or a top-level class.
-    // If it doesn't need access to SelectedServicesAdapter's members other than what's passed,
-    // it could even be a static nested class (by removing `inner`).
-
-    inner class AppointmentViewHolder(
-        private val binding: ListRowSelectedServiceBinding
+    class ServiceViewHolder(
+        private val binding: ListRowSelectedServiceBinding,
+        private val onRemoveClicked: (Service) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        // The 'position' parameter is often not needed in bind if the click listener
-        // already receives the specific 'Service' object.
         fun bind(service: Service) {
-            binding.tvServiceName.text = service.serviceName
-            binding.tvServicePrice.text = "${service.servicePrice} Rs." // Consider using string resources for "Rs."
-            binding.root.setOnClickListener {
-              //  onItemClicked(service)
+            binding.tvServiceNameRow.text = service.serviceName
+            // Ensure you have a currency symbol defined in your strings.xml
+            // e.g., <string name="currency_symbol_pkr">₹%s</string>
+            binding.tvServicePriceRow.text = ""+service.servicePrice
+//                binding.root.context.getString(
+//                R.string.currency_symbol_pkr, // Or your general currency string
+//                String.format("%.2f", service.servicePrice)
+//            )
+
+            binding.ivRemoveService.setOnClickListener {
+                onRemoveClicked(service)
             }
         }
     }
 
-    // DiffUtil.ItemCallback is used with ListAdapter.
-    // It can be a companion object or a separate top-level class.
-    private class ServiceDiffCallback : DiffUtil.ItemCallback<Service>() {
+    class ServiceDiffCallback : DiffUtil.ItemCallback<Service>() {
         override fun areItemsTheSame(oldItem: Service, newItem: Service): Boolean {
-            // Check if the items represent the same logical entity (e.g., compare unique IDs)
-            return oldItem.id == newItem.id
+            return oldItem.id == newItem.id // Assuming 'id' is unique
         }
 
         override fun areContentsTheSame(oldItem: Service, newItem: Service): Boolean {
-            // Check if the visual representation of the item has changed.
-            // If 'Service' is a data class, its auto-generated equals() will compare all properties.
-            return oldItem == newItem
+            return oldItem == newItem // If Service is a data class, this works for content comparison
         }
     }
 

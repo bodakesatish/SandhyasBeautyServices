@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentDetails
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentMode
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.CreateNewAppointmentUseCase
@@ -264,6 +265,31 @@ class ViewModelNewAppointment @Inject constructor(
         Log.d(tag, "ViewModel: _categoryWithServiceListFlow value updated.")
     }
 
+    // Internal function to update the selection state within categoryWithServiceListFlow
+    internal fun removeCategoryServiceSelection(service: Service) {
+        Log.d(tag, "ViewModel: updateCategoryServiceSelection called with service: $service")
+
+        val updatedList = _categoryWithServiceListFlow.value.map { item ->
+            if (item is CategoryWithServiceViewItem.ServiceItem ) {
+                val isSelected = service.id
+                Log.d(tag, "ViewModel: Service ${item.service.serviceName} (ID: ${item.service.id}) isSelected: $isSelected")
+                if(item.service.id == service.id) {
+                    item.copy(service = item.service.copy(isSelected = false))
+                } else {
+                    item
+                }
+            } else {
+                item // Keep CategoryHeader items as they are
+            }
+        }
+        // Emit the new list to the StateFlow to trigger updates in derived flows and the UI
+        Log.d(tag, "ViewModel: Emitting new _categoryWithServiceListFlow with ${updatedList.size} items.")
+        _categoryWithServiceListFlow.value = updatedList
+        Log.d(tag, "ViewModel: _categoryWithServiceListFlow value updated.")
+    }
+
+
+
     // Function to create a new appointment
     fun createNewAppointment() {
         Log.d(tag, "In $tag createNewAppointment")
@@ -271,7 +297,7 @@ class ViewModelNewAppointment @Inject constructor(
         // Get the current values from StateFlows
         val appointmentToSave = _currentAppointment.value.copy(
             // Update paymentMode and totalBillAmount based on current state
-            paymentMode = "PENDING", // Or get this from UI state if applicable
+            paymentMode = PaymentMode.valueOf("PENDING"), // Or get this from UI state if applicable
             totalBillAmount = selectedServicesTotalAmount.value // Use the derived StateFlow value
         )
 

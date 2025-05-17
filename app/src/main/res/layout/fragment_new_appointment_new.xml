@@ -16,57 +16,58 @@
 
         <!-- Customer Selection: Using ExposedDropdownMenu for better UX -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ev_customer_list"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/til_customer_list"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:hint="Select Customer (*)"
-            app:endIconContentDescription="nothing"
-            app:endIconDrawable="@drawable/arrow_down_24"
-            app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/header_generic">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/actv_customer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
                 android:inputType="none"
-                android:longClickable="false" />
+                tools:ignore="LabelFor" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
+        <!-- Date Picker -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ev_appointment_date"
+            android:id="@+id/til_appointment_date"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
             android:hint="Select Date (*)"
-            app:layout_constraintEnd_toStartOf="@+id/ev_appointment_time"
+            app:endIconContentDescription="Select Date"
+            app:endIconDrawable="@drawable/ic_calendar_month"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toStartOf="@+id/til_appointment_time"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ev_customer_list">
+            app:layout_constraintTop_toBottomOf="@+id/til_customer_list">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_appointment_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
+                android:clickable="true"
                 android:focusable="false"
                 android:inputType="none"
                 android:longClickable="false" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Time Picker -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ev_appointment_time"
+            android:id="@+id/til_appointment_time"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -78,10 +79,11 @@
             app:endIconDrawable="@drawable/ic_calendar_month"
             app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ev_appointment_date"
-            app:layout_constraintTop_toBottomOf="@+id/ev_customer_list">
+            app:layout_constraintStart_toEndOf="@+id/til_appointment_date"
+            app:layout_constraintTop_toBottomOf="@+id/til_customer_list">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_appointment_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
@@ -91,8 +93,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Select Services Button -->
         <Button
-            android:id="@+id/btn_show_service"
+            android:id="@+id/btn_select_services"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,22 +104,22 @@
             android:text="Add/Edit Services"
             app:icon="@drawable/add_circle_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ev_appointment_date" />
+            app:layout_constraintTop_toBottomOf="@id/til_appointment_date" />
 
         <!-- Service Bills Card -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardServiceBills"
+            android:id="@+id/card_selected_services"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:visibility="gone"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_show_service"
+            app:layout_constraintTop_toBottomOf="@+id/btn_select_services"
             tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,7 +128,7 @@
                 android:paddingBottom="16dp"> <!-- Padding inside card for total bill -->
 
                 <TextView
-                    android:id="@+id/tvHeaderServicesBill"
+                    android:id="@+id/tv_header_services_bill_label"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -134,12 +137,12 @@
                     android:text="Selected Services"
                     android:textAppearance="?attr/textAppearanceSubtitle1"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/tvHeaderServicesAmount"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_header_services_amount_label"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tvHeaderServicesAmount"
+                    android:id="@+id/tv_header_services_amount_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -152,19 +155,19 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_selected_service_list"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvHeaderServicesBill"
-                    tools:itemCount="2"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_header_services_bill_label"
                     tools:listitem="@layout/list_row_selected_service" /> <!-- Replace with your item layout -->
 
+                <!-- Total Bill inside the Card -->
+                <!-- Total Bill inside the Card -->
                 <TextView
-                    android:id="@+id/tvLabelTotalBill"
+                    android:id="@+id/tv_label_total_bill"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -172,14 +175,14 @@
                     android:text="Total Bill:"
                     android:textAppearance="?attr/textAppearanceBody1"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/tvValueTotalBill"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_value_total_bill"
                     app:layout_constraintTop_toBottomOf="@+id/rv_selected_service_list"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/tvValueTotalBill"
+                    android:id="@+id/tv_value_total_bill"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -206,7 +209,7 @@
             android:hint="Payment Mode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardServiceBills">
+            app:layout_constraintTop_toBottomOf="@+id/card_selected_services">
 
             <AutoCompleteTextView
                 android:id="@+id/actv_payment_mode"
@@ -264,7 +267,7 @@
 
         <!-- Create Appointment Button -->
         <Button
-            android:id="@+id/btn_new_appointment"
+            android:id="@+id/btn_create_appointment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -277,22 +280,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_notes" />
 
+        <!-- Test Button (if still needed) -->
         <Button
-            android:id="@+id/bt_test"
+            android:id="@+id/btn_test"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:padding="16dp"
             android:text="Test"
             android:visibility="gone"
             tools:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_new_appointment" />
-
+            app:layout_constraintTop_toBottomOf="@id/btn_create_appointment" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
