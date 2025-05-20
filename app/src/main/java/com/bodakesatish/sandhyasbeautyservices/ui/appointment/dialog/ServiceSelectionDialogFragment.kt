@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments.dialog
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment.dialog
 
 import android.os.Bundle
 import android.util.Log
@@ -15,19 +15,19 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentSelectServicesDialogBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.ViewModelNewAppointment
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.ServiceDialogAdapter
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.CreateAppointmentViewModel
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.CategoryWithServiceViewItem
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDialogAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SelectServicesDialogFragment : DialogFragment() {
+class ServiceSelectionDialogFragment : DialogFragment() {
 
     private var _binding: FragmentSelectServicesDialogBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ViewModelNewAppointment by viewModels(ownerProducer = { requireActivity() })
+    private val viewModel: CreateAppointmentViewModel by viewModels(ownerProducer = { requireActivity() })
     private lateinit var serviceAdapter: ServiceDialogAdapter
     private val tag = "Beauty->"+this.javaClass.simpleName
 
@@ -43,8 +43,8 @@ class SelectServicesDialogFragment : DialogFragment() {
     }
 
     // Factory method to create a new instance with initial data
-    fun newInstance(initialServices: List<CategoryWithServiceViewItem>): SelectServicesDialogFragment {
-        val fragment = SelectServicesDialogFragment()
+    fun newInstance(initialServices: List<CategoryWithServiceViewItem>): ServiceSelectionDialogFragment {
+        val fragment = ServiceSelectionDialogFragment()
         fragment.arguments =
             bundleOf(BUNDLE_KEY_INITIAL_SERVICES to ArrayList(initialServices)) // Pass list via arguments
         return fragment
@@ -93,7 +93,11 @@ class SelectServicesDialogFragment : DialogFragment() {
             // Optionally dismiss the dialog or show an error message
         }
 
-        binding.btnSelectService.setOnClickListener { view ->
+        binding.btnCancelServiceSelection.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnSubmitServiceSelection.setOnClickListener { view ->
             // Get the list of currently selected services from the adapter's current list
             // We derive this from the data the adapter is currently displaying.
             val selectedServices = serviceAdapter.currentList

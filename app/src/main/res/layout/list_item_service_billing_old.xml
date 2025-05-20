@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/tv_service_name_billing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintEnd_toStartOf="@+id/tv_service_original_price_billing"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Haircut and Styling" />
+
+    <TextView
+        android:id="@+id/tv_service_original_price_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Price: "
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_name_billing" />
+
+    <TextView
+        android:id="@+id/tv_service_original_price_billing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_original_price_label"
+        app:layout_constraintStart_toEndOf="@id/tv_service_original_price_label"
+        tools:text="₹500.00" />
+
+    <!-- Discount Input/Display -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_service_discount"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Discount"
+        app:layout_constraintEnd_toStartOf="@+id/btn_apply_service_discount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_original_price_label"
+        app:prefixText="₹">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_service_discount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Or an "apply" icon -->
+    <ImageButton
+        android:id="@+id/btn_apply_service_discount"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Apply Discount"
+        android:padding="8dp"
+        android:src="@drawable/ic_check"
+        app:layout_constraintBottom_toBottomOf="@id/til_service_discount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_service_discount"
+        app:tint="?attr/colorPrimary" />
+    <!-- Alternative: A simple "Set Discount" Button that opens a dialog -->
+    <!--
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_set_service_discount"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Discount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_original_price_label" />
+    -->
+
+    <TextView
+        android:id="@+id/tv_service_discount_applied_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Discount Applied: "
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_service_discount"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_service_discount_applied_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_discount_applied_label"
+        app:layout_constraintStart_toEndOf="@id/tv_service_discount_applied_label"
+        tools:text="- ₹50.00"
+        tools:visibility="visible" />
+
+
+    <TextView
+        android:id="@+id/tv_service_final_price_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Final Price: "
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_discount_applied_label" />
+
+    <TextView
+        android:id="@+id/tv_service_final_price_billing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_final_price_label"
+        app:layout_constraintStart_toEndOf="@id/tv_service_final_price_label"
+        tools:text="₹450.00" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_final_price_billing" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

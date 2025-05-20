@@ -53,9 +53,11 @@ class AppointmentRepositoryImpl @Inject constructor(
                 customerId = customer.id,
                 appointmentId = appointmentId.toInt(),
                 serviceId = serviceId,
-                amount = service?.servicePrice ?: 0.0,
-                discount = 0,
-                priceAfterDiscount = service?.servicePrice ?: 0.0
+                originalAmount = service?.servicePrice ?: 0.0,
+                discount = 0.0,
+                discountPercentage = 0.0,
+                priceAfterDiscount = service?.servicePrice?: 0.0,
+                serviceSummary = ""
             )
             serviceDetailDao.insertOrUpdate(serviceDetail)
         }
@@ -145,14 +147,9 @@ class AppointmentRepositoryImpl @Inject constructor(
     // or keep them private here if only used by this repository implementation.
     private fun mapDomainStatusToString(domainStatus: AppointmentStatus): String {
         return when (domainStatus) {
-            AppointmentStatus.SCHEDULED -> "SCHEDULED" // Or whatever string your DB expects
+            AppointmentStatus.PENDING -> "PENDING"
             AppointmentStatus.COMPLETED -> "COMPLETED"
             AppointmentStatus.CANCELLED -> "CANCELLED"
-            AppointmentStatus.PENDING -> "PENDING"
-            // Ensure all domain statuses are handled
-            AppointmentStatus.CONFIRMED -> "CONFIRMED"
-            AppointmentStatus.IN_PROGRESS -> "IN_PROGRESS"
-            AppointmentStatus.NO_SHOW -> "NO_SHOW"
             AppointmentStatus.UNKNOWN -> "UNKNOWN"
         }
     }
@@ -162,10 +159,6 @@ class AppointmentRepositoryImpl @Inject constructor(
             PaymentStatus.PAID -> "PAID"
             PaymentStatus.UNPAID -> "UNPAID"
             PaymentStatus.PARTIALLY_PAID -> "PARTIALLY_PAID"
-            // Ensure all domain payment statuses are handled
-            PaymentStatus.REFUNDED -> "REFUNDED"
-            PaymentStatus.FAILED -> "FAILED"
-            PaymentStatus.PENDING_CONFIRMATION -> "PENDING_CONFIRMATION"
             PaymentStatus.UNKNOWN -> "UNKNOWN"
         }
     }

@@ -7,13 +7,17 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointments.FragmentAppointmentsRecord"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentDashboardFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
 
         <action
             android:id="@+id/action_fragment_appointment_dashboard_to_fragment_new_appointment"
             app:destination="@+id/navigation_new_appointment"/>
+
+        <action
+            android:id="@+id/action_fragment_appointment_list_to_appointment_bill_detail"
+            app:destination="@+id/navigation_appointment_details"/>
 
     </fragment>
 
@@ -107,9 +111,51 @@
 
     <fragment
         android:id="@+id/navigation_new_appointment"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointments.FragmentNewAppointment"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.CreateAppointmentFragment"
         android:label="@string/title_add_appointment"
         tools:layout="@layout/fragment_new_appointment" >
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_appointment_bill"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentBillDetailFragment"
+        android:label="@string/bill_detail"
+        tools:layout="@layout/fragment_appointment_details" >
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_appointment_details"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentBillDetailFragment"
+        android:label="Appointment and Bill Detail"
+        tools:layout="@layout/fragment_appointment_details" >
+
+        <action
+            android:id="@+id/temp"
+            app:destination="@+id/navigation_new_appointment"/>
+
+        <action
+            android:id="@+id/nav_to_billing"
+            app:destination="@+id/navigation_billing"/>
+
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_billing"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.billing.BillingFragment"
+        android:label="Billing"
+        tools:layout="@layout/fragment_billing" >
         <argument
             android:name="appointmentId"
             app:argType="integer"

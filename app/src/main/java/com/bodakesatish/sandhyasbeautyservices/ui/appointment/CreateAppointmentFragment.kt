@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment
 
 import android.os.Bundle
 import android.util.Log
@@ -23,11 +23,10 @@ import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentNewAppointmen
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemLayoutBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentMode
-import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.SelectedServicesAdapter
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.dialog.SelectServicesDialogFragment
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.CategoryWithServiceViewItem
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.SelectedServicesAdapter
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.dialog.ServiceSelectionDialogFragment
 import com.bodakesatish.sandhyasbeautyservices.util.AppArrayAdapter
 import com.bodakesatish.sandhyasbeautyservices.util.AppDatePicker
 import com.bodakesatish.sandhyasbeautyservices.util.AppListPopupWindow
@@ -38,14 +37,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import kotlin.collections.filter
 
 @AndroidEntryPoint
-class FragmentNewAppointment : Fragment() {
+class CreateAppointmentFragment : Fragment() {
 
     private var _binding: FragmentNewAppointmentBinding? = null
 
@@ -54,7 +51,7 @@ class FragmentNewAppointment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel scoped to the Activity (assuming it's intended to be shared if navigating back/forth)
-    private val viewModel: ViewModelNewAppointment by viewModels(ownerProducer = { requireActivity() })
+    private val viewModel: CreateAppointmentViewModel by viewModels(ownerProducer = { requireActivity() })
     private val calendar = Calendar.getInstance()
 
     // Dummy data for demonstration - replace with ViewModel data and observe
@@ -67,7 +64,7 @@ class FragmentNewAppointment : Fragment() {
 
     private lateinit var selectedServicesAdapter: SelectedServicesAdapter
 
-    val args: FragmentNewAppointmentArgs by navArgs()
+    val args: CreateAppointmentFragmentArgs by navArgs()
 
     private var selectedCustomer: Customer? = null
     private var selectedServices = mutableListOf<Service>() // Manage selected services
@@ -111,7 +108,6 @@ class FragmentNewAppointment : Fragment() {
 
         selectedServicesAdapter = SelectedServicesAdapter { service ->
             viewModel.removeCategoryServiceSelection(service)
-//            updateTotalBill()
         }
         binding.rvSelectedServiceList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -171,11 +167,11 @@ class FragmentNewAppointment : Fragment() {
 
     private fun setupFragmentResultListeners() {
         // Listen for the result from the SelectServicesDialogFragment
-        setFragmentResultListener(SelectServicesDialogFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
+        setFragmentResultListener(ServiceSelectionDialogFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
             // Ensure we handle the correct request key
-            if (requestKey == SelectServicesDialogFragment.REQUEST_KEY_SELECTED_SERVICES) {
+            if (requestKey == ServiceSelectionDialogFragment.REQUEST_KEY_SELECTED_SERVICES) {
                 val selectedServices =
-                    bundle.getSerializable(SelectServicesDialogFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
+                    bundle.getSerializable(ServiceSelectionDialogFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
                 selectedServices?.let {
                     Log.i(tag, "Received Selected Services from Dialog: $it")
                     // Update the ViewModel with the new list of selected services
@@ -355,7 +351,7 @@ class FragmentNewAppointment : Fragment() {
         // Get the current list of all services with their selection state from the ViewModel
         val currentServicesList = viewModel.categoryWithServiceListFlow.value
         // Create and show the dialog, passing the current list of services
-        val dialog = SelectServicesDialogFragment().newInstance(currentServicesList)
+        val dialog = ServiceSelectionDialogFragment().newInstance(currentServicesList)
         dialog.show(parentFragmentManager, "SelectServicesDialog")
     }
 

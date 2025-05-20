@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -75,7 +75,7 @@ class AppointmentsAdapter(
             }
 
             // --- Appointment Status ---
-            data.appointment.status?.let { status ->
+            data.appointment.appointmentStatus?.let { status ->
                 binding.tvAppointmentStatus.text = status.name // Or a more user-friendly string from string resources
                 val statusTextColorRes: Int
                 val statusIndicatorColorRes: Int
@@ -83,7 +83,7 @@ class AppointmentsAdapter(
                 // val statusCardBackgroundColorRes: Int // If you decide to use card background color
 
                 when (status) {
-                    AppointmentStatus.SCHEDULED -> {
+                    AppointmentStatus.PENDING -> {
                         statusTextColorRes = R.color.colorScheduledText // Or use R.color.colorScheduled if text and border are same
                         statusIndicatorColorRes = R.color.colorScheduled
                         statusCardStrokeColorRes = R.color.colorScheduled
@@ -142,7 +142,7 @@ class AppointmentsAdapter(
                         paymentIconRes = R.drawable.ic_payment_unpaid // e.g., an hourglass or exclamation icon
                         paymentIconTintRes = R.color.colorUnpaid
                     }
-                    PaymentStatus.REFUNDED -> {
+                    PaymentStatus.PARTIALLY_PAID -> {
                         paymentIconRes = R.drawable.ic_payment_unpaid // e.g., a refresh or back arrow icon
                         paymentIconTintRes = R.color.colorRefunded
                     }

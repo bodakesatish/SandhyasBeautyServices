@@ -55,5 +55,16 @@
      <string name="status_not_available">Status Not Available</string>
      <string name="status_unknown">Unknown</string>
     <string name="currency_symbol_pkr">₹</string>
+    <string name="bill_detail">Bill Detail</string>
+    <string name="appointment_and_billing_details">Appointment and Billing Details</string>
+    <string name="select_service_checkbox_desc">test</string>
+    <string name="service_icon_desc">test</string>
+    <string name="dialog_title_select_services">Select Services</string>
+    <string name="action_submit">Submit</string>
+
+    <string-array name="discount_types_array">
+        <item>Amount</item> <!-- Corresponds to DiscountType.AMOUNT -->
+        <item>Percentage</item> <!-- Corresponds to DiscountType.PERCENTAGE -->
+    </string-array>
 
 </resources>

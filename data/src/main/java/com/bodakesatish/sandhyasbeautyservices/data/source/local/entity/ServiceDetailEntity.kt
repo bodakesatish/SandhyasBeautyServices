@@ -39,11 +39,15 @@ data class ServiceDetailEntity(
     @ColumnInfo(Columns.SERVICE_ID)
     val serviceId: Int,
     @ColumnInfo(Columns.AMOUNT)
-    val amount: Double,
+    val originalAmount: Double,
     @ColumnInfo(Columns.DISCOUNT)
-    val discount: Int,
+    val discount: Double,
+    @ColumnInfo(Columns.DISCOUNT_PERCENTAGE)
+    val discountPercentage: Double,
     @ColumnInfo(Columns.PRICE_AFTER_DISCOUNT)
-    val priceAfterDiscount: Double
+    val priceAfterDiscount: Double,
+    @ColumnInfo(Columns.SERVICE_SUMMARY)
+    val serviceSummary: String
 ) {
 
     companion object {
@@ -57,7 +61,9 @@ data class ServiceDetailEntity(
         internal const val SERVICE_ID = "serviceId"
         internal const val AMOUNT = "amount"
         internal const val DISCOUNT = "discount"
+        internal const val DISCOUNT_PERCENTAGE = "percentage"
         internal const val PRICE_AFTER_DISCOUNT = "priceAfterDiscount"
+        internal const val SERVICE_SUMMARY = "serviceSummary"
     }
 
 }

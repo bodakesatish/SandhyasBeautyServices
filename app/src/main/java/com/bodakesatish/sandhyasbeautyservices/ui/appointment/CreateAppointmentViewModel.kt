@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -13,7 +13,7 @@ import com.bodakesatish.sandhyasbeautyservices.domain.usecases.CreateNewAppointm
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentDetailUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCategoriesWithServicesUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCustomerListUseCase
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.CategoryWithServiceViewItem
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.CategoryWithServiceViewItem
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -39,7 +38,7 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewModelNewAppointment @Inject constructor(
+class CreateAppointmentViewModel @Inject constructor(
     private val getAppointmentDetailUseCase: GetAppointmentDetailUseCase,
     private val createNewAppointmentUseCase: CreateNewAppointmentUseCase,
     private val getCustomerListUseCase: GetCustomerListUseCase,

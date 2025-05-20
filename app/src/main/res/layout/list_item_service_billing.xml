@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp">
+
+    <!-- Service Name and Edit Button -->
+    <TextView
+        android:id="@+id/tv_service_name_billing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintEnd_toStartOf="@+id/btn_edit_service_discount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Haircut and Styling" />
+
+    <ImageButton
+        android:id="@+id/btn_edit_service_discount"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Edit Discount"
+        android:padding="4dp"
+        android:src="@drawable/ic_edit"
+        app:layout_constraintBottom_toBottomOf="@id/tv_service_name_billing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_service_name_billing"
+        app:tint="?attr/colorPrimary" />
+    <!-- Ensure you have this drawable -->
+
+    <!-- Price Information Line -->
+    <TextView
+        android:id="@+id/tv_service_original_price_billing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_name_billing"
+        tools:text="₹500.00" />
+
+    <!-- Shows ONLY if discount is applied -->
+    <TextView
+        android:id="@+id/tv_service_discount_info_compact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_original_price_billing"
+        app:layout_constraintStart_toEndOf="@id/tv_service_original_price_billing"
+        tools:text="(-₹50 / 10%)"
+        tools:visibility="visible" />
+
+    <!-- Shows final price. Text changes based on discount. -->
+    <TextView
+        android:id="@+id/tv_service_final_price_display"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textStyle="bold"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_original_price_billing"
+        app:layout_constraintEnd_toStartOf="@+id/btn_edit_service_discount"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/tv_service_discount_info_compact"
+        tools:text="→ Final: ₹450.00" />
+
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/item_divider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_original_price_billing" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

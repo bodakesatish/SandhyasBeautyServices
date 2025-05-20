@@ -1,10 +1,13 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.text.color
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemCategoryHeaderDialogBinding
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemServiceDialogBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
@@ -13,7 +16,6 @@ import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 class ServiceDialogAdapter(
     private val onServiceSelected: (Service, Boolean) -> Unit // Callback for selection changes
 ) : ListAdapter<CategoryWithServiceViewItem, RecyclerView.ViewHolder>(ServiceItemDiffCallback()) { // Use ListAdapter
-    var itemList: List<CategoryWithServiceViewItem> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -68,10 +70,10 @@ class ServiceDialogAdapter(
         ): Boolean {
             return when {
                 oldItem is CategoryWithServiceViewItem.CategoryHeader && newItem is CategoryWithServiceViewItem.CategoryHeader ->
-                    oldItem.category.id == newItem.category.id
+                    oldItem.category == newItem.category
 
                 oldItem is CategoryWithServiceViewItem.ServiceItem && newItem is CategoryWithServiceViewItem.ServiceItem ->
-                    oldItem.service.id == newItem.service.id // Compare based on unique ID
+                    oldItem.service == newItem.service // Compare based on unique ID
                 else -> false
             }
         }
@@ -97,34 +99,73 @@ class ServiceDialogAdapter(
         private val onServiceSelected: (Service, Boolean) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        init {
+
+        }
+
         fun bind(serviceItem: Service) {
             binding.textViewServiceName.text = serviceItem.serviceName
-            binding.textViewServicePrice.text = "$${serviceItem.servicePrice}"
+            binding.textViewServicePrice.text = "Rs. ${serviceItem.servicePrice}"
+
+            // Important: Hold a reference to the current service for the root click listener
+            // This is a simplified way; for more complex scenarios, you might pass the service to the
+            // onServiceSelected lambda directly from the click listener if you can access the item's
+            // adapter position and get the item from the adapter's list.
+            // However, the checkbox listener below is more direct for its own state.
+
+
+            // Temporarily remove listener to prevent unwanted calls during re-binding
+            binding.checkBoxService.setOnCheckedChangeListener(null)
+
+            // Set initial state based on the model
+            binding.checkBoxService.isChecked = serviceItem.isSelected
+
+//            binding.checkBoxService.setCheckedState(MaterialCheckbox.STATE_CHECKED);
+
+
             binding.checkBoxService.setOnCheckedChangeListener { _, isChecked ->
                 // Call the callback with the service and the new checked state
                 onServiceSelected(serviceItem, isChecked)
             }
-            // Set initial state
-            binding.checkBoxService.isChecked = serviceItem.isSelected // Set initial state if needed
+
+            // Make the entire row clickable to toggle the checkbox
+            binding.root.setOnClickListener {
+                // Toggle the checkbox state and invoke the callback
+                val newCheckedState = !binding.checkBoxService.isChecked
+                // binding.checkBoxService.isChecked = newCheckedState // Let bind handle this to avoid listener loops
+                onServiceSelected(
+                    /* pass the current service item here, you'll need to hold a reference to it */
+                    serviceItem, newCheckedState,
+                )
+            }
+
+            if (serviceItem.isSelected) {
+                binding.root.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.selected_service_background)) // Define this color
+                // Or if using MaterialCardView:
+                // (binding.root as MaterialCardView).setCardBackgroundColor(...)
+                // (binding.root as MaterialCardView).strokeWidth = itemView.context.resources.getDimensionPixelSize(R.dimen.selected_card_stroke_width)
+                // (binding.root as MaterialCardView).strokeColor = ContextCompat.getColor(itemView.context, R.color.selected_card_stroke_color)
+
+            } else {
+                binding.root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        android.R.color.transparent
+                    )
+                ) // Or original background
+                // Or if using MaterialCardView:
+                // (binding.root as MaterialCardView).setCardBackgroundColor(...)
+                // (binding.root as MaterialCardView
+            }
+            // Update content description dynamically if needed for accessibility
+            // binding.checkBoxService.contentDescription = itemView.context.getString(R.string.select_service_dynamic_desc, serviceItemModel.serviceName)
+
         }
     }
 
     companion object {
         private const val VIEW_TYPE_HEADER = 0
         private const val VIEW_TYPE_SERVICE = 1
-    }
-
-    fun setData(items: List<CategoryWithServiceViewItem>) {
-        itemList = items
-    }
-
-    fun getSelectedServices(): List<Service> {
-        val selectedArrayList = ArrayList<Service>()
-        itemList.filterIsInstance<CategoryWithServiceViewItem.ServiceItem>()
-            .filter { it.service.isSelected }
-            .forEach { selectedArrayList.add(it.service) }
-
-        return selectedArrayList
     }
 }
 

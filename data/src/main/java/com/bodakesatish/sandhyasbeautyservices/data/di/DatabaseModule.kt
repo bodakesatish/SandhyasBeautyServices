@@ -6,23 +6,25 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.database.AppDatabase
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CategoryEntity
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CustomerEntity
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.Date
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    private const val  DATABASE_NAME = "sandhyasapp.db"
+    private const val DATABASE_NAME = "sandhyasapp.db"
 
     @Provides
     @Singleton
-    fun providesAppDatabase(@ApplicationContext appContext: Context) : AppDatabase {
+    fun providesAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
@@ -42,8 +44,16 @@ object DatabaseModule {
                         ServiceEntity.TABLE_NAME
                     } (${ServiceEntity.Columns.ID}, ${ServiceEntity.Columns.CATEGORY_ID}, ${ServiceEntity.Columns.SERVICE_NAME}, ${ServiceEntity.Columns.NORMAL_PRICE}) VALUES " +
                             "(1,1,'Back Facial',250.0),(2,1,'Spa Facial',350.0),(3,1,'Detox Facial',450.0)," +
-                            "(4,2,'Lip/Chin Waxing',100.0),(5,2,'Eyebrow Waxing',100.0),(6,2,'Full Face Waxing',300.0),"+
+                            "(4,2,'Lip/Chin Waxing',100.0),(5,2,'Eyebrow Waxing',100.0),(6,2,'Full Face Waxing',300.0)," +
                             "(7,3,'Normal Hair Color',300.0),(8,3,'Haircut',100.0),(9,3,'Premium Hair Color',600.0)"
+                )
+                db.execSQL(
+                    "INSERT INTO ${
+                        CustomerEntity.TABLE_NAME
+                    } (${CustomerEntity.Columns.ID}, ${CustomerEntity.Columns.FIRST_NAME}, ${CustomerEntity.Columns.LAST_NAME}, ${CustomerEntity.Columns.PHONE}, ${CustomerEntity.Columns.ADDRESS}, ${CustomerEntity.Columns.DATE_OF_BIRTH}) VALUES " +
+                            "(1,'Satish','Bodake','1234567890','Warje','${Date()}')," +
+                            "(2,'Sandhya','Bodake','2234567891','Belapur','${Date()}')," +
+                            "(3,'Rajveer','Bodake','3234567892','Kothrud','${Date()}')"
                 )
             }
         }

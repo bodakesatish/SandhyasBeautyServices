@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment
 
 import android.icu.util.Calendar
 import android.util.Log
@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.text.format
 
 // Define a simple sealed class for filter types to be used as keys in a map for UI chips
 sealed class FilterType(val displayName: String) {
@@ -52,7 +51,7 @@ enum class QuickDateRange(val displayName: String) {
 }
 
 @HiltViewModel
-class ViewModelAppointmentDashboard @Inject constructor(
+class AppointmentDashboardViewModel @Inject constructor(
     private val getAppointmentListUseCase: GetAppointmentListUseCase,
     private val getFilteredAppointmentsUseCase: GetFilteredAppointmentListUseCase
 ) : ViewModel() {

@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -24,7 +24,7 @@ import com.bodakesatish.sandhyasbeautyservices.databinding.DialogAppointmentFilt
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentsDashboardBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
-import com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter.AppointmentsAdapter
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.AppointmentsAdapter
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,7 +35,7 @@ import java.util.Date
 import kotlin.getValue
 
 @AndroidEntryPoint
-class FragmentAppointmentsRecord : Fragment() {
+class AppointmentDashboardFragment : Fragment() {
 
     private var _binding: FragmentAppointmentsDashboardBinding? = null
 
@@ -43,7 +43,7 @@ class FragmentAppointmentsRecord : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: ViewModelAppointmentDashboard by viewModels()
+    private val viewModel: AppointmentDashboardViewModel by viewModels()
 
     private lateinit var appointmentsAdapter: AppointmentsAdapter // Initialize in onViewCreated
     private var isInitialToastShown = false // To show "Showing for Today" only once effectively
@@ -130,11 +130,12 @@ class FragmentAppointmentsRecord : Fragment() {
     private fun setupRecyclerView() {
         appointmentsAdapter = AppointmentsAdapter { clickedAppointment ->
             // Handle item click
-            val action = FragmentAppointmentsRecordDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(
+            val action = AppointmentDashboardFragmentDirections.actionFragmentAppointmentListToAppointmentBillDetail(
                 clickedAppointment.appointment.id
             )
             findNavController().navigate(action)
         }
+
         binding.rvCustomerList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = appointmentsAdapter
@@ -145,7 +146,7 @@ class FragmentAppointmentsRecord : Fragment() {
     private fun initListeners() {
         binding.btnNewAppointment.setOnClickListener {
             // Consider using Safe Args for navigation if you have defined arguments
-            val action = FragmentAppointmentsRecordDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(0)
+            val action = AppointmentDashboardFragmentDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(0)
             findNavController().navigate(action)
         }
         binding.headerGeneric.btnBack.setOnClickListener {

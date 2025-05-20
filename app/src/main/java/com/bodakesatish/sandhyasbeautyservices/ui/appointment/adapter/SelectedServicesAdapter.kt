@@ -1,4 +1,4 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.appointments.adapter
+package com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

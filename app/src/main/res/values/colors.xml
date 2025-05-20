@@ -32,5 +32,13 @@
     <!-- You can also define text colors to go ON these backgrounds if you use them as solid fills -->
     <!-- e.g., <color name="colorOnScheduled">@color/white</color> -->
 
-     <color name="textColorSecondary">#BDBDBD</color>   Grey 400
+     <color name="textColorSecondary">#BDBDBD</color>
+    <!-- ... other colors ... -->
+    <color name="selected_service_background">#E8EAF6</color> <!-- A light indigo/lavender, example -->
+    <color name="unselected_service_background_or_transparent">@android:color/transparent</color>
+
+    <!-- For MaterialCardView selected state -->
+    <color name="selected_card_service_background">#F0F4FF</color> <!-- Slightly different for card -->
+    <color name="selected_card_stroke_color">?attr/colorPrimary</color>
+
 </resources>

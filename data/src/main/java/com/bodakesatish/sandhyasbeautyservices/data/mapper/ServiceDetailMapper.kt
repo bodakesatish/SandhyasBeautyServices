@@ -10,9 +10,11 @@ object ServiceDetailMapper : Mapper<ServiceDetailEntity, ServiceDetail> {
             customerId = customerId,
             appointmentId = appointmentId,
             serviceId = serviceId,
-            amount = amount,
+            originalAmount = originalAmount,
             discount = discount,
-            priceAfterDiscount = priceAfterDiscount
+            discountPercentage = discountPercentage,
+            priceAfterDiscount = priceAfterDiscount,
+            serviceSummary = serviceSummary
         )
     }
 
@@ -22,9 +24,11 @@ object ServiceDetailMapper : Mapper<ServiceDetailEntity, ServiceDetail> {
             customerId = customerId,
             appointmentId = appointmentId,
             serviceId = serviceId,
-            amount = amount,
+            originalAmount = originalAmount,
             discount = discount,
-            priceAfterDiscount = priceAfterDiscount
+            discountPercentage = discountPercentage,
+            priceAfterDiscount = priceAfterDiscount,
+            serviceSummary = serviceSummary
         )
     }
 

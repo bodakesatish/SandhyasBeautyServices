@@ -8,12 +8,24 @@ import java.util.Date
 
 // Define Enums for status and payment status for type safety and clarity
 enum class AppointmentDataStatus {
-    PENDING, CONFIRMED, COMPLETED, CANCELLED
+    PENDING,
+    COMPLETED,
+    CANCELLED,
+    UNKNOWN
+}
+enum class PaymentModeDataStatus {
+    ONLINE,
+    CASH,
+    PENDING,
+    UNKNOWN
+}
+enum class PaymentDataStatus {
+    PAID,
+    UNPAID,
+    PARTIALLY_PAID,
+    UNKNOWN
 }
 
-enum class PaymentDataStatus {
-    PAID, UNPAID, PARTIALLY_PAID
-}
 
 @Entity(
     tableName = AppointmentsEntity.TABLE_NAME,
@@ -37,16 +49,20 @@ data class AppointmentsEntity(
     val appointmentTime: Date,
     @ColumnInfo(Columns.TOTAL_BILL_AMOUNT)
     val totalBillAmount: Double,
+    @ColumnInfo(Columns.TOTAL_DISCOUNT)
+    val totalDiscount: Double,
+    @ColumnInfo(Columns.DISCOUNT_PERCENTAGE)
+    val totalDiscountPercentage: Double,
     @ColumnInfo(Columns.PAYMENT_MODE)
-    val paymentMode: String,
+    val paymentMode: PaymentModeDataStatus = PaymentModeDataStatus.PENDING,
     @ColumnInfo(Columns.SERVICE_SUMMARY)
     val servicesSummary: String = "",
     @ColumnInfo(Columns.APPOINTMENT_STATUS)
-    val status: AppointmentDataStatus = AppointmentDataStatus.PENDING,
+    val appointmentStatus: AppointmentDataStatus = AppointmentDataStatus.PENDING,
     @ColumnInfo(Columns.PAYMENT_STATUS)
     val paymentStatus: PaymentDataStatus = PaymentDataStatus.UNPAID,
     @ColumnInfo(Columns.NOTES)
-    val notes: String = ""
+    val serviceNotes: String = ""
 ) {
 
     companion object {
@@ -59,10 +75,13 @@ data class AppointmentsEntity(
         internal const val APPOINTMENT_DATE = "appointment_date"
         internal const val APPOINTMENT_TIME = "appointment_time"
         internal const val TOTAL_BILL_AMOUNT = "total_bill_amount"
+        internal const val TOTAL_DISCOUNT = "total_discount"
+        internal const val DISCOUNT_PERCENTAGE = "discount_percentage"
         internal const val SERVICE_SUMMARY = "service_summary"
         internal const val APPOINTMENT_STATUS = "appointment_status"
         internal const val PAYMENT_MODE = "payment_mode"
         internal const val PAYMENT_STATUS = "payment_status"
         internal const val NOTES = "notes"
     }
+
 }
