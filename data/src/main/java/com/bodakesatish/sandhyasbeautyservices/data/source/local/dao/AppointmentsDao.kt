@@ -88,6 +88,9 @@ interface AppointmentsDao {
     @Query("SELECT * FROM ${AppointmentsEntity.TABLE_NAME}")
     fun getAppointmentCustomerList(): Flow<List<AppointmentCustomer>>
 
+    @Query("SELECT * FROM ${AppointmentsEntity.TABLE_NAME} WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
+    fun getAppointmentDetailById(appointmentId: Int): Flow<AppointmentCustomer>
+
     /**
      * Fetches appointments with flexible filtering and dynamic sorting.
      *
@@ -133,6 +136,9 @@ interface AppointmentsDao {
         sortByColumnName: String, // e.g., "appointmentDate", "customerFirstName", "status"
         sortOrderSql: String      // "ASC" or "DESC"
     ): Flow<List<AppointmentCustomer>> // Returns the POJO that Room populates with Appointment and related Customer
+
+    @Query("UPDATE ${AppointmentsEntity.TABLE_NAME} SET ${AppointmentsEntity.Columns.TOTAL_BILL_AMOUNT} = :totalPrice WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
+    fun updateTotalPrice(appointmentId: Int, totalPrice: Double)
 
     // The old getAppointmentsFiltered can be removed or kept if it serves a different specific purpose
     // The old getAppointmentsFilteredWithCustomerName can also be removed as its functionality is now

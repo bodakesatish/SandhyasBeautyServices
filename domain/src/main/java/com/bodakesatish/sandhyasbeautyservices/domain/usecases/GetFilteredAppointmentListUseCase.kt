@@ -4,7 +4,7 @@ import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepo
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
@@ -39,7 +39,7 @@ class GetFilteredAppointmentListUseCase @Inject constructor(
         customerNameQuery: String?,
         sortBy: AppointmentSortBy,
         sortOrder: SortOrder
-    ): Flow<List<AppointmentCustomer>> {
+    ): Flow<List<CustomerAppointment>> {
         // Delegate to the repository to get the appointments
         // The repository implementation will handle the actual data fetching and mapping
         return appointmentRepository.getAppointments(

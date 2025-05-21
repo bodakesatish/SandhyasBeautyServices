@@ -59,15 +59,24 @@ class AppointmentBillDetailFragment  : Fragment() {
 
         setupListeners()
         setupObservers()
+        setupFragmentResultListeners()
     }
 
     private fun setupListeners() {
         binding.btnEditAppointment.setOnClickListener {
             // Handle item click
-            val action = AppointmentBillDetailFragmentDirections.temp(
+            val action = AppointmentBillDetailFragmentDirections.actionAppointmentBillDetailFragmentToNavigationCreateAppointment(
                 viewModel.appointmentIdFlow.value
             )
             findNavController().navigate(action)
+        }
+        binding.btnEditServices.setOnClickListener {
+            // Handle item click
+            val action = AppointmentBillDetailFragmentDirections.actionAppointmentBillDetailFragmentToAddServicesToAppointmentFragment(
+                viewModel.appointmentIdFlow.value
+            )
+            findNavController().navigate(action)
+//            findNavController().navigate(R.id.navigation_add_services_to_appointment)
         }
         binding.btnProceedToBilling.setOnClickListener {
             // Navigate to Billing Screen (passing appointmentId)
@@ -78,10 +87,10 @@ class AppointmentBillDetailFragment  : Fragment() {
             // Navigate to Billing Screen for editing (passing appointmentId and perhaps billingId)
             // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_billingFragment, bundleOf("appointmentId" to appointmentId, "billingId" to billing?.id))
             // Handle item click
-            val action = AppointmentBillDetailFragmentDirections.navToBilling(
-                viewModel.appointmentIdFlow.value
-            )
-            findNavController().navigate(action)
+//            val action = AppointmentBillDetailFragmentDirections.navToBilling(
+//                viewModel.appointmentIdFlow.value
+//            )
+//            findNavController().navigate(action)
         }
 
         binding.btnViewInvoice.setOnClickListener {
@@ -105,6 +114,13 @@ class AppointmentBillDetailFragment  : Fragment() {
                             // --- Appointment Status ---
                                 binding.tvDetailAppointmentStatus.text = detail.appointment.appointmentStatus.name // Or a more user-friendly string from string resources
 
+                            var services = ""
+                            detail.serviceDetailsWithServices.map {
+                               services = services.plus("• ${it.serviceName}  (₹${it.servicePrice.toInt()})\n")
+                                Log.i(tag, services)
+                            }
+                            Log.i(tag, services)
+                            binding.tvServiceWithPrice.text = services
 //                            binding.tvAppointmentTime.text = details.appointment.appointmentTime
 //                            // Update the customer field based on the loaded customer
 //                            details.customer?.let { customer ->
@@ -129,11 +145,11 @@ class AppointmentBillDetailFragment  : Fragment() {
 
     private fun setupFragmentResultListeners() {
         // Listen for the result from the SelectServicesDialogFragment
-        setFragmentResultListener(ServiceSelectionDialogFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
+        setFragmentResultListener(AddOrEditServicesToAppointmentFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
             // Ensure we handle the correct request key
-            if (requestKey == ServiceSelectionDialogFragment.REQUEST_KEY_SELECTED_SERVICES) {
+            if (requestKey == AddOrEditServicesToAppointmentFragment.REQUEST_KEY_SELECTED_SERVICES) {
                 val selectedServices =
-                    bundle.getSerializable(ServiceSelectionDialogFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
+                    bundle.getSerializable(AddOrEditServicesToAppointmentFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
                 selectedServices?.let {
                     Log.i(tag, "Received Selected Services from Dialog: $it")
                     // Update the ViewModel with the new list of selected services

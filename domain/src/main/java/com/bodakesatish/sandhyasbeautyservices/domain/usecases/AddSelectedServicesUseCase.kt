@@ -4,21 +4,20 @@ import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepository
 import javax.inject.Inject
 
-class CreateNewAppointmentUseCase @Inject constructor(
+class AddSelectedServicesUseCase @Inject constructor(
     private val appointmentRepository: AppointmentRepository
 ) {
     suspend operator fun invoke(
-        appointment: Appointment,
-        selectedServicesWithDetails: List<Int>
+        appointmentId: Int,
+        selectedServicesWithDetails: List<Int>,
+        totalPrice: Double
     ): Int {
 
-        val appointmentId = appointmentRepository.createNewAppointment(
-            appointment,
-            selectedServicesWithDetails
+        val appointmentId = appointmentRepository.saveSelectedServices(
+            appointmentId,
+            selectedServicesWithDetails,
+            totalPrice
         )
-        if(appointment.id != 0) {
-         return appointment.id
-        } else
         return appointmentId.toInt()
     }
 }

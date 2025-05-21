@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.ListRowAppointmentBinding
-import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
@@ -18,8 +18,8 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class AppointmentsAdapter(
-    private val onItemClicked: (AppointmentCustomer) -> Unit
-) : ListAdapter<AppointmentCustomer, AppointmentsAdapter.AppointmentViewHolder>(AppointmentDiffCallback()) {
+    private val onItemClicked: (CustomerAppointment) -> Unit
+) : ListAdapter<CustomerAppointment, AppointmentsAdapter.AppointmentViewHolder>(AppointmentDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
         val binding =
@@ -39,7 +39,7 @@ class AppointmentsAdapter(
     // Or can be a static nested class if preferred.
     class AppointmentViewHolder(
         private val binding: ListRowAppointmentBinding,
-        private val onItemClicked: (AppointmentCustomer) -> Unit,
+        private val onItemClicked: (CustomerAppointment) -> Unit,
         private val context: Context // Needed for ContextCompat.getColor/getDrawable
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -47,7 +47,7 @@ class AppointmentsAdapter(
         // Adjust the pattern to your needs. If appointmentTime is already a formatted String, you don't need this here.
         // private val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
 
-        fun bind(data: AppointmentCustomer, itemNumber: Int) {
+        fun bind(data: CustomerAppointment, itemNumber: Int) {
             // --- Basic Info ---
             binding.tvNumber.text = "${itemNumber+1}."
             binding.tvCustomerName.text = "${data.customer.firstName} ${data.customer.lastName}"
@@ -172,13 +172,13 @@ class AppointmentsAdapter(
     }
     // DiffUtil.Callback remains largely the same, but now it's a static nested class
     // or a top-level class as it doesn't need access to adapter instance variables.
-    class AppointmentDiffCallback : DiffUtil.ItemCallback<AppointmentCustomer>() {
-        override fun areItemsTheSame(oldItem: AppointmentCustomer, newItem: AppointmentCustomer): Boolean {
+    class AppointmentDiffCallback : DiffUtil.ItemCallback<CustomerAppointment>() {
+        override fun areItemsTheSame(oldItem: CustomerAppointment, newItem: CustomerAppointment): Boolean {
             // Unique ID for the item itself (appointment ID is a good candidate)
             return oldItem.appointment.id == newItem.appointment.id
         }
 
-        override fun areContentsTheSame(oldItem: AppointmentCustomer, newItem: AppointmentCustomer): Boolean {
+        override fun areContentsTheSame(oldItem: CustomerAppointment, newItem: CustomerAppointment): Boolean {
             // Check if the visual representation of the item has changed.
             // Relies on AppointmentCustomer, Appointment, and Customer being data classes
             // or having proper equals() implementations.

@@ -5,6 +5,6 @@ package com.bodakesatish.sandhyasbeautyservices.domain.model
 // that combine multiple entities.
 data class AppointmentDetails(
     val appointment: Appointment,
-    val customer: Customer?, // Customer might be nullable if an appointment can exist without a customer
+    val customer: Customer,
     val serviceDetailsWithServices: List<ServiceDetailWithService>
 )

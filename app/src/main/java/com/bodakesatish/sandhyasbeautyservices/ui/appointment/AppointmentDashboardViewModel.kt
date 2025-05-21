@@ -4,7 +4,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
@@ -36,7 +36,7 @@ sealed class FilterType(val displayName: String) {
 // Sealed class for richer UI state representation
 sealed class AppointmentUiState {
     data object Loading : AppointmentUiState()
-    data class Success(val appointments: List<AppointmentCustomer>) : AppointmentUiState()
+    data class Success(val appointments: List<CustomerAppointment>) : AppointmentUiState()
     data class Error(val message: String?) : AppointmentUiState()
     data object Empty : AppointmentUiState() // Specific state for no results (not an error)
 }
@@ -70,8 +70,8 @@ class AppointmentDashboardViewModel @Inject constructor(
     private val _currentQuickDateRangeSelection = MutableStateFlow(QuickDateRange.TODAY)
     val currentQuickDateRangeSelection: StateFlow<QuickDateRange> = _currentQuickDateRangeSelection.asStateFlow()
 
-    private val _appointmentList = MutableStateFlow<List<AppointmentCustomer>>(emptyList())
-    val appointmentList: StateFlow<List<AppointmentCustomer>> = _appointmentList.asStateFlow()
+    private val _appointmentList = MutableStateFlow<List<CustomerAppointment>>(emptyList())
+    val appointmentList: StateFlow<List<CustomerAppointment>> = _appointmentList.asStateFlow()
 
 
     // Store current filter parameters to re-apply or modify

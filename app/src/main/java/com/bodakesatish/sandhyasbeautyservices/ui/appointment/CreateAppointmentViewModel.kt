@@ -323,7 +323,6 @@ class CreateAppointmentViewModel @Inject constructor(
             try {
                 // Call the UseCase to create the new appointment
                 val newAppointmentId = createNewAppointmentUseCase.invoke(
-                    selectedCustomer,
                     appointmentToSave,
                     selectedServiceIds
                 )

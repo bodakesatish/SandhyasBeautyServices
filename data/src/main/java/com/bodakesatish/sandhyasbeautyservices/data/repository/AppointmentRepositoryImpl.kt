@@ -4,6 +4,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.mapper.AppointmentMapper.map
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.AppointmentMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.CustomerMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapToDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.AppointmentsDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CustomerDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServiceDetailDao
@@ -12,11 +13,11 @@ import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.Appointm
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.CustomerEntity
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.entity.ServiceDetailEntity
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
-import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentCustomer
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentServices
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetail
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepository
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
@@ -36,7 +37,6 @@ class AppointmentRepositoryImpl @Inject constructor(
 ) : AppointmentRepository {
 
     override suspend fun createNewAppointment(
-        customer: Customer,
         appointment: Appointment,
         selectedServicesWithDetails: List<Int>
     ): Long {
@@ -50,19 +50,47 @@ class AppointmentRepositoryImpl @Inject constructor(
             val service = serviceDao.getServiceById(serviceId)
             val serviceDetail = ServiceDetailEntity(
                 id = 0,
-                customerId = customer.id,
+                customerId = appointment.customerId,
                 appointmentId = appointmentId.toInt(),
                 serviceId = serviceId,
                 originalAmount = service?.servicePrice ?: 0.0,
                 discount = 0.0,
                 discountPercentage = 0.0,
-                priceAfterDiscount = service?.servicePrice?: 0.0,
+                priceAfterDiscount = service?.servicePrice ?: 0.0,
                 serviceSummary = ""
             )
             serviceDetailDao.insertOrUpdate(serviceDetail)
         }
 
         return appointmentId
+    }
+
+    override suspend fun saveSelectedServices(
+        appointmentId: Int,
+        selectedServicesWithDetails: List<Int>,
+        totalPrice: Double
+    ): Long {
+        val appointment = appointmentDao.getAppointmentById(appointmentId).firstOrNull()
+        serviceDetailDao.deleteServicesByAppointment(appointmentId.toLong())
+
+        val updateTotalPrice = appointmentDao.updateTotalPrice(appointmentId, totalPrice)
+
+        for (serviceId in selectedServicesWithDetails) {
+            val service = serviceDao.getServiceById(serviceId)
+            val serviceDetail = ServiceDetailEntity(
+                id = 0,
+                customerId = appointment!!.customerId,
+                appointmentId = appointmentId.toInt(),
+                serviceId = serviceId,
+                originalAmount = service?.servicePrice ?: 0.0,
+                discount = 0.0,
+                discountPercentage = 0.0,
+                priceAfterDiscount = service?.servicePrice ?: 0.0,
+                serviceSummary = ""
+            )
+            serviceDetailDao.insertOrUpdate(serviceDetail)
+        }
+        return 1
     }
 
     override suspend fun getServiceDetailsForAppointment(appointmentId: Int): Flow<List<ServiceDetailWithService>> {
@@ -73,17 +101,38 @@ class AppointmentRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllAppointments(): Flow<List<AppointmentCustomer>> {
+    override suspend fun getSelectedServices(appointmentId: Int): Flow<List<ServiceDetail>> {
+        return serviceDetailDao.getServiceDetailsByAppointmentId(appointmentId.toLong())
+            .map { serviceEntityList ->
+                serviceEntityList.map { service ->
+                    service.mapToDomainModel()
+                }
+            }
+    }
+
+    override fun getAllAppointments(): Flow<List<CustomerAppointment>> {
         // This assumes appointmentDao.getAppointmentCustomerList() returns a list of Room's
         // AppointmentCustomer (which has @Embedded AppointmentsEntity and @Relation CustomerEntity)
         return appointmentDao.getAppointmentCustomerList().map { appointmentCustomerEntityList ->
             appointmentCustomerEntityList.map {
-                AppointmentCustomer(
+                CustomerAppointment(
                     // Assuming entity.appointment is AppointmentsEntity and entity.customer is CustomerEntity
                     customer = it.customer.mapToDomainModel(),
                     appointment = it.appointment.mapToDomainModel()
                 )
             }
+        }
+    }
+
+    override fun getCustomerAppointment(appointmentId: Int): Flow<CustomerAppointment> {
+        // AppointmentCustomer (which has @Embedded AppointmentsEntity and @Relation CustomerEntity)
+        return appointmentDao.getAppointmentDetailById(appointmentId).map { appointmentDetail ->
+            CustomerAppointment(
+                // Assuming entity.appointment is AppointmentsEntity and entity.customer is CustomerEntity
+                customer = appointmentDetail.customer.mapToDomainModel(),
+                appointment = appointmentDetail.appointment.mapToDomainModel()
+            )
+
         }
     }
 
@@ -95,8 +144,7 @@ class AppointmentRepositoryImpl @Inject constructor(
         customerNameQuery: String?,
         sortBy: AppointmentSortBy,
         sortOrder: SortOrder
-    ): Flow<List<AppointmentCustomer>>
-    {
+    ): Flow<List<CustomerAppointment>> {
         // Delegate to the DAO method that handles complex filtering and sorting
         // This DAO method is expected to return Flow<List<com.example.data.local.entity.AppointmentCustomer>>
         // where AppointmentCustomer is the Room entity/POJO with @Embedded and @Relation
@@ -115,7 +163,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             sortOrderSql = if (sortOrder == SortOrder.ASCENDING) "ASC" else "DESC"
         ).map { entityList ->
             entityList.map { entity -> // entity is Room's AppointmentCustomer POJO
-                AppointmentCustomer(
+                CustomerAppointment(
                     appointment = entity.appointment.mapToDomainModel(),
                     customer = entity.customer.mapToDomainModel()
                 )
@@ -164,7 +212,8 @@ class AppointmentRepositoryImpl @Inject constructor(
     }
 
     override fun getAppointmentDetail(appointmentId: Int): Flow<AppointmentServices?> {
-        val appointmentFlow: Flow<AppointmentsEntity?> = appointmentDao.getAppointmentById(appointmentId)
+        val appointmentFlow: Flow<AppointmentsEntity?> =
+            appointmentDao.getAppointmentById(appointmentId)
         val servicesFlow: Flow<List<ServiceDetailWithService>> =
             serviceDetailDao.getServiceDetailsWithServiceForAppointment(appointmentId) // Assuming this returns the domain model directly
                 .map { list -> list.map { it.mapToDomainModel() } } // if it returns entity list
@@ -181,7 +230,8 @@ class AppointmentRepositoryImpl @Inject constructor(
                 // This synchronous fetch of customer inside combine might block if not careful.
                 // Ideally, customer is also a flow or fetched in a different manner.
                 // For this example, let's simplify and assume it's okay.
-                val customerEntity = customerDao.getCustomerById(entity.customerId.toLong()) // This needs to be handled carefully.
+                val customerEntity =
+                    customerDao.getCustomerById(entity.customerId.toLong()) // This needs to be handled carefully.
 
                 if (customerEntity != null) {
                     AppointmentServices(
@@ -196,28 +246,6 @@ class AppointmentRepositoryImpl @Inject constructor(
         }
     }
 
-    fun getAppointmentDetail1(appointmentId: Int): Flow<AppointmentServices> {
-        // Get the Flow of AppointmentsEntity from the DAO
-        return appointmentDao.getAppointmentById(appointmentId)
-            // Use the map operator to transform each AppointmentsEntity
-            // emitted by the Flow into an Appointment
-            // Map the entity to a domain model, handling the case where the entity is null
-            .map { appointmentsEntity ->
-                val services =
-                    serviceDetailDao.getServiceDetailsWithServiceForAppointment1(appointmentId)
-                        .map {
-                            it.mapToDomainModel()
-                        }
-                AppointmentServices(
-                    customer = customerDao.getCustomerById(appointmentsEntity!!.customerId.toLong())!!
-                        .mapToDomainModel(),
-                    appointment = appointmentsEntity.mapToDomainModel(),
-                    services = services
-                )
-
-            }
-        // Now the Flow emits null if no entity was found
-    }
 
     // Alternative using firstOrNull/singleOrNull at the collection point
     // This approach returns Flow<Appointment?> as well, but handles null at the end of the flow processing

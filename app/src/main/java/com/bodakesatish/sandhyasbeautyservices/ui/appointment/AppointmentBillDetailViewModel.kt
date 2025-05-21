@@ -57,7 +57,6 @@ class AppointmentBillDetailViewModel @Inject constructor(
     private val _appointmentId = MutableStateFlow<Int>(0)
     val appointmentIdFlow: StateFlow<Int> = _appointmentId.asStateFlow()
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val appointmentDetailFlow: StateFlow<AppointmentDetails?> =
         _appointmentId

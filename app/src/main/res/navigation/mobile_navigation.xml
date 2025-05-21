@@ -17,7 +17,12 @@
 
         <action
             android:id="@+id/action_fragment_appointment_list_to_appointment_bill_detail"
-            app:destination="@+id/navigation_appointment_details"/>
+            app:destination="@+id/navigation_appointment_bill"/>
+
+        <action
+            android:id="@+id/action_fragment_appointment_dashboard_to_navigation_create_appointment"
+            app:destination="@+id/navigation_create_appointment"/>
+
 
     </fragment>
 
@@ -125,37 +130,75 @@
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentBillDetailFragment"
         android:label="@string/bill_detail"
         tools:layout="@layout/fragment_appointment_details" >
-        <argument
-            android:name="appointmentId"
-            app:argType="integer"
-            android:defaultValue="0"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_appointment_details"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentBillDetailFragment"
-        android:label="Appointment and Bill Detail"
-        tools:layout="@layout/fragment_appointment_details" >
 
         <action
-            android:id="@+id/temp"
-            app:destination="@+id/navigation_new_appointment"/>
+            android:id="@+id/action_appointmentBillDetailFragment_to_navigation_create_appointment"
+            app:destination="@+id/navigation_create_appointment"/>
 
         <action
-            android:id="@+id/nav_to_billing"
-            app:destination="@+id/navigation_billing"/>
+            android:id="@+id/action_appointmentBillDetailFragment_to_addServicesToAppointmentFragment"
+            app:destination="@+id/navigation_add_services_to_appointment"/>
 
         <argument
             android:name="appointmentId"
             app:argType="integer"
             android:defaultValue="0"/>
+
     </fragment>
+
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_appointment_details"-->
+<!--        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentBillDetailFragment"-->
+<!--        android:label="Appointment and Bill Detail"-->
+<!--        tools:layout="@layout/fragment_appointment_details" >-->
+
+<!--        <action-->
+<!--            android:id="@+id/temp"-->
+<!--            app:destination="@+id/navigation_create_appointment"/>-->
+
+<!--        <action-->
+<!--            android:id="@+id/nav_to_billing"-->
+<!--            app:destination="@+id/navigation_billing"/>-->
+
+<!--        <argument-->
+<!--            android:name="appointmentId"-->
+<!--            app:argType="integer"-->
+<!--            android:defaultValue="0"/>-->
+<!--    </fragment>-->
 
     <fragment
         android:id="@+id/navigation_billing"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.billing.BillingFragment"
         android:label="Billing"
         tools:layout="@layout/fragment_billing" >
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_add_services_to_appointment"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AddOrEditServicesToAppointmentFragment"
+        android:label="Service"
+        tools:layout="@layout/fragment_add_or_edit_services_to_appointment" >
+        <argument
+            android:name="appointmentId"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_create_appointment"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.CreateOrEditAppointmentFragment"
+        android:label="@string/title_add_appointment"
+        tools:layout="@layout/fragment_create_or_edit_appointment" >
+        <action
+            android:id="@+id/action_createOrEditAppointmentFragment_to_appointmentBillDetailFragment"
+            app:destination="@+id/navigation_appointment_bill"
+            app:popUpTo="@+id/navigation_create_appointment"
+            app:popUpToInclusive="true" />
+        <!-- Other actions -->
         <argument
             android:name="appointmentId"
             app:argType="integer"

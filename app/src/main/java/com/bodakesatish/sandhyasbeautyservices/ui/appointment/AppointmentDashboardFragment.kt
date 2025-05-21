@@ -146,7 +146,7 @@ class AppointmentDashboardFragment : Fragment() {
     private fun initListeners() {
         binding.btnNewAppointment.setOnClickListener {
             // Consider using Safe Args for navigation if you have defined arguments
-            val action = AppointmentDashboardFragmentDirections.actionFragmentAppointmentDashboardToFragmentNewAppointment(0)
+            val action = AppointmentDashboardFragmentDirections.actionFragmentAppointmentDashboardToNavigationCreateAppointment(0)
             findNavController().navigate(action)
         }
         binding.headerGeneric.btnBack.setOnClickListener {

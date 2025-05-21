@@ -195,19 +195,15 @@
                             android:orientation="vertical">
                             <!-- Service items will be added here programmatically or use a RecyclerView -->
                             <TextView
+                                android:id="@+id/tvServiceWithPrice"
                                 style="@style/TextAppearance.Material3.BodyMedium"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
                                 android:text="• Haircut (₹500)" />
 
-                            <TextView
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:text="• Manicure (₹700)" />
                         </LinearLayout>
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"> <!-- Added padding at the bottom -->
+
+    <include
+        android:id="@+id/header_generic"
+        layout="@layout/header_generic" />
+
+    <!-- Customer Selection: Using ExposedDropdownMenu for better UX -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ev_customer_list"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Select Customer (*)"
+        app:endIconContentDescription="nothing"
+        app:endIconDrawable="@drawable/arrow_down_24"
+        app:endIconMode="custom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_generic">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:inputType="none"
+            android:longClickable="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ev_appointment_date"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="Select Date (*)"
+        app:layout_constraintEnd_toStartOf="@+id/ev_appointment_time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ev_customer_list">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:inputType="none"
+            android:longClickable="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ev_appointment_time"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Select Time (*)"
+        app:endIconContentDescription="Select Time"
+        app:endIconDrawable="@drawable/ic_calendar_month"
+        app:endIconMode="custom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ev_appointment_date"
+        app:layout_constraintTop_toBottomOf="@+id/ev_customer_list">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:inputType="none"
+            android:longClickable="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Notes -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_notes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Notes (Optional)"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ev_appointment_time">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:maxLines="5" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- ACTION BUTTONS -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_proceed_to_add_services"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Save and Select Services"
+        android:visibility="visible"
+        app:icon="@drawable/ic_save_24"
+        app:layout_constraintTop_toBottomOf="@+id/til_notes"
+        tools:visibility="visible" /> <!-- Initially gone, show if billing is not done -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
