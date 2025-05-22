@@ -5,17 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+    <!--    <com.google.android.material.appbar.AppBarLayout-->
+    <!--        android:id="@+id/appbar_details"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:fitsSystemWindows="true">-->
 
-        <include
-            android:id="@+id/header_generic"
-            layout="@layout/header_generic" />
+    <!--        <include-->
+    <!--            android:id="@+id/header_generic"-->
+    <!--            layout="@layout/header_generic" />-->
 
-    </com.google.android.material.appbar.AppBarLayout>
+    <!--&lt;!&ndash;    </com.google.android.material.appbar.AppBarLayout>&ndash;&gt;-->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -24,423 +24,430 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progress_bar_details"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="32dp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_error_details"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:textColor="?attr/colorError"
-                android:visibility="gone"
-                tools:text="Error: Could not load appointment details." />
+            <include
+                android:id="@+id/header_generic"
+                layout="@layout/header_generic" />
 
             <LinearLayout
-                android:id="@+id/content_layout_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                tools:visibility="visible">
+                android:padding="8dp">
 
-                <!-- APPOINTMENT DETAILS SECTION -->
-                <com.google.android.material.card.MaterialCardView
+                <ProgressBar
+                    android:id="@+id/progress_bar_details"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="32dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_error_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardElevation="2dp"
-                    app:cardUseCompatPadding="true">
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:textColor="?attr/colorError"
+                    android:visibility="gone"
+                    tools:text="Error: Could not load appointment details." />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.TitleMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true"
-                                android:text="Appointment Summary" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_edit_appointment"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:text="Edit"
-                                app:icon="@drawable/ic_edit"
-                                tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
-
-                        </RelativeLayout>
-
-                        <GridLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:columnCount="2">
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_columnWeight="0"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginEnd="8dp"
-                                android:text="Customer:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_customer_name"
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_columnWeight="1"
-                                android:layout_gravity="fill_horizontal|center_vertical"
-                                android:text="Satish Bodake" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_columnWeight="0"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="Date &amp; Time:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_appointment_datetime"
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_columnWeight="1"
-                                android:layout_gravity="fill_horizontal|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="25 Dec 2023, 10:00 AM" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_columnWeight="0"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="Status:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_appointment_status"
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_columnWeight="1"
-                                android:layout_gravity="fill_horizontal|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="Pending Payment"
-                                android:textStyle="bold" />
-                        </GridLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- SERVICES SUMMARY SECTION -->
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
+                    android:id="@+id/content_layout_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardElevation="2dp"
-                    app:cardUseCompatPadding="true">
+                    android:orientation="vertical"
+                    tools:visibility="visible">
 
-                    <LinearLayout
+                    <!-- APPOINTMENT DETAILS SECTION -->
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.TitleMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true"
-                                android:text="Services Booked" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_edit_services"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:text="Edit"
-                                app:icon="@drawable/ic_edit"
-                                tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
-
-                        </RelativeLayout>
-
+                        app:cardElevation="2dp"
+                        app:cardUseCompatPadding="true">
 
                         <LinearLayout
-                            android:id="@+id/ll_services_summary_container"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <!-- Service items will be added here programmatically or use a RecyclerView -->
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp">
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.TitleMedium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_centerVertical="true"
+                                    android:text="Appointment Summary" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_edit_appointment"
+                                    style="?attr/materialButtonOutlinedStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:text="Edit"
+                                    app:icon="@drawable/ic_edit"
+                                    tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
+
+                            </RelativeLayout>
+
+                            <GridLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:columnCount="2">
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_columnWeight="0"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Customer:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_customer_name"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_columnWeight="1"
+                                    android:layout_gravity="fill_horizontal|center_vertical"
+                                    android:text="Satish Bodake" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_columnWeight="0"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Date &amp; Time:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_appointment_datetime"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_columnWeight="1"
+                                    android:layout_gravity="fill_horizontal|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="25 Dec 2023, 10:00 AM" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_columnWeight="0"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Status:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_appointment_status"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_columnWeight="1"
+                                    android:layout_gravity="fill_horizontal|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Pending Payment"
+                                    android:textStyle="bold" />
+                            </GridLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- SERVICES SUMMARY SECTION -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="2dp"
+                        app:cardUseCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp">
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.TitleMedium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_centerVertical="true"
+                                    android:text="Services Booked" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_edit_services"
+                                    style="?attr/materialButtonOutlinedStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:text="Edit"
+                                    app:icon="@drawable/ic_edit"
+                                    tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
+
+                            </RelativeLayout>
+
+
+                            <LinearLayout
+                                android:id="@+id/ll_services_summary_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <!-- Service items will be added here programmatically or use a RecyclerView -->
+                                <TextView
+                                    android:id="@+id/tvServiceWithPrice"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="• Haircut (₹500)" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                    <!-- BILLING DETAILS SECTION - This will be shown if billing is already completed -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_billing_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        app:cardElevation="2dp"
+                        app:cardUseCompatPadding="true"
+                        tools:visibility="visible"> <!-- Initially gone, show if billing exists -->
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp">
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.TitleMedium"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_toStartOf="@+id/btn_edit_bill"
+                                    android:text="Billed Services &amp; Discounts Summary" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_edit_bill"
+                                    style="?attr/materialButtonOutlinedStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:text="Edit"
+                                    android:visibility="visible"
+                                    app:icon="@drawable/ic_edit"
+                                    tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
+
+                            </RelativeLayout>
+
+
+                            <!-- Billed Services List (If different from booked or to show discounts) -->
+
                             <TextView
-                                android:id="@+id/tvServiceWithPrice"
-                                style="@style/TextAppearance.Material3.BodyMedium"
+                                style="@style/TextAppearance.Material3.LabelLarge"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="4dp"
-                                android:text="• Haircut (₹500)" />
+                                android:layout_gravity="end"
+                                android:text="Final" />
 
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rv_services_for_billing"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:nestedScrollingEnabled="false"
+                                tools:itemCount="2"
+                                tools:listitem="@layout/list_service_bil" />
+
+                            <GridLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:columnCount="2">
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:text="Subtotal:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_subtotal"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:text="₹1200.00" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Total Discount:"
+                                    android:textColor="?attr/colorError" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_total_discount"
+                                    style="@style/TextAppearance.Material3.BodyLarge"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="- ₹50.00"
+                                    android:textColor="?attr/colorError" />
+
+                                <View
+                                    android:layout_height="1dp"
+                                    android:layout_columnSpan="2"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:background="?android:attr/listDivider" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.TitleSmall"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:text="Grand Total:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_grand_total"
+                                    style="@style/TextAppearance.Material3.TitleSmall"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:text="₹1150.00"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="8dp"
+                                    android:text="Amount Paid:"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_amount_paid"
+                                    style="@style/TextAppearance.Material3.BodyLarge"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginTop="8dp"
+                                    android:text="₹1150.00"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Payment Mode:"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_payment_mode"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Credit Card"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Material3.LabelLarge"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:visibility="gone"
+                                    android:text="Payment Date:" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_payment_date"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:visibility="gone"
+                                    android:text="25 Dec 2023, 10:30 AM" />
+                            </GridLayout>
                         </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-
-                <!-- BILLING DETAILS SECTION - This will be shown if billing is already completed -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_billing_details"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    app:cardElevation="2dp"
-                    app:cardUseCompatPadding="true"
-                    tools:visibility="visible"> <!-- Initially gone, show if billing exists -->
-
-                    <LinearLayout
+                    <!-- NOTES SUMMARY SECTION -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_notes_summary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        app:cardElevation="2dp"
+                        app:cardUseCompatPadding="true"
+                        tools:visibility="visible"> <!-- Initially gone, show if notes exist -->
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
                             <TextView
                                 style="@style/TextAppearance.Material3.TitleMedium"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true"
-                                android:text="Billing Summary" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_edit_bill"
-                                style="?attr/materialButtonOutlinedStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:text="Edit"
-                                android:visibility="visible"
-                                app:icon="@drawable/ic_edit"
-                                tools:visibility="visible" /> <!-- Show only if bill exists and is editable -->
-                        </RelativeLayout>
-
-
-                        <!-- Billed Services List (If different from booked or to show discounts) -->
-                        <TextView
-                            style="@style/TextAppearance.Material3.LabelLarge"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
-                            android:text="Billed Services &amp; Discounts:" />
-
-                        <LinearLayout
-                            android:id="@+id/ll_billed_services_container"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:orientation="vertical"
-                            android:paddingStart="8dp">
-                            <!-- Example Billed Service Item -->
-                            <TextView
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="2dp"
-                                android:text="Haircut: ₹500 (Discount: ₹50)" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="2dp"
-                                android:text="Manicure: ₹700 (No Discount)" />
-                        </LinearLayout>
-
-
-                        <GridLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:columnCount="2">
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_gravity="start|center_vertical"
-                                android:text="Subtotal:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_subtotal"
-                                style="@style/TextAppearance.Material3.BodyLarge"
-                                android:layout_gravity="end|center_vertical"
-                                android:text="₹1200.00" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="Total Discount:"
-                                android:textColor="?attr/colorError" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_total_discount"
-                                style="@style/TextAppearance.Material3.BodyLarge"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="- ₹50.00"
-                                android:textColor="?attr/colorError" />
-
-                            <View
-                                android:layout_height="1dp"
-                                android:layout_columnSpan="2"
-                                android:layout_marginTop="8dp"
                                 android:layout_marginBottom="8dp"
-                                android:background="?android:attr/listDivider" />
+                                android:text="Notes" />
 
                             <TextView
-                                style="@style/TextAppearance.Material3.TitleSmall"
-                                android:layout_gravity="start|center_vertical"
-                                android:text="Grand Total:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_grand_total"
-                                style="@style/TextAppearance.Material3.TitleSmall"
-                                android:layout_gravity="end|center_vertical"
-                                android:text="₹1150.00"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="8dp"
-                                android:text="Amount Paid:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_amount_paid"
-                                style="@style/TextAppearance.Material3.BodyLarge"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginTop="8dp"
-                                android:text="₹1150.00" />
-
-                            <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="Payment Mode:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_payment_mode"
+                                android:id="@+id/tv_detail_notes_content"
                                 style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="Credit Card" />
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:lineSpacingMultiplier="1.2"
+                                android:text="Customer requested a specific brand of shampoo. Also mentioned a slight allergy to lavender." />
 
                             <TextView
-                                style="@style/TextAppearance.Material3.LabelLarge"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="Payment Date:" />
-
-                            <TextView
-                                android:id="@+id/tv_detail_billing_payment_date"
+                                android:id="@+id/tv_detail_no_notes"
                                 style="@style/TextAppearance.Material3.BodyMedium"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginTop="4dp"
-                                android:text="25 Dec 2023, 10:30 AM" />
-                        </GridLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No notes provided for this appointment."
+                                android:textColor="?android:attr/textColorSecondary"
+                                tools:visibility="visible" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                <!-- NOTES SUMMARY SECTION -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_notes_summary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardElevation="2dp"
-                    app:cardUseCompatPadding="true"
-                    tools:visibility="visible"> <!-- Initially gone, show if notes exist -->
-
-                    <LinearLayout
+                    <!-- ACTION BUTTONS -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_proceed_to_billing"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_marginTop="16dp"
+                        android:text="Proceed to Billing"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_payment"
+                        tools:visibility="gone" /> <!-- Initially gone, show if billing is not done -->
 
-                        <TextView
-                            style="@style/TextAppearance.Material3.TitleMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
-                            android:text="Notes" />
-
-                        <TextView
-                            android:id="@+id/tv_detail_notes_content"
-                            style="@style/TextAppearance.Material3.BodyMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingMultiplier="1.2"
-                            android:text="Customer requested a specific brand of shampoo. Also mentioned a slight allergy to lavender." />
-
-                        <TextView
-                            android:id="@+id/tv_detail_no_notes"
-                            style="@style/TextAppearance.Material3.BodyMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="No notes provided for this appointment."
-                            android:textColor="?android:attr/textColorSecondary"
-                            tools:visibility="visible" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- ACTION BUTTONS -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_proceed_to_billing"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Proceed to Billing"
-                    android:visibility="visible"
-                    app:icon="@drawable/ic_payment"
-                    tools:visibility="visible" /> <!-- Initially gone, show if billing is not done -->
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_view_invoice"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="View Invoice"
-                    android:visibility="visible"
-                    app:icon="@drawable/ic_receipt"
-                    tools:visibility="visible" /> <!-- Initially gone, show if bill is generated -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_view_invoice"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="View Invoice"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_receipt"
+                        tools:visibility="gone" /> <!-- Initially gone, show if bill is generated -->
 
 
-            </LinearLayout> <!-- End of content_layout_details -->
-        </LinearLayout> <!-- End of root LinearLayout in ScrollView -->
+                </LinearLayout> <!-- End of content_layout_details -->
+            </LinearLayout> <!-- End of root LinearLayout in ScrollView -->
+
+        </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

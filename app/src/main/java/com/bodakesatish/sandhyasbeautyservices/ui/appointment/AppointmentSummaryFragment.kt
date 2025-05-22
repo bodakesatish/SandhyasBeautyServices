@@ -13,18 +13,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentDetailsBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
-import com.bodakesatish.sandhyasbeautyservices.ui.appointment.dialog.ServiceSelectionDialogFragment
+import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDiscountAdapter
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @AndroidEntryPoint
-class AppointmentBillDetailFragment  : Fragment() {
+class AppointmentSummaryFragment  : Fragment() {
 
     private var _binding: FragmentAppointmentDetailsBinding? = null
 
@@ -32,9 +35,11 @@ class AppointmentBillDetailFragment  : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    val args: AppointmentBillDetailFragmentArgs by navArgs()
+    val args: AppointmentSummaryFragmentArgs by navArgs()
 
     val viewModel: AppointmentBillDetailViewModel by viewModels()
+
+    private lateinit var billServiceAdapter: ServiceDiscountAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,19 +65,30 @@ class AppointmentBillDetailFragment  : Fragment() {
         setupListeners()
         setupObservers()
         setupFragmentResultListeners()
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        billServiceAdapter = ServiceDiscountAdapter()
+        binding.rvServicesForBilling.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = billServiceAdapter
+            // Optional: Add ItemDecoration for dividers if not handled by item layout
+            // addItemDecoration(MaterialDividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        }
     }
 
     private fun setupListeners() {
         binding.btnEditAppointment.setOnClickListener {
             // Handle item click
-            val action = AppointmentBillDetailFragmentDirections.actionAppointmentBillDetailFragmentToNavigationCreateAppointment(
+            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToNavigationCreateAppointment(
                 viewModel.appointmentIdFlow.value
             )
             findNavController().navigate(action)
         }
         binding.btnEditServices.setOnClickListener {
             // Handle item click
-            val action = AppointmentBillDetailFragmentDirections.actionAppointmentBillDetailFragmentToAddServicesToAppointmentFragment(
+            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToAddServicesToAppointmentFragment(
                 viewModel.appointmentIdFlow.value
             )
             findNavController().navigate(action)
@@ -87,10 +103,10 @@ class AppointmentBillDetailFragment  : Fragment() {
             // Navigate to Billing Screen for editing (passing appointmentId and perhaps billingId)
             // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_billingFragment, bundleOf("appointmentId" to appointmentId, "billingId" to billing?.id))
             // Handle item click
-//            val action = AppointmentBillDetailFragmentDirections.navToBilling(
-//                viewModel.appointmentIdFlow.value
-//            )
-//            findNavController().navigate(action)
+            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToBillingFragment(
+                viewModel.appointmentIdFlow.value
+            )
+            findNavController().navigate(action)
         }
 
         binding.btnViewInvoice.setOnClickListener {
@@ -100,6 +116,14 @@ class AppointmentBillDetailFragment  : Fragment() {
     }
 
     private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                viewModel.serviceDetailList.collect { list ->
+                    billServiceAdapter.submitList(list)
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -116,11 +140,19 @@ class AppointmentBillDetailFragment  : Fragment() {
 
                             var services = ""
                             detail.serviceDetailsWithServices.map {
-                               services = services.plus("• ${it.serviceName}  (₹${it.servicePrice.toInt()})\n")
+                               services = services.plus("• ${it.serviceName}  (₹${it.originalPrice.toInt()})\n")
                                 Log.i(tag, services)
                             }
                             Log.i(tag, services)
                             binding.tvServiceWithPrice.text = services
+
+                            // --- Billing Status ---
+                            binding.tvDetailBillingSubtotal.text = formatCurrency(detail.appointment.totalBillAmount)
+                            binding.tvDetailBillingTotalDiscount.text = "- ${viewModel.formatCurrency(detail.appointment.totalDiscount)}"
+                            binding.tvDetailBillingGrandTotal.text = viewModel.formatCurrency(detail.appointment.netTotal)
+
+                            binding.tvDetailNotesContent.text = detail.appointment.appointmentNotes
+                            binding.tvDetailNoNotes.text = detail.appointment.paymentNotes
 //                            binding.tvAppointmentTime.text = details.appointment.appointmentTime
 //                            // Update the customer field based on the loaded customer
 //                            details.customer?.let { customer ->
@@ -136,7 +168,7 @@ class AppointmentBillDetailFragment  : Fragment() {
     }
 
     private fun setupHeader() {
-        binding.headerGeneric.tvHeader.setText(getString(R.string.appointment_and_billing_details))
+        binding.headerGeneric.tvHeader.text = getString(R.string.appointment_and_billing_details)
         binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
         binding.headerGeneric.btnBack.setOnClickListener {
             findNavController().popBackStack()
@@ -145,20 +177,24 @@ class AppointmentBillDetailFragment  : Fragment() {
 
     private fun setupFragmentResultListeners() {
         // Listen for the result from the SelectServicesDialogFragment
-        setFragmentResultListener(AddOrEditServicesToAppointmentFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
+        setFragmentResultListener(EditAppointmentServicesFragment.REQUEST_KEY_SELECTED_SERVICES) { requestKey, bundle ->
             // Ensure we handle the correct request key
-            if (requestKey == AddOrEditServicesToAppointmentFragment.REQUEST_KEY_SELECTED_SERVICES) {
+            if (requestKey == EditAppointmentServicesFragment.REQUEST_KEY_SELECTED_SERVICES) {
                 val selectedServices =
-                    bundle.getSerializable(AddOrEditServicesToAppointmentFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
+                    bundle.getSerializable(EditAppointmentServicesFragment.BUNDLE_KEY_SELECTED_SERVICES) as? ArrayList<Service>
                 selectedServices?.let {
                     Log.i(tag, "Received Selected Services from Dialog: $it")
                     // Update the ViewModel with the new list of selected services
                     // This assumes you have a function in your ViewModel to handle this update
-                    val selectedServicesIds = it.map { service -> service.id }.toSet()
+                    it.map { service -> service.id }.toSet()
                   //  viewModel.updateCategoryServiceSelection(selectedServicesIds)
                 }
             }
         }
+    }
+
+    private fun formatCurrency(amount: Double): String {
+        return NumberFormat.getCurrencyInstance(Locale("en", "IN")).format(amount) // For INR
     }
 
 

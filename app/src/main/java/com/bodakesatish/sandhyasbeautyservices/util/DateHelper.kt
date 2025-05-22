@@ -84,7 +84,7 @@ object DateHelper {
 
     fun getFormattedDate(date: Date): String { // Or (dateInMillis: Long)
         // Your existing formatting logic
-        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return sdf.format(date)
     }
 

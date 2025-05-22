@@ -27,14 +27,14 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
 
             totalBillAmount = totalBillAmount, // Consider converting to BigDecimal in domain if entity uses Double
             totalDiscount = totalDiscount, // Consider converting to BigDecimal in domain if entity uses Double
-            totalDiscountPercentage = totalDiscountPercentage, // Consider converting to BigDecimal in domain if entity uses Double
+            netTotal = netTotal, // Consider converting to BigDecimal in domain if entity uses Double
             paymentMode = mapDataPaymentModeStatusToDomain(paymentMode), // Entity uses String
-            servicesSummary = servicesSummary,
             appointmentStatus = mapDataStatusToDomain(appointmentStatus),
-            paymentStatus = mapDataPaymentStatusToDomain(paymentStatus),
+         //   paymentStatus = mapDataPaymentStatusToDomain(paymentStatus),
 
 //          servicesSummary = servicesSummary.takeIf { it.isNotBlank() }, // Map empty string to null for domain
-            serviceNotes = serviceNotes // Map empty string to null for domain
+            appointmentNotes = appointmentNotes, // Map empty string to null for domain
+            paymentNotes = paymentNotes // Map empty string to null for domain
         )
     }
 
@@ -46,12 +46,13 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
             appointmentTime = appointmentTime, // Consider mapping from LocalTime to Date if domain uses LocalTime
             totalBillAmount = totalBillAmount, // Handle null from domain, provide default for entity
             totalDiscount = totalDiscount,
-            totalDiscountPercentage = totalDiscountPercentage,
+            netTotal = netTotal,
             paymentMode = mapDomainPaymentModeToData(paymentMode), // Map enum to String for entity
-            servicesSummary = servicesSummary, // Map null from domain to empty string for entity
+            appointmentNotes = appointmentNotes, // Map null from domain to empty string for entity
             appointmentStatus = mapDomainStatusToData(appointmentStatus),
-            paymentStatus = mapDomainPaymentStatusToData(paymentStatus),
-            serviceNotes = serviceNotes // Map null from domain to empty string for entity
+            //paymentStatus = mapDomainPaymentStatusToData(paymentStatus),
+            paymentNotes = paymentNotes // Map null from domain to empty string for entity,
+
         )
     }
 
@@ -62,7 +63,6 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
         return when (dataStatus) {
             AppointmentDataStatus.PENDING -> AppointmentStatus.PENDING
             AppointmentDataStatus.COMPLETED -> AppointmentStatus.COMPLETED
-            AppointmentDataStatus.CANCELLED -> AppointmentStatus.CANCELLED
             AppointmentDataStatus.UNKNOWN -> AppointmentStatus.UNKNOWN
             // Add default or error handling if dataStatus could have values not in domain
             // else -> AppointmentStatus.UNKNOWN // Example
@@ -73,7 +73,6 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
         return when (domainStatus) {
             AppointmentStatus.PENDING -> AppointmentDataStatus.PENDING
             AppointmentStatus.COMPLETED -> AppointmentDataStatus.COMPLETED
-            AppointmentStatus.CANCELLED -> AppointmentDataStatus.CANCELLED
             AppointmentStatus.UNKNOWN -> AppointmentDataStatus.PENDING // Fallback to a sensible default
             // It's crucial to define how all domain statuses map to the more limited data statuses
         }
@@ -102,16 +101,16 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
     private fun mapDataPaymentModeStatusToDomain(paymentModeDataStatus: PaymentModeDataStatus): PaymentMode {
         return when (paymentModeDataStatus){
             PaymentModeDataStatus.CASH -> PaymentMode.CASH
-            PaymentModeDataStatus.ONLINE -> PaymentMode.ONLINE
             PaymentModeDataStatus.PENDING -> PaymentMode.PENDING
             PaymentModeDataStatus.UNKNOWN -> PaymentMode.UNKNOWN
+            PaymentModeDataStatus.UPI -> PaymentMode.UPI
         }
     }
 
     private fun mapDomainPaymentModeToData(paymentMode: PaymentMode): PaymentModeDataStatus {
         return when (paymentMode){
             PaymentMode.CASH -> PaymentModeDataStatus.CASH
-            PaymentMode.ONLINE -> PaymentModeDataStatus.ONLINE
+            PaymentMode.UPI -> PaymentModeDataStatus.UPI
             PaymentMode.PENDING -> PaymentModeDataStatus.PENDING
             PaymentMode.UNKNOWN -> PaymentModeDataStatus.UNKNOWN
         }

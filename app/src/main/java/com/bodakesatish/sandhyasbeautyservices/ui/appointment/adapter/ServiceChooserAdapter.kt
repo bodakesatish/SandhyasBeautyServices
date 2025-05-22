@@ -3,7 +3,6 @@ package com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.text.color
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -107,21 +106,11 @@ class ServiceDialogAdapter(
             binding.textViewServiceName.text = serviceItem.serviceName
             binding.textViewServicePrice.text = "Rs. ${serviceItem.servicePrice}"
 
-            // Important: Hold a reference to the current service for the root click listener
-            // This is a simplified way; for more complex scenarios, you might pass the service to the
-            // onServiceSelected lambda directly from the click listener if you can access the item's
-            // adapter position and get the item from the adapter's list.
-            // However, the checkbox listener below is more direct for its own state.
-
-
             // Temporarily remove listener to prevent unwanted calls during re-binding
             binding.checkBoxService.setOnCheckedChangeListener(null)
 
             // Set initial state based on the model
             binding.checkBoxService.isChecked = serviceItem.isSelected
-
-//            binding.checkBoxService.setCheckedState(MaterialCheckbox.STATE_CHECKED);
-
 
             binding.checkBoxService.setOnCheckedChangeListener { _, isChecked ->
                 // Call the callback with the service and the new checked state
@@ -140,11 +129,12 @@ class ServiceDialogAdapter(
             }
 
             if (serviceItem.isSelected) {
-                binding.root.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.selected_service_background)) // Define this color
-                // Or if using MaterialCardView:
-                // (binding.root as MaterialCardView).setCardBackgroundColor(...)
-                // (binding.root as MaterialCardView).strokeWidth = itemView.context.resources.getDimensionPixelSize(R.dimen.selected_card_stroke_width)
-                // (binding.root as MaterialCardView).strokeColor = ContextCompat.getColor(itemView.context, R.color.selected_card_stroke_color)
+                binding.root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.selected_service_background
+                    )
+                ) // Define this color
 
             } else {
                 binding.root.setBackgroundColor(
@@ -152,13 +142,8 @@ class ServiceDialogAdapter(
                         itemView.context,
                         android.R.color.transparent
                     )
-                ) // Or original background
-                // Or if using MaterialCardView:
-                // (binding.root as MaterialCardView).setCardBackgroundColor(...)
-                // (binding.root as MaterialCardView
+                )
             }
-            // Update content description dynamically if needed for accessibility
-            // binding.checkBoxService.contentDescription = itemView.context.getString(R.string.select_service_dynamic_desc, serviceItemModel.serviceName)
 
         }
     }

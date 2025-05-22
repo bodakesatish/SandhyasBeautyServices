@@ -83,7 +83,7 @@ interface AppointmentsDao {
     fun getAppointmentList(): Flow<List<AppointmentsEntity>>
 
     @Query("SELECT * FROM ${AppointmentsEntity.TABLE_NAME} WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
-    fun getAppointmentById(appointmentId: Int): Flow<AppointmentsEntity?>
+    fun getAppointmentById(appointmentId: Int): Flow<AppointmentsEntity>
 
     @Query("SELECT * FROM ${AppointmentsEntity.TABLE_NAME}")
     fun getAppointmentCustomerList(): Flow<List<AppointmentCustomer>>

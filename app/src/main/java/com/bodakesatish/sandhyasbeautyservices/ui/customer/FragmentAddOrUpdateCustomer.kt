@@ -63,7 +63,7 @@ class FragmentAddOrUpdateCustomer : Fragment() {
     private fun initView() {
         binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
         if(viewModel.customer.id != 0) {
-            binding.btnAdd.setText("Update")
+            binding.btnAdd.text = "Update"
         }
         binding.evPatientFirstName.editText?.requestFocus()
         binding.evPatientFirstName.post {
@@ -110,7 +110,7 @@ class FragmentAddOrUpdateCustomer : Fragment() {
         }
 
         // This callback will only be called when FragmentAddOrUpdateCustomer is at least Started.
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // Handle the back button event
             // e.g., navigate to the previous screen or pop the back stack
             navigateToCustomerListScreen()

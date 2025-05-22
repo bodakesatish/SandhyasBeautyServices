@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
-import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentMode
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.CreateNewAppointmentUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCustomerAppointmentUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetCustomerListUseCase
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,7 +31,7 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateOrEditAppointmentViewModel @Inject constructor(
+class AppointmentEditViewModel @Inject constructor(
     private val getAppointmentDetailUseCase: GetCustomerAppointmentUseCase,
     private val getCustomerListUseCase: GetCustomerListUseCase,
     private val createNewAppointmentUseCase: CreateNewAppointmentUseCase
@@ -70,8 +68,7 @@ class CreateOrEditAppointmentViewModel @Inject constructor(
             totalBillAmount = 0.0
         )
     )
-    val currentAppointment: StateFlow<Appointment?> = _currentAppointment.asStateFlow()
-
+    val currentAppointment: StateFlow<Appointment> = _currentAppointment.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val customerAppointmentFlow: StateFlow<CustomerAppointment?> =
@@ -137,11 +134,7 @@ class CreateOrEditAppointmentViewModel @Inject constructor(
         }
     }
 
-
-    fun createNewAppointment(appointment: Appointment) {
-    }
-
-    fun saveAppointment() {
+    fun saveAppointment(appointmentNotes: String) {
         Log.d(tag, "In $tag saveAppointment")
 
         // Get the current values from StateFlows
@@ -149,9 +142,13 @@ class CreateOrEditAppointmentViewModel @Inject constructor(
         // Launch a coroutine in the viewModelScope, using Dispatchers.IO for database operations
         viewModelScope.launch(Dispatchers.IO) {
             try {
+
+                _currentAppointment.value = _currentAppointment.value.copy(
+                    appointmentNotes = appointmentNotes
+                )
                 // Call the UseCase to create the new appointment
                 val newAppointmentId = createNewAppointmentUseCase.invoke(
-                    currentAppointment.value!!,
+                    currentAppointment.value,
                     emptyList()
                 )
 

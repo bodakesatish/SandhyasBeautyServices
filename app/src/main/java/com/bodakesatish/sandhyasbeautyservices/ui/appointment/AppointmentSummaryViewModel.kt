@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentDetails
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetail
+import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentRepository
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.CategoryRepository
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentDetailUseCase
+import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetServiceDetailWithServiceByAppointmentIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +24,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 import javax.inject.Inject
 
 // Define a UI state class to hold all formatted data for the screen
@@ -42,6 +46,7 @@ class AppointmentBillDetailViewModel @Inject constructor(
     private val appointmentRepository: AppointmentRepository,
 //    private val billingRepository: BillingRepository,
     private val serviceRepository: CategoryRepository,
+    private val getServiceDetailUseCase: GetServiceDetailWithServiceByAppointmentIdUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -57,6 +62,11 @@ class AppointmentBillDetailViewModel @Inject constructor(
     private val _appointmentId = MutableStateFlow<Int>(0)
     val appointmentIdFlow: StateFlow<Int> = _appointmentId.asStateFlow()
 
+    private val _serviceDetailList = MutableStateFlow<List<ServiceDetailWithService>>(emptyList())
+    val serviceDetailList: StateFlow<List<ServiceDetailWithService>> =
+        _serviceDetailList.asStateFlow()
+
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val appointmentDetailFlow: StateFlow<AppointmentDetails?> =
         _appointmentId
@@ -64,6 +74,7 @@ class AppointmentBillDetailViewModel @Inject constructor(
                 if (id == 0) {
                     flowOf(null) // New or invalid ID, emit null
                 } else {
+                    getServiceDetail()
                     getAppointmentDetailUseCase.invoke(id) // This should return Flow<AppointmentAndCustomer?>
                         .map { appointmentAndCustomer ->
                             // Map the result from the use case to your UI model (AppointmentDetails)
@@ -105,6 +116,19 @@ class AppointmentBillDetailViewModel @Inject constructor(
         }
     }
 
+    fun getServiceDetail() {
+        Log.d(tag, "$tag->getServiceDetail")
+        viewModelScope.launch(Dispatchers.IO) {
+
+            getServiceDetailUseCase.invoke(_appointmentId.value).collect { list ->
+                _serviceDetailList.value = list
+                //  _serviceItems.value = list
+                Log.d(tag, "In $tag $list")
+            }
+        }
+    }
+
+
     fun loadAppointmentDetails() {
         viewModelScope.launch {
             _uiState.value = AppointmentDetailsUiState(isLoading = true) // Start loading
@@ -140,5 +164,10 @@ class AppointmentBillDetailViewModel @Inject constructor(
                 _uiState.value = AppointmentDetailsUiState(isLoading = false, error = "Error loading details: ${e.message}")
             }
         }
+    }
+
+    // --- Helper for formatting ---
+    fun formatCurrency(amount: Double): String {
+        return NumberFormat.getCurrencyInstance(Locale("en", "IN")).format(amount) // For INR
     }
 }

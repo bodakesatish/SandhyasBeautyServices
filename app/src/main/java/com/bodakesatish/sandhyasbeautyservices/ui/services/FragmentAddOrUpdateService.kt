@@ -75,7 +75,7 @@ class FragmentAddOrUpdateService : Fragment() {
 
     private fun onBackPressed() {
         // This callback will only be called when FragmentCustomerList is at least Started.
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // Handle the back button event
             // e.g., navigate to the previous screen or pop the back stack
             //requireActivity().finish()

@@ -16,7 +16,7 @@ import dagger.hilt.testing.TestInstallIn
 interface FakeDataModule {
 
     @Binds
-    abstract fun bindRepository(
+    fun bindRepository(
         fakeRepository: FakeMyModelRepository
     ) : MyModelRepository
 }

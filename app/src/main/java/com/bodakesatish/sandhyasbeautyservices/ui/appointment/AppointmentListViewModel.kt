@@ -4,16 +4,14 @@ import android.icu.util.Calendar
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
+import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.AppointmentSortBy
 import com.bodakesatish.sandhyasbeautyservices.domain.repository.SortOrder
-import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetAppointmentListUseCase
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.GetFilteredAppointmentListUseCase
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +50,6 @@ enum class QuickDateRange(val displayName: String) {
 
 @HiltViewModel
 class AppointmentDashboardViewModel @Inject constructor(
-    private val getAppointmentListUseCase: GetAppointmentListUseCase,
     private val getFilteredAppointmentsUseCase: GetFilteredAppointmentListUseCase
 ) : ViewModel() {
 
@@ -68,11 +65,8 @@ class AppointmentDashboardViewModel @Inject constructor(
 
     // Store the current quick date range selection, also used by Fragment to set the correct chip
     private val _currentQuickDateRangeSelection = MutableStateFlow(QuickDateRange.TODAY)
-    val currentQuickDateRangeSelection: StateFlow<QuickDateRange> = _currentQuickDateRangeSelection.asStateFlow()
-
-    private val _appointmentList = MutableStateFlow<List<CustomerAppointment>>(emptyList())
-    val appointmentList: StateFlow<List<CustomerAppointment>> = _appointmentList.asStateFlow()
-
+    val currentQuickDateRangeSelection: StateFlow<QuickDateRange> =
+        _currentQuickDateRangeSelection.asStateFlow()
 
     // Store current filter parameters to re-apply or modify
     private var currentStatusFilter: AppointmentStatus? = null
@@ -94,21 +88,25 @@ class AppointmentDashboardViewModel @Inject constructor(
     }
 
     fun setQuickDateRange(quickDateRange: QuickDateRange) {
-        _currentQuickDateRangeSelection.value = quickDateRange // Update state for Fragment to observe        val today = Date()
+        _currentQuickDateRangeSelection.value =
+            quickDateRange // Update state for Fragment to observe        val today = Date()
         val today = Date()
         when (quickDateRange) {
             QuickDateRange.TODAY -> {
                 currentStartDate = getStartOfDayMillis(today)
                 currentEndDate = getEndOfDayMillis(today)
             }
+
             QuickDateRange.TOMORROW -> {
                 val tomorrowCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
                 currentStartDate = getStartOfDayMillis(tomorrowCal.time)
                 currentEndDate = getEndOfDayMillis(tomorrowCal.time)
             }
+
             QuickDateRange.THIS_WEEK -> {
                 val calendar = Calendar.getInstance()
-                calendar.firstDayOfWeek = Calendar.MONDAY // Or Sunday, depending on your locale/preference
+                calendar.firstDayOfWeek =
+                    Calendar.MONDAY // Or Sunday, depending on your locale/preference
                 calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
                 currentStartDate = getStartOfDayMillis(calendar.time)
 
@@ -116,10 +114,12 @@ class AppointmentDashboardViewModel @Inject constructor(
                 calendar.add(Calendar.DAY_OF_YEAR, -1) // End of the week
                 currentEndDate = getEndOfDayMillis(calendar.time)
             }
+
             QuickDateRange.ALL_TIME -> {
                 currentStartDate = getVeryPastDateMillis()
                 currentEndDate = getVeryFutureDateMillis()
             }
+
             QuickDateRange.CUSTOM -> {
                 // Dates are already set by applyFilters or will be by the dialog.
                 // The _currentQuickDateRangeSelection is set to CUSTOM if applyFilters is called with new dates.
@@ -188,17 +188,36 @@ class AppointmentDashboardViewModel @Inject constructor(
                 // This makes the chip text consistent if a custom selection happens to be "Today", etc.
                 when {
                     isToday(currentStartDate, currentEndDate) -> QuickDateRange.TODAY.displayName
-                    isTomorrow(currentStartDate, currentEndDate) -> QuickDateRange.TOMORROW.displayName
-                    isThisWeek(currentStartDate, currentEndDate) -> QuickDateRange.THIS_WEEK.displayName
-                    isAllTime(currentStartDate, currentEndDate) -> QuickDateRange.ALL_TIME.displayName
+                    isTomorrow(
+                        currentStartDate,
+                        currentEndDate
+                    ) -> QuickDateRange.TOMORROW.displayName
+
+                    isThisWeek(
+                        currentStartDate,
+                        currentEndDate
+                    ) -> QuickDateRange.THIS_WEEK.displayName
+
+                    isAllTime(
+                        currentStartDate,
+                        currentEndDate
+                    ) -> QuickDateRange.ALL_TIME.displayName
+
                     else -> {
                         // Format custom dates nicely
-                        val startDateFormatted = DateHelper.getFormattedDate(Date(currentStartDate), DateHelper.DATE_FORMAT_dd_MMM_yyyy) // Use your DateHelper
-                        val endDateFormatted = DateHelper.getFormattedDate(Date(currentEndDate), DateHelper.DATE_FORMAT_dd_MMM_yyyy)
+                        val startDateFormatted = DateHelper.getFormattedDate(
+                            Date(currentStartDate),
+                            DateHelper.DATE_FORMAT_dd_MMM_yyyy
+                        ) // Use your DateHelper
+                        val endDateFormatted = DateHelper.getFormattedDate(
+                            Date(currentEndDate),
+                            DateHelper.DATE_FORMAT_dd_MMM_yyyy
+                        )
                         "$startDateFormatted - $endDateFormatted"
                     }
                 }
             }
+
             else -> {
                 // For predefined ranges, use their display name directly
                 currentSelection.displayName
@@ -217,7 +236,8 @@ class AppointmentDashboardViewModel @Inject constructor(
             newActiveFiltersMap[FilterType.Payment] = it.name // Or it.displayName
         }
         currentCustomerNameQuery?.takeIf { it.isNotBlank() }?.let {
-            newActiveFiltersMap[FilterType.CustomerName] = "\"$it\"" // Adding quotes to indicate it's a search term
+            newActiveFiltersMap[FilterType.CustomerName] =
+                "\"$it\"" // Adding quotes to indicate it's a search term
         }
 
         // If there's only one filter and it's "All Time" for DateRange,
@@ -264,28 +284,31 @@ class AppointmentDashboardViewModel @Inject constructor(
         fetchJob?.cancel() // Cancel previous job if any
         _uiState.value = AppointmentUiState.Loading // Set loading state
 
-        fetchJob = viewModelScope.launch { // viewModelScope defaults to Main, use case should use flowOn(Dispatchers.IO)
-            getFilteredAppointmentsUseCase.invoke(
-                startDate = currentStartDate,
-                endDate = currentEndDate,
-                status = currentStatusFilter,
-                paymentStatus = currentPaymentStatusFilter,
-                customerNameQuery = currentCustomerNameQuery,
-                sortBy = currentSortBy,
-                sortOrder = currentSortOrder
-            ).catch { exception ->
-                Log.e(tag, "Error fetching appointments: ${exception.message}", exception)
-                _uiState.value = AppointmentUiState.Error(exception.localizedMessage ?: "An unexpected error occurred")
-            }.collect { list ->
-                if (list.isEmpty()) {
-                    _uiState.value = AppointmentUiState.Empty
-                    Log.d(tag, "In $tag received an empty list of appointments")
-                } else {
-                    _uiState.value = AppointmentUiState.Success(list)
-                    Log.d(tag, "In $tag received ${list.size} appointments")
+        fetchJob =
+            viewModelScope.launch { // viewModelScope defaults to Main, use case should use flowOn(Dispatchers.IO)
+                getFilteredAppointmentsUseCase.invoke(
+                    startDate = currentStartDate,
+                    endDate = currentEndDate,
+                    status = currentStatusFilter,
+                    paymentStatus = currentPaymentStatusFilter,
+                    customerNameQuery = currentCustomerNameQuery,
+                    sortBy = currentSortBy,
+                    sortOrder = currentSortOrder
+                ).catch { exception ->
+                    Log.e(tag, "Error fetching appointments: ${exception.message}", exception)
+                    _uiState.value = AppointmentUiState.Error(
+                        exception.localizedMessage ?: "An unexpected error occurred"
+                    )
+                }.collect { list ->
+                    if (list.isEmpty()) {
+                        _uiState.value = AppointmentUiState.Empty
+                        Log.d(tag, "In $tag received an empty list of appointments")
+                    } else {
+                        _uiState.value = AppointmentUiState.Success(list)
+                        Log.d(tag, "In $tag received ${list.size} appointments")
+                    }
                 }
             }
-        }
     }
 
     private fun getEndOfDayMillis(): Long {
@@ -297,21 +320,9 @@ class AppointmentDashboardViewModel @Inject constructor(
         return calendar.timeInMillis
     }
 
-    fun getAppointmentList() {
-        Log.d(tag, "$tag->getCategoryList")
-        viewModelScope.launch(Dispatchers.IO) {
-
-            getAppointmentListUseCase.invoke().collect { list ->
-                _appointmentList.value = list
-                Log.d(tag, "In $tag $list")
-            }
-        }
-    }
-
-
     override fun onCleared() {
         super.onCleared()
-        Log.i(tag , "$tag->onCleared")
+        Log.i(tag, "$tag->onCleared")
     }
 
     // Helper functions for ViewModelAppointmentDashboard
@@ -398,17 +409,4 @@ class AppointmentDashboardViewModel @Inject constructor(
         return startDateMillis == expectedStart && endDateMillis == expectedEnd
     }
 
-
-// Optional: If you still need a way to get all appointments without any filters
-// (though typically covered by setting all filter params to null in getFilteredAppointmentsUseCase)
-/*
-funfetchAllAppointmentsUnfiltered() {
-    currentStatusFilter = null
-    currentPaymentStatusFilter = null
-    currentCustomerNameQuery = null
-    // Reset dates to a very wide range or handle in use case
-    // currentStartDate = veryPastDate
-    // currentEndDate = veryFutureDate
-    updateActiveFilterChips()
-    fetch*/
 }

@@ -13,7 +13,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAddOrEditServicesToAppointmentBinding
+import com.bodakesatish.sandhyasbeautyservices.R
+import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentEditAppointmentServicesBinding
 import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDialogAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,17 +22,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AddOrEditServicesToAppointmentFragment : Fragment() {
+class EditAppointmentServicesFragment : Fragment() {
 
-    private var _binding: FragmentAddOrEditServicesToAppointmentBinding? = null
+    private var _binding: FragmentEditAppointmentServicesBinding? = null
     private val binding get() = _binding
 
-    private val viewModel : AddOrEditServicesToAppointmentViewModel by viewModels()
+    private val viewModel : EditAppointmentServicesViewModel by viewModels()
 
     private lateinit var servicesAdapter: ServiceDialogAdapter
 
-    val args: AddOrEditServicesToAppointmentFragmentArgs by navArgs()
-
+    val args: EditAppointmentServicesFragmentArgs by navArgs()
 
     // Define keys for FragmentResultListener
     companion object {
@@ -44,7 +44,7 @@ class AddOrEditServicesToAppointmentFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAddOrEditServicesToAppointmentBinding.inflate(inflater, container, false)
+        _binding = FragmentEditAppointmentServicesBinding.inflate(inflater, container, false)
         return binding?.root
     }
 
@@ -66,6 +66,15 @@ class AddOrEditServicesToAppointmentFragment : Fragment() {
         binding?.rvServicesList?.adapter = servicesAdapter
         initObservers()
         initListeners()
+        initHeader()
+    }
+
+    private fun initHeader() {
+        binding?.headerGeneric?.tvHeader?.text = "Select Services"
+        binding?.headerGeneric?.btnBack?.setImageResource(R.drawable.ic_back_24)
+        binding?.headerGeneric?.btnBack?.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun initListeners() {

@@ -15,8 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewbinding.ViewBinding
 import com.bodakesatish.sandhyasbeautyservices.R
-import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentCreateOrEditAppointmentBinding
-import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentNewAppointmentBinding
+import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentEditBinding
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemLayoutBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.util.AppArrayAdapter
@@ -32,17 +31,17 @@ import java.util.Date
 import kotlin.getValue
 
 @AndroidEntryPoint
-class CreateOrEditAppointmentFragment : Fragment() {
+class AppointmentEditFragment : Fragment() {
 
-    private var _binding: FragmentCreateOrEditAppointmentBinding? = null
+    private var _binding: FragmentAppointmentEditBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: CreateOrEditAppointmentViewModel by viewModels()
+    private val viewModel: AppointmentEditViewModel by viewModels()
 
-    private val args: CreateOrEditAppointmentFragmentArgs by navArgs()
+    private val args: AppointmentEditFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -50,7 +49,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCreateOrEditAppointmentBinding.inflate(inflater, container, false)
+        _binding = FragmentAppointmentEditBinding.inflate(inflater, container, false)
         val root: View = binding.root
         return root
     }
@@ -85,7 +84,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentAppointment.collectLatest { appointment ->
-                    appointment?.let {
+                    appointment.let {
                         binding.evAppointmentDate.editText?.setText(
                             DateHelper.getFormattedDate(
                                 it.appointmentDate,
@@ -95,6 +94,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
                         binding.evAppointmentTime.editText?.setText(
                             DateHelper.formatTime(it.appointmentTime)
                         )
+                        binding.tilNotes.editText?.setText(it.appointmentNotes)
                     }
                 }
             }
@@ -122,7 +122,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
     }
 
     private fun navigateToDetail(appointmentId: Int) {
-        val action = CreateOrEditAppointmentFragmentDirections
+        val action = AppointmentEditFragmentDirections
             .actionCreateOrEditAppointmentFragmentToAppointmentBillDetailFragment(appointmentId)
         findNavController().navigate(action)
     }
@@ -137,10 +137,10 @@ class CreateOrEditAppointmentFragment : Fragment() {
 
     private fun setupViews() {
         if (args.appointmentId == 0) {
-            binding.headerGeneric.tvHeader.setText(getString(R.string.new_appointment_title))
+            binding.headerGeneric.tvHeader.text = getString(R.string.new_appointment_title)
         } else {
-            binding.headerGeneric.tvHeader.setText(getString(R.string.edit_appointment_title))
-            binding.btnProceedToAddServices.setText(getString(R.string.update_appointment_button))
+            binding.headerGeneric.tvHeader.text = getString(R.string.edit_appointment_title)
+            binding.btnProceedToAddServices.text = getString(R.string.update_appointment_button)
         }
         binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_back_24)
     }
@@ -150,7 +150,8 @@ class CreateOrEditAppointmentFragment : Fragment() {
             requireActivity().onBackPressed()
         }
         binding.btnProceedToAddServices.setOnClickListener {
-            viewModel.saveAppointment()
+            val appointmentNotes = binding.etNotes.text.toString()
+            viewModel.saveAppointment(appointmentNotes)
         }
 
         binding.evAppointmentDate.editText?.setOnClickListener {
@@ -215,13 +216,6 @@ class CreateOrEditAppointmentFragment : Fragment() {
             viewModel.selectAppointmentTime(selectedTime.time)
             binding.evAppointmentTime.editText?.setText(formattedTime)
         }
-
-    }
-
-    private fun observeViewModel() {
-
-
-
 
     }
 

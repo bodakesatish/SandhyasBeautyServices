@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Service Name and Edit Button -->
+    <TextView
+        android:id="@+id/tv_service_name_billing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        style="@style/TextAppearance.Material3.BodyMedium"
+        app:layout_constraintEnd_toStartOf="@+id/tv_service_original_price_billing"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="Haircut and Stylinsdsadg" />
+
+    <!-- Price Information Line -->
+    <TextView
+        android:id="@+id/tv_service_original_price_billing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_service_discount_info_compact"
+        tools:text="₹500.00" />
+
+    <!-- Shows ONLY if discount is applied -->
+    <TextView
+        android:id="@+id/tv_service_discount_info_compact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/tv_service_final_price_display"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_original_price_billing"
+        tools:text="(-₹50)"
+        tools:visibility="visible" />
+
+    <!-- Shows final price. Text changes based on discount. -->
+    <TextView
+        android:id="@+id/tv_service_final_price_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        style="@style/TextAppearance.Material3.BodyMedium"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_service_original_price_billing"
+        app:layout_constraintHorizontal_bias="0.0"
+        tools:text="→ Final: ₹450.00" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

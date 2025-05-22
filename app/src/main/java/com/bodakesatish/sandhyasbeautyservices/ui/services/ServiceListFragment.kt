@@ -62,7 +62,7 @@ class ServiceListFragment : Fragment() {
 
     private fun onBackPressed() {
         // This callback will only be called when FragmentCustomerList is at least Started.
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             // Handle the back button event
             // e.g., navigate to the previous screen or pop the back stack
             //requireActivity().finish()
@@ -110,7 +110,7 @@ class ServiceListFragment : Fragment() {
         val args: ServiceListFragmentArgs by navArgs()
         category = args.category
         viewModel.getCategoryList(category.id)
-        binding.headerGeneric.tvHeader.setText(category.categoryName)
+        binding.headerGeneric.tvHeader.text = category.categoryName
         binding.rvServiceList.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.rvServiceList.adapter = customerAdapter

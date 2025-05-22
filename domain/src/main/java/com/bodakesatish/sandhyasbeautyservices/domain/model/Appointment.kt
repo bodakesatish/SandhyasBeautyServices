@@ -10,13 +10,13 @@ enum class AppointmentStatus {
 //    CONFIRMED, // Example, if you have this step
 //    IN_PROGRESS,
     COMPLETED,
-    CANCELLED,
+  //  CANCELLED,
 //    NO_SHOW,
     UNKNOWN // Good to have a fallback
 }
 
 enum class PaymentMode {
-    ONLINE,
+    UPI,
     CASH,
 //    CARD,
 //    UPI, // Unified Payments Interface - common in India
@@ -52,17 +52,18 @@ data class Appointment(
 
     var totalDiscount: Double = 0.0, // Make nullable if it can be absent
 
-    var totalDiscountPercentage: Double = 0.0, // Make nullable if it can be absent
+    var netTotal: Double = 0.0, // Make nullable if it can be absent
 
     var paymentMode: PaymentMode = PaymentMode.PENDING, // Use enum, make nullable if not always set
 
-    var servicesSummary: String = "", // Make nullable if it can be empty
-
     var appointmentStatus: AppointmentStatus = AppointmentStatus.PENDING, // Use the enum
 
-    var paymentStatus: PaymentStatus = PaymentStatus.UNPAID, // Add if needed, was used in adapter
+  //  var paymentStatus: PaymentStatus = PaymentStatus.UNPAID, // Add if needed, was used in adapter
 
-    var serviceNotes: String = "" // Example: additional field for internal notes
+    var appointmentNotes: String = "", // Example: additional field for internal notes
+
+    var paymentNotes: String = "" // Example: additional field for internal notes
+
 )
 
 // Helper to get default Date for appointmentDate (if still using Date)
