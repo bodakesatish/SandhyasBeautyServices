@@ -6,11 +6,13 @@ data class ServiceDetailWithServiceData(
     val id: Int, // Assuming ServiceDetail has an ID
     val appointmentId: Int,
     val serviceId: Int,
+    val customerId: Int,
     //val quantity: Int, // Example field from ServiceDetail
     val amount: Double, // Example field from ServiceDetail (price specifically for this appointment)
-
+    val discount: Double,
+    val priceAfterDiscount: Double,
+    val serviceSummary: String,
     // Fields from Service (assuming a Service entity exists)
     val serviceName: String,
-    val normalPrice: Double // Example field from Service
     // Add any other fields from Service you select in the query
 )

@@ -9,10 +9,12 @@ object ServiceDetailWithServiceMapper : Mapper<ServiceDetailWithServiceData, Ser
             id = id,
             appointmentId = appointmentId,
             serviceId = serviceId,
-            quantity = 0,
-            amount = amount,
-            serviceName = serviceName,
-            servicePrice = normalPrice
+            customerId = customerId,
+            originalPrice = amount,
+            discountAmount = discount,
+            priceAfterDiscount = priceAfterDiscount,
+            serviceSummary = serviceSummary,
+            serviceName = serviceName
         )
     }
 
@@ -21,9 +23,12 @@ object ServiceDetailWithServiceMapper : Mapper<ServiceDetailWithServiceData, Ser
             id = id,
             appointmentId = appointmentId,
             serviceId = serviceId,
-            amount = amount,
-            serviceName = serviceName,
-            normalPrice = servicePrice
+            customerId = customerId,
+            amount = originalPrice,
+            discount = discountAmount,
+            priceAfterDiscount = priceAfterDiscount,
+            serviceSummary = serviceSummary,
+            serviceName = serviceName
         )
     }
 

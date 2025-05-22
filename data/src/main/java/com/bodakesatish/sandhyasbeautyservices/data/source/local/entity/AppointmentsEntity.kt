@@ -10,14 +10,16 @@ import java.util.Date
 enum class AppointmentDataStatus {
     PENDING,
     COMPLETED,
-    CANCELLED,
     UNKNOWN
 }
 enum class PaymentModeDataStatus {
-    ONLINE,
+    UPI,
     CASH,
-    PENDING,
-    UNKNOWN
+    //    CARD,
+//    UPI, // Unified Payments Interface - common in India
+//    NOT_APPLICABLE, // e.g., for free consultations
+    UNKNOWN,
+    PENDING
 }
 enum class PaymentDataStatus {
     PAID,
@@ -51,18 +53,18 @@ data class AppointmentsEntity(
     val totalBillAmount: Double,
     @ColumnInfo(Columns.TOTAL_DISCOUNT)
     val totalDiscount: Double,
-    @ColumnInfo(Columns.DISCOUNT_PERCENTAGE)
-    val totalDiscountPercentage: Double,
+    @ColumnInfo(Columns.NET_TOTAL)
+    val netTotal: Double,
     @ColumnInfo(Columns.PAYMENT_MODE)
     val paymentMode: PaymentModeDataStatus = PaymentModeDataStatus.PENDING,
-    @ColumnInfo(Columns.SERVICE_SUMMARY)
-    val servicesSummary: String = "",
+    @ColumnInfo(Columns.APPOINTMENT_NOTES)
+    val appointmentNotes: String = "",
     @ColumnInfo(Columns.APPOINTMENT_STATUS)
     val appointmentStatus: AppointmentDataStatus = AppointmentDataStatus.PENDING,
     @ColumnInfo(Columns.PAYMENT_STATUS)
     val paymentStatus: PaymentDataStatus = PaymentDataStatus.UNPAID,
-    @ColumnInfo(Columns.NOTES)
-    val serviceNotes: String = ""
+    @ColumnInfo(Columns.PAYMENT_NOTES)
+    val paymentNotes: String = ""
 ) {
 
     companion object {
@@ -76,12 +78,12 @@ data class AppointmentsEntity(
         internal const val APPOINTMENT_TIME = "appointment_time"
         internal const val TOTAL_BILL_AMOUNT = "total_bill_amount"
         internal const val TOTAL_DISCOUNT = "total_discount"
-        internal const val DISCOUNT_PERCENTAGE = "discount_percentage"
-        internal const val SERVICE_SUMMARY = "service_summary"
+        internal const val NET_TOTAL = "net_total"
+        internal const val APPOINTMENT_NOTES = "appointment_notes"
         internal const val APPOINTMENT_STATUS = "appointment_status"
         internal const val PAYMENT_MODE = "payment_mode"
         internal const val PAYMENT_STATUS = "payment_status"
-        internal const val NOTES = "notes"
+        internal const val PAYMENT_NOTES = "payment_notes"
     }
 
 }

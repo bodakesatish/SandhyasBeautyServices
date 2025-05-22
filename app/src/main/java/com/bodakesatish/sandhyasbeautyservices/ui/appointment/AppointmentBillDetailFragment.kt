@@ -13,15 +13,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentDetailsBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
-import com.bodakesatish.sandhyasbeautyservices.ui.appointment.dialog.ServiceSelectionDialogFragment
+import com.bodakesatish.sandhyasbeautyservices.ui.billing.BillServiceAdapter
+import com.bodakesatish.sandhyasbeautyservices.ui.billing.BillingServicesAdapter
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class AppointmentBillDetailFragment  : Fragment() {
@@ -35,6 +39,8 @@ class AppointmentBillDetailFragment  : Fragment() {
     val args: AppointmentBillDetailFragmentArgs by navArgs()
 
     val viewModel: AppointmentBillDetailViewModel by viewModels()
+
+    private lateinit var billServiceAdapter: BillServiceAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,6 +66,17 @@ class AppointmentBillDetailFragment  : Fragment() {
         setupListeners()
         setupObservers()
         setupFragmentResultListeners()
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        billServiceAdapter = BillServiceAdapter()
+        binding.rvServicesForBilling.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = billServiceAdapter
+            // Optional: Add ItemDecoration for dividers if not handled by item layout
+            // addItemDecoration(MaterialDividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        }
     }
 
     private fun setupListeners() {
@@ -87,10 +104,10 @@ class AppointmentBillDetailFragment  : Fragment() {
             // Navigate to Billing Screen for editing (passing appointmentId and perhaps billingId)
             // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_billingFragment, bundleOf("appointmentId" to appointmentId, "billingId" to billing?.id))
             // Handle item click
-//            val action = AppointmentBillDetailFragmentDirections.navToBilling(
-//                viewModel.appointmentIdFlow.value
-//            )
-//            findNavController().navigate(action)
+            val action = AppointmentBillDetailFragmentDirections.actionAppointmentBillDetailFragmentToBillingFragment(
+                viewModel.appointmentIdFlow.value
+            )
+            findNavController().navigate(action)
         }
 
         binding.btnViewInvoice.setOnClickListener {
@@ -100,6 +117,14 @@ class AppointmentBillDetailFragment  : Fragment() {
     }
 
     private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                viewModel.serviceDetailList.collect { list ->
+                    billServiceAdapter.submitList(list)
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -116,11 +141,19 @@ class AppointmentBillDetailFragment  : Fragment() {
 
                             var services = ""
                             detail.serviceDetailsWithServices.map {
-                               services = services.plus("• ${it.serviceName}  (₹${it.servicePrice.toInt()})\n")
+                               services = services.plus("• ${it.serviceName}  (₹${it.originalPrice.toInt()})\n")
                                 Log.i(tag, services)
                             }
                             Log.i(tag, services)
-                            binding.tvServiceWithPrice.text = services
+                            binding.tvServiceWithPrice.setText(services)
+
+                            // --- Billing Status ---
+                            binding.tvDetailBillingSubtotal.text = formatCurrency(detail.appointment.totalBillAmount)
+                            binding.tvDetailBillingTotalDiscount.text = "- ${viewModel.formatCurrency(detail.appointment.totalDiscount)}"
+                            binding.tvDetailBillingGrandTotal.text = viewModel.formatCurrency(detail.appointment.netTotal)
+
+                            binding.tvDetailNotesContent.setText(detail.appointment.appointmentNotes)
+                            binding.tvDetailNoNotes.setText(detail.appointment.paymentNotes)
 //                            binding.tvAppointmentTime.text = details.appointment.appointmentTime
 //                            // Update the customer field based on the loaded customer
 //                            details.customer?.let { customer ->
@@ -159,6 +192,10 @@ class AppointmentBillDetailFragment  : Fragment() {
                 }
             }
         }
+    }
+
+    private fun formatCurrency(amount: Double): String {
+        return NumberFormat.getCurrencyInstance(Locale("en", "IN")).format(amount) // For INR
     }
 
 

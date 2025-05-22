@@ -5,6 +5,7 @@ import com.bodakesatish.sandhyasbeautyservices.data.mapper.AppointmentMapper.map
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.CustomerMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailMapper.mapToDomainModel
+import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapFromDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.AppointmentsDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CustomerDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServiceDetailDao
@@ -93,6 +94,57 @@ class AppointmentRepositoryImpl @Inject constructor(
         return 1
     }
 
+    override suspend fun updateSelectedServices(
+        appointmentId: Int,
+        selectedServicesWithDetails: List<ServiceDetailWithService>
+    ): Long {
+        serviceDetailDao.deleteServicesByAppointment(appointmentId.toLong())
+
+        for (serviceDetail in selectedServicesWithDetails) {
+            val serviceDetailEntity = ServiceDetailEntity(
+                id = serviceDetail.id,
+                customerId = serviceDetail.customerId,
+                appointmentId = appointmentId.toInt(),
+                serviceId = serviceDetail.serviceId,
+                originalAmount = serviceDetail.originalPrice,
+                discount = serviceDetail.discountAmount,
+                discountPercentage = 0.0,
+                priceAfterDiscount = (serviceDetail.originalPrice - serviceDetail.discountAmount),
+                serviceSummary = ""
+            )
+            serviceDetailDao.insertOrUpdate(serviceDetailEntity)
+        }
+        return 0
+    }
+
+    override suspend fun saveSelectedServicesN(
+        appointmentId: Int,
+        selectedServicesWithDetails: List<Int>,
+        totalPrice: Double
+    ): Long {
+        val appointment = appointmentDao.getAppointmentById(appointmentId).firstOrNull()
+        serviceDetailDao.deleteServicesByAppointment(appointmentId.toLong())
+
+        val updateTotalPrice = appointmentDao.updateTotalPrice(appointmentId, totalPrice)
+
+        for (serviceId in selectedServicesWithDetails) {
+            val service = serviceDao.getServiceById(serviceId)
+            val serviceDetail = ServiceDetailEntity(
+                id = 0,
+                customerId = appointment!!.customerId,
+                appointmentId = appointmentId.toInt(),
+                serviceId = serviceId,
+                originalAmount = service?.servicePrice ?: 0.0,
+                discount = 0.0,
+                discountPercentage = 0.0,
+                priceAfterDiscount = service?.servicePrice ?: 0.0,
+                serviceSummary = ""
+            )
+            serviceDetailDao.insertOrUpdate(serviceDetail)
+        }
+        return 1
+    }
+
     override suspend fun getServiceDetailsForAppointment(appointmentId: Int): Flow<List<ServiceDetailWithService>> {
         return serviceDetailDao.getServiceDetailsWithServiceForAppointment(appointmentId).map {
             it.map { serviceDetailWithService ->
@@ -134,6 +186,16 @@ class AppointmentRepositoryImpl @Inject constructor(
             )
 
         }
+    }
+
+    override fun fetchAppointment(appointmentId: Int): Flow<Appointment> {
+        return appointmentDao.getAppointmentById(appointmentId).map { appointmentDetail ->
+            appointmentDetail.mapToDomainModel()
+        }
+    }
+
+    override suspend fun updateAppointment(appointment: Appointment): Int {
+        return appointmentDao.update(appointment.mapFromDomainModel())
     }
 
     override fun getAppointments(
@@ -197,7 +259,6 @@ class AppointmentRepositoryImpl @Inject constructor(
         return when (domainStatus) {
             AppointmentStatus.PENDING -> "PENDING"
             AppointmentStatus.COMPLETED -> "COMPLETED"
-            AppointmentStatus.CANCELLED -> "CANCELLED"
             AppointmentStatus.UNKNOWN -> "UNKNOWN"
         }
     }
@@ -258,7 +319,7 @@ class AppointmentRepositoryImpl @Inject constructor(
 
     override fun getAppointment(appointmentId: Int): Flow<Appointment> {
         return appointmentDao.getAppointmentById(appointmentId).map {
-            it!!.mapToDomainModel()
+            it.mapToDomainModel()
         }
     }
 

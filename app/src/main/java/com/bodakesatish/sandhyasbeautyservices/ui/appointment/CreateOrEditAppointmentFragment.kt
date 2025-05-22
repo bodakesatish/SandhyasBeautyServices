@@ -16,7 +16,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewbinding.ViewBinding
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentCreateOrEditAppointmentBinding
-import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentNewAppointmentBinding
 import com.bodakesatish.sandhyasbeautyservices.databinding.ItemLayoutBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.util.AppArrayAdapter
@@ -85,7 +84,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currentAppointment.collectLatest { appointment ->
-                    appointment?.let {
+                    appointment.let {
                         binding.evAppointmentDate.editText?.setText(
                             DateHelper.getFormattedDate(
                                 it.appointmentDate,
@@ -95,6 +94,7 @@ class CreateOrEditAppointmentFragment : Fragment() {
                         binding.evAppointmentTime.editText?.setText(
                             DateHelper.formatTime(it.appointmentTime)
                         )
+                        binding.tilNotes.editText?.setText(it.appointmentNotes)
                     }
                 }
             }
@@ -150,7 +150,8 @@ class CreateOrEditAppointmentFragment : Fragment() {
             requireActivity().onBackPressed()
         }
         binding.btnProceedToAddServices.setOnClickListener {
-            viewModel.saveAppointment()
+            val appointmentNotes = binding.etNotes.text.toString()
+            viewModel.saveAppointment(appointmentNotes)
         }
 
         binding.evAppointmentDate.editText?.setOnClickListener {
@@ -215,13 +216,6 @@ class CreateOrEditAppointmentFragment : Fragment() {
             viewModel.selectAppointmentTime(selectedTime.time)
             binding.evAppointmentTime.editText?.setText(formattedTime)
         }
-
-    }
-
-    private fun observeViewModel() {
-
-
-
 
     }
 

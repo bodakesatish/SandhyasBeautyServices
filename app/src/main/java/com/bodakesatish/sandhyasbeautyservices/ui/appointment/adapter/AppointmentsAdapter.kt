@@ -67,8 +67,8 @@ class AppointmentsAdapter(
             binding.ivDatetimeIcon.setImageResource(R.drawable.ic_calendar_month) // Ensure you have this drawable
 
             // --- Services Summary ---
-            if (!data.appointment.servicesSummary.isNullOrBlank()) {
-                binding.tvAppointmentServicesSummary.text = data.appointment.servicesSummary
+            if (!data.appointment.appointmentNotes.isNullOrBlank()) {
+                binding.tvAppointmentServicesSummary.text = data.appointment.appointmentNotes
                 binding.tvAppointmentServicesSummary.visibility = View.VISIBLE
             } else {
                 binding.tvAppointmentServicesSummary.visibility = View.GONE
@@ -93,11 +93,11 @@ class AppointmentsAdapter(
                         statusIndicatorColorRes = R.color.colorCompleted
                         statusCardStrokeColorRes = R.color.colorCompleted
                     }
-                    AppointmentStatus.CANCELLED -> {
-                        statusTextColorRes = R.color.colorCancelledText
-                        statusIndicatorColorRes = R.color.colorCancelled
-                        statusCardStrokeColorRes = R.color.colorCancelled
-                    }
+//                    AppointmentStatus.CANCELLED -> {
+//                        statusTextColorRes = R.color.colorCancelledText
+//                        statusIndicatorColorRes = R.color.colorCancelled
+//                        statusCardStrokeColorRes = R.color.colorCancelled
+//                    }
                     // Add other AppointmentStatus cases if any (e.g., IN_PROGRESS, NO_SHOW)
                     else -> { // Default for any unknown or new status
                         statusTextColorRes = R.color.textColorSecondary // A neutral default
@@ -129,40 +129,40 @@ class AppointmentsAdapter(
             }
 
             // --- Payment Status Icon ---
-            data.appointment.paymentStatus?.let { paymentStatus ->
-                val paymentIconRes: Int?
-                val paymentIconTintRes: Int?
-
-                when (paymentStatus) {
-                    PaymentStatus.PAID -> {
-                        paymentIconRes = R.drawable.ic_payment_paid // e.g., a checkmark icon
-                        paymentIconTintRes = R.color.colorPaid
-                    }
-                    PaymentStatus.UNPAID -> {
-                        paymentIconRes = R.drawable.ic_payment_unpaid // e.g., an hourglass or exclamation icon
-                        paymentIconTintRes = R.color.colorUnpaid
-                    }
-                    PaymentStatus.PARTIALLY_PAID -> {
-                        paymentIconRes = R.drawable.ic_payment_unpaid // e.g., a refresh or back arrow icon
-                        paymentIconTintRes = R.color.colorRefunded
-                    }
-                    // Add other PaymentStatus cases if any
-                    else -> {
-                        paymentIconRes = null
-                        paymentIconTintRes = null
-                    }
-                }
-
-                if (paymentIconRes != null && paymentIconTintRes != null) {
-                    binding.ivPaymentStatusIcon.setImageResource(paymentIconRes)
-                    binding.ivPaymentStatusIcon.setColorFilter(ContextCompat.getColor(context, paymentIconTintRes))
-                    binding.ivPaymentStatusIcon.visibility = View.VISIBLE
-                } else {
-                    binding.ivPaymentStatusIcon.visibility = View.GONE
-                }
-            } ?: run {
-                binding.ivPaymentStatusIcon.visibility = View.GONE
-            }
+//            data.appointment.paymentStatus?.let { paymentStatus ->
+//                val paymentIconRes: Int?
+//                val paymentIconTintRes: Int?
+//
+//                when (paymentStatus) {
+//                    PaymentStatus.PAID -> {
+//                        paymentIconRes = R.drawable.ic_payment_paid // e.g., a checkmark icon
+//                        paymentIconTintRes = R.color.colorPaid
+//                    }
+//                    PaymentStatus.UNPAID -> {
+//                        paymentIconRes = R.drawable.ic_payment_unpaid // e.g., an hourglass or exclamation icon
+//                        paymentIconTintRes = R.color.colorUnpaid
+//                    }
+//                    PaymentStatus.PARTIALLY_PAID -> {
+//                        paymentIconRes = R.drawable.ic_payment_unpaid // e.g., a refresh or back arrow icon
+//                        paymentIconTintRes = R.color.colorRefunded
+//                    }
+//                    // Add other PaymentStatus cases if any
+//                    else -> {
+//                        paymentIconRes = null
+//                        paymentIconTintRes = null
+//                    }
+//                }
+//
+//                if (paymentIconRes != null && paymentIconTintRes != null) {
+//                    binding.ivPaymentStatusIcon.setImageResource(paymentIconRes)
+//                    binding.ivPaymentStatusIcon.setColorFilter(ContextCompat.getColor(context, paymentIconTintRes))
+//                    binding.ivPaymentStatusIcon.visibility = View.VISIBLE
+//                } else {
+//                    binding.ivPaymentStatusIcon.visibility = View.GONE
+//                }
+//            } ?: run {
+//                binding.ivPaymentStatusIcon.visibility = View.GONE
+//            }
 
             // --- Click Listener ---
             binding.root.setOnClickListener {

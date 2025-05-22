@@ -4,7 +4,6 @@ import com.bodakesatish.sandhyasbeautyservices.domain.model.Appointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentServices
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetail
 import com.bodakesatish.sandhyasbeautyservices.domain.model.ServiceDetailWithService
@@ -48,6 +47,17 @@ interface AppointmentRepository {
         totalPrice: Double
     ) : Long //: Result<Long> // Returns the ID of the new appointment or an error
 
+    suspend fun updateSelectedServices(
+        appointmentId: Int,
+        selectedServicesWithDetails: List<ServiceDetailWithService>, // Service, Amount, Discount
+    ) : Long //: Result<Long> // Returns the ID of the new appointment or an error
+
+    suspend fun saveSelectedServicesN(
+        appointmentId: Int,
+        selectedServicesWithDetails: List<Int>, // Service, Amount, Discount
+        totalPrice: Double
+    ) : Long //: Result<Long> // Returns the ID of the new appointment or an error
+
     suspend fun getServiceDetailsForAppointment(appointmentId: Int): Flow<List<ServiceDetailWithService>>
 
     suspend fun getSelectedServices(appointmentId: Int): Flow<List<ServiceDetail>>
@@ -61,6 +71,10 @@ interface AppointmentRepository {
     fun getAppointment(appointmentId: Int): Flow<Appointment>
 
     fun getCustomerAppointment(appointmentId: Int): Flow<CustomerAppointment>
+
+    fun fetchAppointment(appointmentId: Int): Flow<Appointment>
+
+    suspend fun updateAppointment(appointment: Appointment): Int
 
     fun getAppointments(
         startDate: Long,

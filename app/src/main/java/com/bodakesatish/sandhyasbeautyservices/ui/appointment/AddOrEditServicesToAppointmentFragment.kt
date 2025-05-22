@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAddOrEditServicesToAppointmentBinding
 import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDialogAdapter
 import com.google.android.material.snackbar.Snackbar
@@ -31,7 +32,6 @@ class AddOrEditServicesToAppointmentFragment : Fragment() {
     private lateinit var servicesAdapter: ServiceDialogAdapter
 
     val args: AddOrEditServicesToAppointmentFragmentArgs by navArgs()
-
 
     // Define keys for FragmentResultListener
     companion object {
@@ -66,6 +66,15 @@ class AddOrEditServicesToAppointmentFragment : Fragment() {
         binding?.rvServicesList?.adapter = servicesAdapter
         initObservers()
         initListeners()
+        initHeader()
+    }
+
+    private fun initHeader() {
+        binding?.headerGeneric?.tvHeader?.setText("Select Services")
+        binding?.headerGeneric?.btnBack?.setImageResource(R.drawable.ic_back_24)
+        binding?.headerGeneric?.btnBack?.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun initListeners() {

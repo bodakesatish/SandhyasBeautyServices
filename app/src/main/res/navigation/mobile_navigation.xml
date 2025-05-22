@@ -139,6 +139,10 @@
             android:id="@+id/action_appointmentBillDetailFragment_to_addServicesToAppointmentFragment"
             app:destination="@+id/navigation_add_services_to_appointment"/>
 
+        <action
+            android:id="@+id/action_appointmentBillDetailFragment_to_BillingFragment"
+            app:destination="@+id/navigation_billing"/>
+
         <argument
             android:name="appointmentId"
             app:argType="integer"

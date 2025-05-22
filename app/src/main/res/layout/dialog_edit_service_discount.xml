@@ -23,38 +23,6 @@
         android:textAppearance="?attr/textAppearanceSubtitle1"
         tools:text="Original Price: ₹500.00" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Select Discount Type:"
-        android:textAppearance="?attr/textAppearanceLabelLarge"
-        android:textSize="12sp" />
-
-    <RadioGroup
-        android:id="@+id/rg_discount_type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rb_percentage_discount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Percentage" />
-        <!--            android:textAppearance="?attr/textAppearanceBodyMedium"/>-->
-
-        <RadioButton
-            android:id="@+id/rb_fixed_amount_discount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Fixed Amount" />
-        <!--            android:textAppearance="?attr/textAppearanceBodyMedium"/>-->
-    </RadioGroup>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_discount_value"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
