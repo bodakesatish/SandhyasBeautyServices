@@ -26,7 +26,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class BillingViewModel @Inject constructor(
+class BillEditorViewModel @Inject constructor(
     private val getServiceDetailUseCase: GetServiceDetailWithServiceByAppointmentIdUseCase,
     private val fetchAppointmentDetailUseCase: FetchAppointmentDetailUseCase,
     private val updateAppointmentDetailUseCase: UpdateAppointmentDetailUseCase,

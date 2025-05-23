@@ -38,7 +38,7 @@
 
     <fragment
         android:id="@+id/navigation_add_customer"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.customer.FragmentAddOrUpdateCustomer"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.customer.EditCustomerFragment"
         android:label="@string/title_add_customer"
         tools:layout="@layout/fragment_customer_add" >
         <argument
@@ -66,7 +66,7 @@
 
     <fragment
         android:id="@+id/navigation_add_category"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.category.FragmentAddOrUpdateCategory"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.category.EditCategoryFragment"
         android:label="@string/title_add_customer"
         tools:layout="@layout/fragment_customer_add">
 
@@ -94,7 +94,7 @@
 
     <fragment
         android:id="@+id/navigation_add_service"
-        android:name="com.bodakesatish.sandhyasbeautyservices.ui.services.FragmentAddOrUpdateService"
+        android:name="com.bodakesatish.sandhyasbeautyservices.ui.services.EditServiceFragment"
         android:label="@string/title_add_service"
         tools:layout="@layout/fragment_add_edit_service" >
         <argument

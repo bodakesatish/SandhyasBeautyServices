@@ -95,25 +95,9 @@ class AppointmentBillDetailViewModel @Inject constructor(
                 initialValue = null
             )
 
-
-    init {
-       // loadAppointmentDetails()
-    }
-
     // Function to set the appointment ID (called from Fragment's onViewCreated)
     fun setAppointmentId(id: Int) {
         _appointmentId.value = id
-    }
-
-    fun getAppointmentList() {
-        Log.d(tag, "$tag->getCategoryList")
-        viewModelScope.launch(Dispatchers.IO) {
-
-            getAppointmentDetailUseCase.invoke(_appointmentId.value).collect {
-             //   _appointmentDetail.value = it
-                Log.d(tag, "In $tag $it")
-            }
-        }
     }
 
     fun getServiceDetail() {
@@ -124,44 +108,6 @@ class AppointmentBillDetailViewModel @Inject constructor(
                 _serviceDetailList.value = list
                 //  _serviceItems.value = list
                 Log.d(tag, "In $tag $list")
-            }
-        }
-    }
-
-
-    fun loadAppointmentDetails() {
-        viewModelScope.launch {
-            _uiState.value = AppointmentDetailsUiState(isLoading = true) // Start loading
-            try {
-                val appointment = appointmentRepository.getAppointment(appointmentId)
-                if (appointment == null) {
-                    _uiState.value = AppointmentDetailsUiState(isLoading = false, error = "Appointment not found.")
-                    return@launch
-                }
-
-//                var billing: Billing? = null
-//                if (appointment.billingId != null) {
-//                    billing = billingRepository.getBillingById(appointment.billingId!!)
-//                }
-
-//                val services = serviceRepository.getServicesByIds(appointment.serviceIds)
-
-                // Example of pre-formatting dates (implement DateHelper.formatTimestampToDateTime etc.)
-                // val formattedAppointmentDate = DateHelper.formatTimestampToDateTime(appointment.dateTime)
-                // val formattedPaymentDt = billing?.paymentDate?.let { DateHelper.formatTimestampToDateTime(it) }
-
-
-//                _uiState.value = AppointmentDetailsUiState(
-//                    isLoading = false,
-//                    appointment = appointment,
-//                    billing = billing,
-//                    services = services,
-//                    // formattedAppointmentDateTime = formattedAppointmentDate,
-//                    // formattedPaymentDate = formattedPaymentDt
-//                )
-
-            } catch (e: Exception) {
-                _uiState.value = AppointmentDetailsUiState(isLoading = false, error = "Error loading details: ${e.message}")
             }
         }
     }

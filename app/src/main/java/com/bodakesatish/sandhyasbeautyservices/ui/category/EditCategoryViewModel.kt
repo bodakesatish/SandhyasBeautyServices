@@ -1,24 +1,24 @@
-package com.bodakesatish.sandhyasbeautyservices.ui.customer
+package com.bodakesatish.sandhyasbeautyservices.ui.category
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bodakesatish.sandhyasbeautyservices.domain.model.Customer
-import com.bodakesatish.sandhyasbeautyservices.domain.usecases.AddOrUpdateCustomerUseCase
+import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
+import com.bodakesatish.sandhyasbeautyservices.domain.usecases.AddOrUpdateCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddOrUpdateCustomerViewModel @Inject constructor(
-    private val addOrUpdateCustomerUseCase: AddOrUpdateCustomerUseCase
+class EditCategoryViewModel @Inject constructor(
+    private val addOrUpdateCategoryUseCase: AddOrUpdateCategoryUseCase
 ) : ViewModel() {
 
     private val tag = this.javaClass.simpleName
 
-    var customer = Customer()
+    var category = Category()
 
     val customerResponse = MutableLiveData<Boolean>()
 
@@ -26,10 +26,10 @@ class AddOrUpdateCustomerViewModel @Inject constructor(
         Log.d(tag, "$tag->init")
     }
 
-    fun addOrUpdateCustomer() {
-        Log.d(tag, "In $tag addOrUpdatePatient")
+    fun addOrUpdateCategory() {
+        Log.d(tag, "In $tag addOrUpdateCategory")
         viewModelScope.launch(Dispatchers.IO) {
-            val id = addOrUpdateCustomerUseCase.invoke(customer)
+            val id = addOrUpdateCategoryUseCase.invoke(category)
             Log.d(tag, "In $tag $id")
             viewModelScope.launch(Dispatchers.Main) {
                 customerResponse.value = true

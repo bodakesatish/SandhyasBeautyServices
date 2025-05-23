@@ -18,10 +18,9 @@ import com.bodakesatish.sandhyasbeautyservices.util.AppDatePicker
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Date
 
 @AndroidEntryPoint
-class FragmentAddOrUpdateCustomer : Fragment() {
+class EditCustomerFragment : Fragment() {
 
     private var _binding: FragmentCustomerAddBinding? = null
 
@@ -29,12 +28,12 @@ class FragmentAddOrUpdateCustomer : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: AddOrUpdateCustomerViewModel by viewModels()
+    private val viewModel: EditCustomerViewModel by viewModels()
 
     private val tag = this.javaClass.simpleName
 
 
-    val args : FragmentAddOrUpdateCustomerArgs by navArgs()
+    val args : EditCustomerFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,

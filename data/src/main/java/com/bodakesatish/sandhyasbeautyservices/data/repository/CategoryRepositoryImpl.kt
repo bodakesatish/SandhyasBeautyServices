@@ -40,7 +40,8 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insertOrUpdateService(service: Service): Long {
-        return serviceDao.insertOrUpdateService(service.mapFromDomainModel())
+        val result = serviceDao.insertOrUpdateService(service.mapFromDomainModel())
+        return 1
     }
 
     override suspend fun deleteService(serviceId: Int) {

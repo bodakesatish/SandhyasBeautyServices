@@ -12,31 +12,31 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bodakesatish.sandhyasbeautyservices.R
-import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAddEditCategoryBinding
+import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentEditCategoryBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FragmentAddOrUpdateCategory : Fragment() {
+class EditCategoryFragment : Fragment() {
 
-    private var _binding: FragmentAddEditCategoryBinding? = null
+    private var _binding: FragmentEditCategoryBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: AddOrUpdateCategoryViewModel by viewModels()
+    private val viewModel: EditCategoryViewModel by viewModels()
 
     private val tag = this.javaClass.simpleName
 
-    val args : FragmentAddOrUpdateCategoryArgs by navArgs()
+    val args : EditCategoryFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAddEditCategoryBinding.inflate(inflater, container, false)
+        _binding = FragmentEditCategoryBinding.inflate(inflater, container, false)
         val root: View = binding.root
         args.category?.let {
             viewModel.category = it

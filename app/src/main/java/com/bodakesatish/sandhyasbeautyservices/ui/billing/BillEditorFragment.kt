@@ -32,7 +32,7 @@ class BillEditorFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: BillingViewModel by viewModels()
+    private val viewModel: BillEditorViewModel by viewModels()
     private lateinit var billingServicesAdapter: BillServiceListAdapter
     val args: BillEditorFragmentArgs by navArgs()
 

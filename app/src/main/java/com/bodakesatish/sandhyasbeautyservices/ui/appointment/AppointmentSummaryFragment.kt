@@ -27,7 +27,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @AndroidEntryPoint
-class AppointmentSummaryFragment  : Fragment() {
+class AppointmentSummaryFragment : Fragment() {
 
     private var _binding: FragmentAppointmentDetailsBinding? = null
 
@@ -81,16 +81,18 @@ class AppointmentSummaryFragment  : Fragment() {
     private fun setupListeners() {
         binding.btnEditAppointment.setOnClickListener {
             // Handle item click
-            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToNavigationCreateAppointment(
-                viewModel.appointmentIdFlow.value
-            )
+            val action =
+                AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToNavigationCreateAppointment(
+                    viewModel.appointmentIdFlow.value
+                )
             findNavController().navigate(action)
         }
         binding.btnEditServices.setOnClickListener {
             // Handle item click
-            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToAddServicesToAppointmentFragment(
-                viewModel.appointmentIdFlow.value
-            )
+            val action =
+                AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToAddServicesToAppointmentFragment(
+                    viewModel.appointmentIdFlow.value
+                )
             findNavController().navigate(action)
 //            findNavController().navigate(R.id.navigation_add_services_to_appointment)
         }
@@ -103,9 +105,10 @@ class AppointmentSummaryFragment  : Fragment() {
             // Navigate to Billing Screen for editing (passing appointmentId and perhaps billingId)
             // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_billingFragment, bundleOf("appointmentId" to appointmentId, "billingId" to billing?.id))
             // Handle item click
-            val action = AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToBillingFragment(
-                viewModel.appointmentIdFlow.value
-            )
+            val action =
+                AppointmentSummaryFragmentDirections.actionAppointmentBillDetailFragmentToBillingFragment(
+                    viewModel.appointmentIdFlow.value
+                )
             findNavController().navigate(action)
         }
 
@@ -131,36 +134,36 @@ class AppointmentSummaryFragment  : Fragment() {
                         .filterNotNull() // Ensure we only process non-null details
                         .collectLatest { detail ->
                             // Update UI fields with initial appointment details
-                            binding.tvDetailCustomerName.text = detail.customer?.firstName + " " + detail.customer?.lastName
-                            binding.tvDetailAppointmentDatetime.text = DateHelper.getFormattedDate(detail.appointment.appointmentDate,
-                                "dd MMM yyyy") +", "+ DateHelper.formatTime(detail.appointment.appointmentTime)
+                            binding.tvDetailCustomerName.text =
+                                detail.customer?.firstName + " " + detail.customer?.lastName
+                            binding.tvDetailAppointmentDatetime.text = DateHelper.getFormattedDate(
+                                detail.appointment.appointmentDate,
+                                "dd MMM yyyy"
+                            ) + ", " + DateHelper.formatTime(detail.appointment.appointmentTime)
 
                             // --- Appointment Status ---
-                                binding.tvDetailAppointmentStatus.text = detail.appointment.appointmentStatus.name // Or a more user-friendly string from string resources
+                            binding.tvDetailAppointmentStatus.text =
+                                detail.appointment.appointmentStatus.name // Or a more user-friendly string from string resources
 
                             var services = ""
                             detail.serviceDetailsWithServices.map {
-                               services = services.plus("• ${it.serviceName}  (₹${it.originalPrice.toInt()})\n")
+                                services =
+                                    services.plus("• ${it.serviceName}  (₹${it.originalPrice.toInt()})\n")
                                 Log.i(tag, services)
                             }
                             Log.i(tag, services)
                             binding.tvServiceWithPrice.text = services
 
                             // --- Billing Status ---
-                            binding.tvDetailBillingSubtotal.text = formatCurrency(detail.appointment.totalBillAmount)
-                            binding.tvDetailBillingTotalDiscount.text = "- ${viewModel.formatCurrency(detail.appointment.totalDiscount)}"
-                            binding.tvDetailBillingGrandTotal.text = viewModel.formatCurrency(detail.appointment.netTotal)
+                            binding.tvDetailBillingSubtotal.text =
+                                formatCurrency(detail.appointment.totalBillAmount)
+                            binding.tvDetailBillingTotalDiscount.text =
+                                "- ${viewModel.formatCurrency(detail.appointment.totalDiscount)}"
+                            binding.tvDetailBillingGrandTotal.text =
+                                viewModel.formatCurrency(detail.appointment.netTotal)
 
                             binding.tvDetailNotesContent.text = detail.appointment.appointmentNotes
                             binding.tvDetailNoNotes.text = detail.appointment.paymentNotes
-//                            binding.tvAppointmentTime.text = details.appointment.appointmentTime
-//                            // Update the customer field based on the loaded customer
-//                            details.customer?.let { customer ->
-//                                binding.tvCustomerName.text =
-//                                    "${customer.firstName} ${customer.lastName}"
-//                            }
-                            // The selected services for the RecyclerView are handled by the categoryWithServiceListFlow observer
-                            // because the viewModel.updateSelectedServicesFromDialog() is called from the dialog result.
                         }
                 }
             }
@@ -187,7 +190,7 @@ class AppointmentSummaryFragment  : Fragment() {
                     // Update the ViewModel with the new list of selected services
                     // This assumes you have a function in your ViewModel to handle this update
                     it.map { service -> service.id }.toSet()
-                  //  viewModel.updateCategoryServiceSelection(selectedServicesIds)
+                    //  viewModel.updateCategoryServiceSelection(selectedServicesIds)
                 }
             }
         }
