@@ -46,7 +46,6 @@ data class EditServiceUiState(
     val saveResult: SaveResult = SaveResult.Idle
 )
 
-@HiltViewModel
 class EditServiceViewModel @Inject constructor(
     private val addOrUpdateServiceUseCase: AddOrUpdateServiceUseCase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO // Provide default
@@ -64,15 +63,19 @@ class EditServiceViewModel @Inject constructor(
     val navigationCommands = _navigationCommands.receiveAsFlow() // Expose as Flow
 
     init {
-        Log.d(tag, "$tag->init")
+        // Log.d(tag, "$tag->init")
     }
 
     fun setCategory(category: Category) {
         _uiState.update { currentState ->
+            val header = if (currentState.isEditMode) {
+                "Update service in ${category.categoryName}"
+            } else {
+                "Add your service to ${category.categoryName}"
+            }
             currentState.copy(
                 currentCategory = category,
-                headerText = if (currentState.isEditMode) "Update service in ${category.categoryName}"
-                else "Add your service to ${category.categoryName}"
+                headerText = header
             )
         }
     }
@@ -80,13 +83,19 @@ class EditServiceViewModel @Inject constructor(
     fun setService(service: Service) {
         // This is called when editing an existing service
         _uiState.update { currentState ->
-            val categoryName = currentState.currentCategory?.categoryName  ?: "" // Fallback category name if needed
+            // Logic to determine header text based on existing category and new service
+            val header = if (currentState.currentCategory != null) {
+                "Update service in ${currentState.currentCategory.categoryName}"
+            } else {
+                "Update service" // Fallback, though category should ideally be set first or with service
+            }
             currentState.copy(
                 initialServiceId = service.id,
                 serviceName = service.serviceName,
                 servicePrice = service.servicePrice.toString(),
                 isEditMode = true,
-                headerText = "Update service in $categoryName"
+                // currentCategory = service.category, // If service has category info
+                headerText = header // Ensure this is updated
             )
         }
     }
@@ -111,7 +120,46 @@ class EditServiceViewModel @Inject constructor(
 
 
     fun addOrUpdateService() {
-        Log.d(tag, "In $tag addOrUpdateService")
+//        Log.d(tag, "In $tag addOrUpdateService")
+        val currentServiceName = _uiState.value.serviceName
+        val currentServicePrice = _uiState.value.servicePrice
+        val currentCategory = _uiState.value.currentCategory
+
+        if (currentCategory == null) {
+            // Consider setting an error or logging
+            _uiState.update {
+                it.copy(
+                    saveResult = SaveResult.Error("Category not selected.")
+                )
+            }
+            return
+        }
+        // Initialize nameError by calling the validation function
+        val nameError = validateServiceName(currentServiceName)
+        val priceError =
+            validateServicePrice(currentServicePrice) // Assuming you've implemented validateServicePrice
+
+        // --- CRITICAL STATE UPDATE FOR VALIDATION ERRORS ---
+        // This update MUST happen if there's any validation error.
+        if (nameError != null || priceError != null) {
+            _uiState.update {
+                it.copy(
+                    serviceNameError = nameError,
+                    servicePriceError = priceError,
+                    saveResult = SaveResult.Idle // Or Error, ensure it's not Success/Loading
+                )
+            }
+            return // Stop further processing if validation fails
+        }
+
+
+        if (nameError != null || priceError != null) {
+            _uiState.update { it.copy(saveResult = SaveResult.Idle) }
+            // No need to update saveResult again if done above, but ensure it's Idle.
+            // _uiState.update { it.copy(saveResult = SaveResult.Idle) } // Can be removed if handled in the previous update
+            return // Validation failed
+        }
+
         val currentState = _uiState.value
         var hasError = false
 
@@ -145,8 +193,14 @@ class EditServiceViewModel @Inject constructor(
             return
         }
 
-        _uiState.update { it.copy(saveResult = SaveResult.Loading) }
-
+        // If validation passes, proceed to save
+        _uiState.update {
+            it.copy(
+                serviceNameError = null, // Clear previous errors
+                servicePriceError = null, // Clear previous errors
+                saveResult = SaveResult.Loading
+            )
+        }
         viewModelScope.launch(ioDispatcher) { // Use IO dispatcher for network/DB
             try {
                 val serviceToSave = Service(
@@ -157,7 +211,8 @@ class EditServiceViewModel @Inject constructor(
                     // categoryNameFromArgs can be removed if category object is always present
                 )
 
-                val resultCount = addOrUpdateServiceUseCase.invoke(serviceToSave) // Assuming use case returns count or ID
+                val resultCount =
+                    addOrUpdateServiceUseCase.invoke(serviceToSave) // Assuming use case returns count or ID
 
                 if (resultCount > 0) { // Or check for specific success condition from use case
                     _uiState.update { it.copy(saveResult = SaveResult.Success) }
@@ -166,10 +221,34 @@ class EditServiceViewModel @Inject constructor(
                     _uiState.update { it.copy(saveResult = SaveResult.Error("Failed to save service. Please try again.")) }
                 }
             } catch (e: Exception) {
-                Log.e(tag, "Error saving service: ${e.message}", e)
-                _uiState.update { it.copy(saveResult = SaveResult.Error(e.message ?: "An unexpected error occurred.")) }
+                // Log.e(tag, "Error saving service: ${e.message}", e)
+                _uiState.update {
+                    it.copy(
+                        saveResult = SaveResult.Error(
+                            e.message ?: "An unexpected error occurred."
+                        )
+                    )
+                }
             }
         }
+    }
+
+    private fun validateServiceName(name: String): String? {
+        return if (name.isBlank()) "Service name cannot be empty" else null // This should be triggered
+    }
+
+    private fun validateServicePrice(price: String): String? {
+        if (price.isBlank()) {
+            return "Service price cannot be empty"
+        }
+        val priceDouble = price.toDoubleOrNull()
+        if (priceDouble == null) {
+            return "Please enter a valid numeric price"
+        }
+        if (priceDouble <= 0) {
+            return "Please enter a positive price"
+        }
+        return null // Price is valid
     }
 
     /**
@@ -184,6 +263,12 @@ class EditServiceViewModel @Inject constructor(
         super.onCleared()
         _navigationCommands.close() // Close the channel when ViewModel is cleared
         Log.i(tag, "$tag->onCleared")
+    }
+
+    fun onSaveComplete() {
+        _uiState.update { currentState ->
+            currentState.copy(saveResult = SaveResult.Idle)
+        }
     }
 
 }

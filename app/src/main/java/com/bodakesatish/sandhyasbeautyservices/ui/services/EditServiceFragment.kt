@@ -134,6 +134,7 @@ class EditServiceFragment : Fragment() {
                             // Navigation is handled by observeNavigationCommands
                             // Snackbar    message can be shown here or after navigation
                              showSnackBar("Service saved successfully!")
+                            viewModel.onSaveComplete()
                             observeNavigationCommands()
                             // ViewModel should reset saveResult to Idle after success or error is handled
                         }
