@@ -77,7 +77,7 @@ class AppointmentDashboardViewModel @Inject constructor(
     internal var currentStartDate: Long = getStartOfDayMillis(Date()) // Default: Today
     internal var currentEndDate: Long = getEndOfDayMillis()     // Default: Today
     private var currentSortBy: AppointmentSortBy = AppointmentSortBy.DATE // Default sort
-    private var currentSortOrder: SortOrder = SortOrder.ASCENDING      // Default sort order
+    private var currentSortOrder: SortOrder = SortOrder.DESCENDING      // Default sort order
 
     private var fetchJob: Job? = null
 
