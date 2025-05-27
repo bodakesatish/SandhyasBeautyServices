@@ -19,6 +19,7 @@ import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentDe
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDiscountAdapter
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
@@ -26,6 +27,23 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
+/**
+ * A [Fragment] that displays a summary of an appointment, including customer details,
+ * appointment date/time, status, services, billing information, and notes.
+ *
+ * This fragment receives an `appointmentId` through navigation arguments and uses it
+ * to fetch and display the relevant appointment details via the [AppointmentBillDetailViewModel].
+ *
+ * It allows users to:
+ * - View appointment and billing details.
+ * - Navigate to edit the appointment.
+ * - Navigate to edit the services for the appointment.
+ * - Navigate to the billing screen (either to proceed with billing or edit an existing bill).
+ * - Navigate to view an invoice (if applicable).
+ *
+ * The fragment uses Hilt for dependency injection and Jetpack Navigation for screen transitions.
+ * It observes LiveData/Flow from the ViewModel to update the UI dynamically.
+ */
 @AndroidEntryPoint
 class AppointmentSummaryFragment : Fragment() {
 
@@ -112,13 +130,45 @@ class AppointmentSummaryFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        binding.btnViewInvoice.setOnClickListener {
-            // Navigate to Invoice Screen or trigger invoice generation
-            // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_invoiceFragment, bundleOf("billingId" to billing?.id))
+        binding.btnDeleteAppointment.setOnClickListener {
+            showDeleteConfirmationDialog()
         }
     }
+    private fun showDeleteConfirmationDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.confirm_delete_title)) // Add to strings.xml: "Confirm Deletion"
+            .setMessage(getString(R.string.confirm_delete_appointment_message)) // Add to strings.xml: "Are you sure you want to delete this appointment? This action cannot be undone."
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> // Add to strings.xml: "Cancel"
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ -> // Add to strings.xml: "Delete"
+                viewModel.deleteCurrentAppointment()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
 
     private fun setupObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.appointmentDeletionStatus.collectLatest { success ->
+                    if (success) {
+                        Log.d(tag, "Appointment deleted successfully, navigating back.")
+                        // Show a Toast or Snackbar for feedback (optional)
+                        // Toast.makeText(context, "Appointment deleted", Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack() // Or navigate to a specific destination
+                    } else {
+                        // Deletion failed, show an error message (e.g., Snackbar)
+                        // This might also be triggered if you emit false for "no valid ID" in ViewModel
+                        Log.e(tag, "Failed to delete appointment.")
+                        // Toast.makeText(context, "Failed to delete appointment", Toast.LENGTH_LONG).show()
+                        // Or show a Snackbar:
+                        // Snackbar.make(binding.root, "Error deleting appointment.", Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
@@ -157,6 +207,8 @@ class AppointmentSummaryFragment : Fragment() {
                             // --- Billing Status ---
                             binding.tvDetailBillingSubtotal.text =
                                 formatCurrency(detail.appointment.totalBillAmount)
+                            binding.tvDetailBillingOtherDiscount.text =
+                                "- ${viewModel.formatCurrency(detail.appointment.otherDiscount)}"
                             binding.tvDetailBillingTotalDiscount.text =
                                 "- ${viewModel.formatCurrency(detail.appointment.totalDiscount)}"
                             binding.tvDetailBillingGrandTotal.text =

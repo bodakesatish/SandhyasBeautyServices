@@ -41,10 +41,10 @@ sealed class AppointmentUiState {
 
 // Define an enum or sealed class for your QuickDateRange options
 enum class QuickDateRange(val displayName: String) {
+    ALL_TIME("All Time"),
     TODAY("Today"),
     TOMORROW("Tomorrow"),
     THIS_WEEK("This Week"),
-    ALL_TIME("All Time"),
     CUSTOM("Custom") // For when user picks dates from dialog
 }
 
@@ -84,7 +84,7 @@ class AppointmentDashboardViewModel @Inject constructor(
     init {
         Log.d(tag, "$tag->init")
         // Initial fetch will use the default "Today"
-        setQuickDateRange(QuickDateRange.TODAY) // This will also call fetchAppointments and updateActiveFilterChips
+        setQuickDateRange(QuickDateRange.ALL_TIME) // This will also call fetchAppointments and updateActiveFilterChips
     }
 
     fun setQuickDateRange(quickDateRange: QuickDateRange) {

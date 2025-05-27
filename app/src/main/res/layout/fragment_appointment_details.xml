@@ -299,6 +299,21 @@
                                     android:text="₹1200.00" />
 
                                 <TextView
+                                    style="@style/TextAppearance.Material3.LabelMedium"
+                                    android:layout_gravity="start|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Other Discount:"
+                                    android:textColor="?attr/colorError" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_billing_other_discount"
+                                    style="@style/TextAppearance.Material3.BodyMedium"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginTop="4dp"
+                                    android:text="- ₹50.00"
+                                    android:textColor="?attr/colorError" />
+
+                                <TextView
                                     style="@style/TextAppearance.Material3.LabelLarge"
                                     android:layout_gravity="start|center_vertical"
                                     android:layout_marginTop="4dp"
@@ -420,6 +435,25 @@
                                 tools:visibility="visible" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
+
+                    <!-- ... other elements in your ConstraintLayout or other root layout ... -->
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_delete_appointment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Delete Appointment"
+                        android:textColor="@color/design_default_color_error"
+                        app:icon="@drawable/ic_delete_24"
+                        style="?attr/materialButtonOutlinedStyle"
+                        app:iconTint="@color/design_default_color_error"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/card_notes_summary" />
+                    <!-- Adjust layout_constraintTop_toBottomOf to position it correctly relative to other buttons -->
+
+                    <!-- ... other elements ... -->
 
                     <!-- ACTION BUTTONS -->
                     <com.google.android.material.button.MaterialButton

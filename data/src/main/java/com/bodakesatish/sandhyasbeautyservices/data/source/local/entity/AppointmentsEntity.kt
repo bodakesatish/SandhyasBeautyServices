@@ -51,6 +51,10 @@ data class AppointmentsEntity(
     val appointmentTime: Date,
     @ColumnInfo(Columns.TOTAL_BILL_AMOUNT)
     val totalBillAmount: Double,
+    @ColumnInfo(Columns.SERVICES_DISCOUNT)
+    val servicesDiscount: Double,
+    @ColumnInfo(Columns.OTHER_DISCOUNT)
+    val otherDiscount: Double,
     @ColumnInfo(Columns.TOTAL_DISCOUNT)
     val totalDiscount: Double,
     @ColumnInfo(Columns.NET_TOTAL)
@@ -77,6 +81,8 @@ data class AppointmentsEntity(
         internal const val APPOINTMENT_DATE = "appointment_date"
         internal const val APPOINTMENT_TIME = "appointment_time"
         internal const val TOTAL_BILL_AMOUNT = "total_bill_amount"
+        internal const val SERVICES_DISCOUNT = "service_discount"
+        internal const val OTHER_DISCOUNT = "other_discount"
         internal const val TOTAL_DISCOUNT = "total_discount"
         internal const val NET_TOTAL = "net_total"
         internal const val APPOINTMENT_NOTES = "appointment_notes"

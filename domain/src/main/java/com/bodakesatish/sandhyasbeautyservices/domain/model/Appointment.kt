@@ -50,6 +50,10 @@ data class Appointment(
     var totalBillAmount: Double = 0.0, // Make nullable if it can be absent (e.g., before billing)
     // Consider BigDecimal for financial calculations to avoid precision issues
 
+    val servicesDiscount: Double = 0.0,
+
+    var otherDiscount: Double = 0.0, // Make nullable if it can be absent
+
     var totalDiscount: Double = 0.0, // Make nullable if it can be absent
 
     var netTotal: Double = 0.0, // Make nullable if it can be absent

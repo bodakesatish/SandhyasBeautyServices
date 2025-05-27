@@ -92,7 +92,7 @@ class AppointmentListAdapter(
                 binding.tvAppointmentStatusCard.strokeColor = ContextCompat.getColor(context, R.color.textColorSecondary)
             }
 
-            data.appointment.totalBillAmount?.let { amount ->
+            data.appointment.netTotal?.let { amount ->
                 val format: NumberFormat = NumberFormat.getCurrencyInstance(Locale.getDefault()) // Or your app's specific locale
                 binding.tvTotalAmount.text = format.format(amount)
                 binding.tvTotalAmount.visibility = View.VISIBLE

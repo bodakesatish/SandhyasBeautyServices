@@ -1,10 +1,18 @@
 package com.bodakesatish.sandhyasbeautyservices.ui.billing
 
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -39,6 +47,7 @@ class BillEditorFragment : Fragment() {
     // To store the actual enum values for easy lookup
     private lateinit var selectablePaymentModes: List<PaymentMode>
     private lateinit var selectableAppointmentModes: List<AppointmentStatus>
+    private var isDiscountEditable = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +76,7 @@ class BillEditorFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         setupFragmentResultListener()
+        setupOtherDiscountField()
 
     }
 
@@ -100,6 +110,114 @@ class BillEditorFragment : Fragment() {
             val selectedAppointmentStatusEnum = selectableAppointmentModes[position]
             viewModel.updateAppointmentStatus(selectedAppointmentStatusEnum)
         }
+        binding.etOtherDiscount.doAfterTextChanged { editable ->
+            isValidDiscount()
+        }
+        binding.etOtherDiscount.setOnEditorActionListener { textView, actionId, keyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                handleDiscount()
+                // Optionally, clear focus
+//                true // Consume the event
+            } else {
+                false // Do not consume other events
+            }
+        }
+        binding.tilOtherDiscount.setEndIconOnClickListener {
+            isDiscountEditable = !isDiscountEditable
+            updateDiscountEditState(isDiscountEditable)
+
+            if (isDiscountEditable) {
+                // Request focus and show keyboard
+                binding.etOtherDiscount.requestFocus()
+                binding.etOtherDiscount.setSelection(binding.etOtherDiscount.text!!.length)
+                val imm =
+                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.showSoftInput(binding.etOtherDiscount, InputMethodManager.SHOW_IMPLICIT)
+            } else {
+                if (binding.etOtherDiscount.text.toString().toInt() == 0) {
+                    binding.etOtherDiscount.setText("")
+                }
+                // Hide keyboard if it was made non-editable by icon click
+                hideKeyboard(binding.etOtherDiscount)
+                handleDiscount()
+            }
+        }
+    }
+
+    private fun handleDiscount(): Boolean {
+        val discountValueStr = binding.tilOtherDiscount.editText?.text.toString()
+        val otherDiscount = discountValueStr.toDoubleOrNull() ?: 0.0
+        return if (isValidDiscount()) {
+            viewModel.setOtherDiscount(otherDiscount)
+            // Optionally, clear focus
+            binding.etOtherDiscount.clearFocus()
+            isDiscountEditable = false
+            updateDiscountEditState(false)
+            hideKeyboard(binding.tilOtherDiscount)
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun setupOtherDiscountField() {
+        // Initial state: not editable, show edit icon
+        updateDiscountEditState(editable = false)
+
+
+    }
+
+    private fun updateDiscountEditState(editable: Boolean) {
+        binding.etOtherDiscount.isEnabled = editable
+        if (editable) {
+            binding.tilOtherDiscount.endIconDrawable =
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_done_24)
+            binding.tilOtherDiscount.setEndIconContentDescription("Done Editing Discount")
+            // You could also change endIconMode here if needed, but changing drawable is often enough
+            // binding.tilOtherDiscount.endIconMode = TextInputLayout.END_ICON_CUSTOM or END_ICON_CLEAR_TEXT etc.
+        } else {
+            binding.tilOtherDiscount.endIconDrawable =
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_edit_24)
+            binding.tilOtherDiscount.setEndIconContentDescription("Edit Discount")
+        }
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun isValidDiscount(): Boolean {
+        val discountValueStr = binding.etOtherDiscount.text.toString()
+        val otherDiscount = discountValueStr.toDoubleOrNull() ?: 0.0
+        val discountInput =
+            (viewModel.appointmentDetail.value?.servicesDiscount ?: 0.0) + otherDiscount
+        val maxDiscount = (viewModel.appointmentDetail.value?.totalBillAmount
+            ?: 0.0) - (viewModel.appointmentDetail.value?.servicesDiscount ?: 0.0)
+        val calculatedDiscount: Double
+        val finalPrice: Double
+
+        calculatedDiscount =
+            discountInput.coerceAtMost(viewModel.appointmentDetail.value?.totalBillAmount ?: 0.0)
+
+        finalPrice =
+            (viewModel.appointmentDetail.value?.totalBillAmount ?: 0.0) - calculatedDiscount
+
+        var result =
+            discountInput >= 0 && discountInput <= (viewModel.appointmentDetail.value?.totalBillAmount
+                ?: 0.0)
+
+        // Replace MAX_DISCOUNT_ALLOWED with actualSubtotal or another dynamic limit if needed
+        if (!result) {
+            binding.tilOtherDiscount.error = "Max other discount is $maxDiscount"
+            result = false
+        } else {
+            binding.tilOtherDiscount.error = null // Clear error if all checks pass
+        }
+
+        binding.btnSaveBill.isEnabled = result
+
+        return result
     }
 
     private fun setupRecyclerView() {
@@ -149,10 +267,17 @@ class BillEditorFragment : Fragment() {
                             "- ${viewModel.formatCurrency(it.totalDiscount)}"
                         binding.tvValueTotalDiscount.visibility =
                             if (it.totalDiscount > 0) View.VISIBLE else View.GONE
+                        if (it.otherDiscount.toInt() > 0) {
+                            binding.etOtherDiscount.setText(it.otherDiscount.toInt().toString())
+                        } else {
+                            binding.etOtherDiscount.setText("")
+                        }
                         binding.tvValueGrandTotal.text = viewModel.formatCurrency(it.netTotal)
-                        binding.actvPaymentMode.setText(it.paymentMode.name, false)
                         binding.actvAppointmentStatus.setText(it.appointmentStatus.name, false)
                         binding.tilPaymentNotes.editText?.setText(it.paymentNotes)
+                        binding.btnSaveBill.isEnabled =
+                            it.totalDiscount >= 0 && it.totalDiscount <= it.totalBillAmount
+                        binding.actvPaymentMode.setText(it.paymentMode.name, false)
                     }
                 }
             }
@@ -196,11 +321,7 @@ class BillEditorFragment : Fragment() {
     }
 
     private fun showSnackBar(message: String) {
-        Snackbar.make(
-            requireView(),
-            message,
-            Snackbar.LENGTH_SHORT
-        ).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun setupPaymentModeDropdown() {
@@ -242,7 +363,8 @@ class BillEditorFragment : Fragment() {
         if (appointmentStatusDisplayNames.isEmpty()) {
             // Handle case where no selectable appointment status are available
             binding.tilPaymentMode.isEnabled = false
-            binding.tilPaymentMode.hint = "No Appointment status available" // Or some other indication
+            binding.tilPaymentMode.hint =
+                "No Appointment status available" // Or some other indication
             return
         }
 

@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import java.text.NumberFormat
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.collections.sumOf
 
 @HiltViewModel
 class BillEditorViewModel @Inject constructor(
@@ -56,9 +57,11 @@ class BillEditorViewModel @Inject constructor(
         viewModelScope.launch {
             serviceDetailList.collect { serviceDetailList ->
                 val totalBillAmount = serviceDetailList.sumOf { it.originalPrice }
-                val totalDiscount = serviceDetailList.sumOf { it.discountAmount }
+                val servicesDiscount = serviceDetailList.sumOf { it.discountAmount }
+                val totalDiscount = servicesDiscount + (_appointmentDetail.value?.otherDiscount ?: 0.0)
                 val netTotal = totalBillAmount - totalDiscount
                 _appointmentDetail.value = _appointmentDetail.value?.copy(
+                    servicesDiscount = servicesDiscount,
                     totalBillAmount = totalBillAmount,
                     totalDiscount = totalDiscount,
                     netTotal = netTotal
@@ -143,6 +146,19 @@ class BillEditorViewModel @Inject constructor(
 
     fun updateAppointmentStatus(appointmentStatus: AppointmentStatus) {
         _appointmentDetail.value = _appointmentDetail.value?.copy(appointmentStatus = appointmentStatus)
+    }
+
+    fun setOtherDiscount(otherDiscount: Double) {
+        appointmentDetail.value?.let {
+            val totalBillAmount = it.totalBillAmount
+            val totalDiscount = otherDiscount + it.servicesDiscount
+            val netTotal = totalBillAmount - totalDiscount
+            _appointmentDetail.value = _appointmentDetail.value?.copy(
+                otherDiscount = otherDiscount,
+                totalDiscount = totalDiscount,
+                netTotal = netTotal
+            )
+        }
     }
 
 }

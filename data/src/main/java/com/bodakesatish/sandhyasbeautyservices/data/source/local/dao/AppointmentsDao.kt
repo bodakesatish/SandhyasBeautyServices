@@ -77,7 +77,7 @@ interface AppointmentsDao {
     suspend fun update(appointment: AppointmentsEntity): Int
 
     @Query("DELETE FROM ${AppointmentsEntity.TABLE_NAME} WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
-    fun delete(appointmentId: Int)
+    fun delete(appointmentId: Int) : Int
 
     @Query("SELECT * FROM ${AppointmentsEntity.TABLE_NAME}")
     fun getAppointmentList(): Flow<List<AppointmentsEntity>>
@@ -139,6 +139,15 @@ interface AppointmentsDao {
 
     @Query("UPDATE ${AppointmentsEntity.TABLE_NAME} SET ${AppointmentsEntity.Columns.TOTAL_BILL_AMOUNT} = :totalPrice WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
     fun updateTotalPrice(appointmentId: Int, totalPrice: Double)
+
+    @Query("UPDATE ${AppointmentsEntity.TABLE_NAME} SET ${AppointmentsEntity.Columns.TOTAL_BILL_AMOUNT} = :totalPrice, ${AppointmentsEntity.Columns.SERVICES_DISCOUNT} = :servicesDiscount, ${AppointmentsEntity.Columns.NET_TOTAL} = :netPrice, ${AppointmentsEntity.Columns.OTHER_DISCOUNT} = 0.0, ${AppointmentsEntity.Columns.TOTAL_DISCOUNT} = 0.0 WHERE ${AppointmentsEntity.Columns.ID} = :appointmentId")
+    fun updateTotalPrice(
+        appointmentId: Int,
+        servicesDiscount: Double,
+        totalPrice: Double,
+        netPrice: Double
+    )
+
 
     // The old getAppointmentsFiltered can be removed or kept if it serves a different specific purpose
     // The old getAppointmentsFilteredWithCustomerName can also be removed as its functionality is now

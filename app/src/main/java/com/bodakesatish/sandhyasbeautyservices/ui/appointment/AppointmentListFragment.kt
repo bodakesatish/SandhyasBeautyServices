@@ -30,8 +30,10 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -50,10 +52,10 @@ class AppointmentListFragment : Fragment() {
     // Map Chip IDs to QuickDateRange values - defined once
     private val quickDateChipIdToDateRangeMap by lazy {
         mapOf(
+            R.id.chip_date_all_time to QuickDateRange.ALL_TIME,
             R.id.chip_date_today to QuickDateRange.TODAY,
             R.id.chip_date_tomorrow to QuickDateRange.TOMORROW,
-            R.id.chip_date_this_week to QuickDateRange.THIS_WEEK,
-            R.id.chip_date_all_time to QuickDateRange.ALL_TIME
+            R.id.chip_date_this_week to QuickDateRange.THIS_WEEK
         )
 
     }
@@ -93,7 +95,8 @@ class AppointmentListFragment : Fragment() {
     private fun initView() {
         binding.headerGeneric.tvHeader.text = getString(R.string.title_list_of_appointments)
         binding.headerGeneric.btnBack.setImageResource(R.drawable.ic_menu_24)
-        binding.btnShowFilters.setOnClickListener { // Assuming you add a btnShowFilters to your layout
+        binding.headerGeneric.btnShowFilters.visibility = View.VISIBLE
+        binding.headerGeneric.btnShowFilters.setOnClickListener { // Assuming you add a btnShowFilters to your layout
             showFilterDialog()
         }
     }
@@ -230,6 +233,12 @@ class AppointmentListFragment : Fragment() {
 
             is AppointmentUiState.Success -> {
                 appointmentSummaryAdapter.submitList(state.appointments)
+                binding.tvLabelGrandTotal.isVisible = true
+                binding.tvValueGrandTotal.isVisible = true
+                val grandTotal = state.appointments.sumOf { it.appointment.netTotal }
+                val format: NumberFormat =
+                    NumberFormat.getCurrencyInstance(Locale.getDefault()) // Or your app's specific locale
+                binding.tvValueGrandTotal.text = format.format(grandTotal)
                 binding.tvEmptyMessage.text = ""
                 if (state.appointments.isEmpty()) { // Technically covered by Empty state, but good for robustness
                     binding.tvEmptyMessage.isVisible = true
@@ -240,11 +249,14 @@ class AppointmentListFragment : Fragment() {
 
             is AppointmentUiState.Error -> {
                 appointmentSummaryAdapter.submitList(emptyList()) // Clear previous data from RecyclerView
+
                 binding.tvEmptyMessage.text =
                     state.message ?: getString(R.string.error_fetching_appointments)
             }
 
             is AppointmentUiState.Empty -> {
+                binding.tvLabelGrandTotal.isVisible = false
+                binding.tvValueGrandTotal.isVisible = false
                 appointmentSummaryAdapter.submitList(emptyList())
                 binding.tvEmptyMessage.text = getString(R.string.no_appointments_found_for_filters)
             }

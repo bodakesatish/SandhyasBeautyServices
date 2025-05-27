@@ -45,7 +45,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_services"
                 tools:itemCount="2"
-                tools:listitem="@layout/list_item_service_billing_old" />
+                tools:listitem="@layout/list_item_service_billing" />
 
             <!-- Billing Summary Section -->
             <TextView
@@ -67,6 +67,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="₹1200.00" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_other_discount"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="Other Discount"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_edit_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_value_subtotal">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_other_discount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="number"
+                    android:imeOptions="actionDone"
+                    android:minLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
             <TextView
                 android:id="@+id/tv_label_total_discount"
                 android:layout_width="wrap_content"
@@ -75,7 +101,7 @@
                 android:text="Total Discount:"
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_label_subtotal" />
+                app:layout_constraintTop_toBottomOf="@id/til_other_discount" />
 
             <TextView
                 android:id="@+id/tv_value_total_discount"

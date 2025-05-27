@@ -26,6 +26,8 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
             // For now, let's assume they are not directly in AppointmentsEntity or are handled similarly to appointmentTime.
 
             totalBillAmount = totalBillAmount, // Consider converting to BigDecimal in domain if entity uses Double
+            servicesDiscount = servicesDiscount,
+            otherDiscount = otherDiscount,
             totalDiscount = totalDiscount, // Consider converting to BigDecimal in domain if entity uses Double
             netTotal = netTotal, // Consider converting to BigDecimal in domain if entity uses Double
             paymentMode = mapDataPaymentModeStatusToDomain(paymentMode), // Entity uses String
@@ -45,6 +47,8 @@ object AppointmentMapper : Mapper<AppointmentsEntity, Appointment> {
             appointmentDate = appointmentDate,
             appointmentTime = appointmentTime, // Consider mapping from LocalTime to Date if domain uses LocalTime
             totalBillAmount = totalBillAmount, // Handle null from domain, provide default for entity
+            servicesDiscount = servicesDiscount,
+            otherDiscount = otherDiscount,
             totalDiscount = totalDiscount,
             netTotal = netTotal,
             paymentMode = mapDomainPaymentModeToData(paymentMode), // Map enum to String for entity

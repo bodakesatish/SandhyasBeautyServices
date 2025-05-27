@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.bodakesatish.sandhyasbeautyservices.CustomRunner"
     }
 
     buildTypes {
@@ -81,15 +81,28 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
 
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.56.1")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     // Turbine for Flow testing
     testImplementation("app.cash.turbine:turbine:1.1.0") // Use the latest version
 
+    androidTestImplementation("app.cash.turbine:turbine:1.1.0") // Use the latest version
+
     testImplementation("androidx.arch.core:core-testing:2.2.0") // For InstantTaskExecutorRule
+
+    androidTestImplementation("org.mockito:mockito-core:5.10.0")
+    androidTestImplementation(libs.mockito.kotlin)
 
     // Hilt testing (optional for these specific ViewModel tests if you instantiate directly, but good for integration tests)
     // testImplementation "com.google.dagger:hilt-android-testing:2.51"
     // kaptTest "com.google.dagger:hilt-android-compiler:2.51"
+
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.compiler)
+
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0") // For InstantTaskExecutorRule
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

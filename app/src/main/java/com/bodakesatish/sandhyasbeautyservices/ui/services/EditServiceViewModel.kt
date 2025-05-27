@@ -3,6 +3,7 @@ package com.bodakesatish.sandhyasbeautyservices.ui.services
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bodakesatish.sandhyasbeautyservices.di.IoDispatcher
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.AddOrUpdateServiceUseCase
@@ -46,9 +47,10 @@ data class EditServiceUiState(
     val saveResult: SaveResult = SaveResult.Idle
 )
 
+@HiltViewModel
 class EditServiceViewModel @Inject constructor(
     private val addOrUpdateServiceUseCase: AddOrUpdateServiceUseCase,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO // Provide default
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     // Inject other use cases or repositories if needed
     // If you were injecting the DefaultDispatcher too:
     // @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher

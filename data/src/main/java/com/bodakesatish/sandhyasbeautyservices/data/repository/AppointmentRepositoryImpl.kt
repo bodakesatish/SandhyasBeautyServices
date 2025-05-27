@@ -5,7 +5,6 @@ import com.bodakesatish.sandhyasbeautyservices.data.mapper.AppointmentMapper.map
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.CustomerMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapToDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailMapper.mapToDomainModel
-import com.bodakesatish.sandhyasbeautyservices.data.mapper.ServiceDetailWithServiceMapper.mapFromDomainModel
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.AppointmentsDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.CustomerDao
 import com.bodakesatish.sandhyasbeautyservices.data.source.local.dao.ServiceDetailDao
@@ -73,9 +72,7 @@ class AppointmentRepositoryImpl @Inject constructor(
     ): Long {
         val appointment = appointmentDao.getAppointmentById(appointmentId).firstOrNull()
         serviceDetailDao.deleteServicesByAppointment(appointmentId.toLong())
-
-        appointmentDao.updateTotalPrice(appointmentId, totalPrice)
-
+        var servicesDiscount = 0.0
         for (serviceId in selectedServicesWithDetails) {
             val service = serviceDao.getServiceById(serviceId)
             val serviceDetail = ServiceDetailEntity(
@@ -89,8 +86,11 @@ class AppointmentRepositoryImpl @Inject constructor(
                 priceAfterDiscount = service?.servicePrice ?: 0.0,
                 serviceSummary = ""
             )
+            servicesDiscount += serviceDetail.discount
             serviceDetailDao.insertOrUpdate(serviceDetail)
         }
+        var netPrice = totalPrice - servicesDiscount
+        appointmentDao.updateTotalPrice(appointmentId, servicesDiscount, totalPrice, netPrice)
         return 1
     }
 
@@ -196,6 +196,11 @@ class AppointmentRepositoryImpl @Inject constructor(
 
     override suspend fun updateAppointment(appointment: Appointment): Int {
         return appointmentDao.update(appointment.mapFromDomainModel())
+    }
+
+    override suspend fun deleteAppointment(appointmentId: Int): Int {
+        serviceDetailDao.deleteServicesByAppointment(appointmentId.toLong())
+        return appointmentDao.delete(appointmentId)
     }
 
     override fun getAppointments(
