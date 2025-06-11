@@ -52,6 +52,7 @@ android {
 
 dependencies {
 
+    implementation(project(":compose"))
     implementation(project(":domain"))
     implementation(project(":data"))
 

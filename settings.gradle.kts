@@ -23,3 +23,4 @@ rootProject.name = "Sandhyas Beauty Services"
 include(":app")
 include(":data")
 include(":domain")
+include(":compose")
