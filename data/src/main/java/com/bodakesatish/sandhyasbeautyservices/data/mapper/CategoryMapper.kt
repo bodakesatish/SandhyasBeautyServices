@@ -7,14 +7,16 @@ object CategoryMapper : Mapper<CategoryEntity, Category> {
     override fun CategoryEntity.mapToDomainModel(): Category {
         return Category(
             id = id,
-            categoryName = categoryName
+            categoryName = categoryName,
+            categoryDescription = categoryDescription
         )
     }
 
     override fun Category.mapFromDomainModel(): CategoryEntity {
         return CategoryEntity(
             id = id,
-            categoryName = categoryName
+            categoryName = categoryName,
+            categoryDescription = categoryDescription
         )
     }
 

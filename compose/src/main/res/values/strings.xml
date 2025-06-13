@@ -1,3 +1,42 @@
 <resources>
     <string name="title_activity_compose">ComposeActivity</string>
+    <string name="empty_category_list">Categories are not available</string>
+    <string name="generic_error">Generic Error</string>
+    <string name="categories_title">Category List</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="add_category">Add Category</string>
+    <string name="add_category_screen_title">New Category</string>
+    <string name="add_category_title">Add New Category</string>
+    <string name="edit_category_title">Edit Category</string>
+    <string name="category_name_label">Category Name</string>
+    <string name="description_label">Description (Optional)</string>
+    <string name="image_url_label">Image URL (Optional)</string>
+    <string name="save_category_button">Save Category</string>
+    <string name="category_name_empty_error">Category name cannot be empty.</string>
+    <string name="category_save_error">Could not save category. Please try again.</string>
+    <string name="category_not_found_error">Could not load category for editing.</string>
+
+    // Ensure you have these string resources defined in your strings.xml:
+    <string name="bottom_nav_categories">Categories</string>
+    <string name="bottom_nav_appointments">Appointments</string>
+    <string name="bottom_nav_customers">Customers</string>
+    <string name="screen_title_categories">Service Categories</string>
+    <string name="fab_desc_add_category">Add new category</string>
+    <string name="no_categories_available">No categories found. Tap \'+\' to add one.</string>
+    <string name="error_loading_categories">Could not load categories. Please try again.</string>
+    <string name="error_loading_categories_transient">Failed to refresh categories.</string>
+    <string name="screen_title_add_category">Add New Category</string>
+    <string name="screen_title_edit_category">Edit Category</string>
+    <string name="error_category_not_found">Category not found.</string>
+    <string name="error_loading_category_details">Failed to load category details.</string>
+    <string name="field_label_category_name">Category Name*</string>
+    <string name="field_label_description">Description</string>
+    <string name="field_label_image_url">Image URL</string>
+    <string name="error_category_name_required">Category name is required.</string>
+    <string name="button_save_category">Save Category</string>
+    <string name="category_updated_success">Category updated successfully.</string>
+    <string name="category_added_success">Category added successfully.</string>
+    <string name="error_saving_category">Failed to save category. Please try again.</string>
+    <string name="cd_navigate_back">NavigateBack</string>
+
 </resources>

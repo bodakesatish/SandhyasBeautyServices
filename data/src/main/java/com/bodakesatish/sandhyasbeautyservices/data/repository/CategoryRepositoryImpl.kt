@@ -35,8 +35,8 @@ class CategoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCategoryById(customerId: Long): Category? {
-        TODO("Not yet implemented")
+    override suspend fun getCategoryById(customerId: Int): Category? {
+        return categoryDao.getCategoryById(customerId.toLong())?.mapToDomainModel()
     }
 
     override suspend fun insertOrUpdateService(service: Service): Long {

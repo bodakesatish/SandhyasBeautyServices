@@ -10,8 +10,11 @@ data class CategoryEntity(
     @ColumnInfo(Columns.ID)
     val id: Int = 0,
     @ColumnInfo(Columns.CATEGORY_NAME)
-    val categoryName: String
-) {
+    val categoryName: String,
+    @ColumnInfo(Columns.CATEGORY_DESCRIPTION)
+    val categoryDescription: String,
+
+    ) {
 
     companion object {
         const val TABLE_NAME = "category"
@@ -20,5 +23,6 @@ data class CategoryEntity(
     internal object Columns {
         const val ID = "id"
         internal const val CATEGORY_NAME = "categoryName"
+        internal const val CATEGORY_DESCRIPTION = "categoryDescription"
     }
 }
