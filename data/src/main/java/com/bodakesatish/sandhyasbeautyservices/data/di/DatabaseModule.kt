@@ -29,7 +29,8 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             DATABASE_NAME
-        ).addCallback(object : RoomDatabase.Callback() {
+        ).createFromAsset(DATABASE_NAME)
+            .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
 
