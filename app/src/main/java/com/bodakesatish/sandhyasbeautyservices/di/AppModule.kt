@@ -28,4 +28,5 @@ interface AppModule {
     @Singleton
     fun bindAppointmentRepository(appointmentRepository: AppointmentRepositoryImpl): AppointmentRepository
 
+
 }

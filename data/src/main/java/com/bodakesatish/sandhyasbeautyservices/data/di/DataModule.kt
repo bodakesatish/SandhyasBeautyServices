@@ -2,6 +2,12 @@ package com.bodakesatish.sandhyasbeautyservices.data.di
 
 import com.bodakesatish.sandhyasbeautyservices.data.repository.DefaultMyModelRepository
 import com.bodakesatish.sandhyasbeautyservices.data.repository.MyModelRepository
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.CategoryLocalDataSource
+import com.bodakesatish.sandhyasbeautyservices.data.source.local.CategoryLocalDataSourceImpl
+import com.bodakesatish.sandhyasbeautyservices.data.source.remote.CategoryRemoteDataSource
+import com.bodakesatish.sandhyasbeautyservices.data.source.remote.CategoryRemoteDataSourceImpl
+import com.bodakesatish.sandhyasbeautyservices.data.utils.NetworkConnectivityService
+import com.bodakesatish.sandhyasbeautyservices.data.utils.NetworkConnectivityServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -20,6 +26,18 @@ interface DataModule {
     fun bindMyModelRepository(
         myModelRepository: DefaultMyModelRepository
     ) : MyModelRepository
+
+    @Singleton
+    @Binds
+    fun bindCategoryRemoteDataSource(
+        categoryRemoteDataSource: CategoryRemoteDataSourceImpl
+    ) : CategoryRemoteDataSource
+
+    @Singleton
+    @Binds
+    fun bindCategoryLocalDataSource(
+        categoryLocalDataSource: CategoryLocalDataSourceImpl
+    ) : CategoryLocalDataSource
 
 
 }

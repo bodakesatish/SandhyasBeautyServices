@@ -29,7 +29,7 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             DATABASE_NAME
-        ).createFromAsset(DATABASE_NAME)
+        )//.createFromAsset(DATABASE_NAME)
             .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
@@ -85,5 +85,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesServiceDetailDao(appDatabase: AppDatabase) = appDatabase.serviceDetailDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(appDatabase: AppDatabase) = appDatabase.userDao()
 
 }

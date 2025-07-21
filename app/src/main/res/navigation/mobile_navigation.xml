@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/login">
 
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentListFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_appointment_list" >
 
         <action
             android:id="@+id/action_fragment_appointment_dashboard_to_fragment_new_appointment"
@@ -193,4 +193,29 @@
             android:defaultValue="0"/>
     </fragment>
 
+    <fragment
+        android:id="@+id/login"
+        android:name="com.bodakesatish.sandhyasbeautyservices.login.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/login_to_register"
+            app:destination="@+id/register"/>
+        <action
+            android:id="@+id/login_to_home"
+            app:destination="@+id/navigation_home"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/register"
+        android:name="com.bodakesatish.sandhyasbeautyservices.signup.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_signup">
+        <action
+            android:id="@+id/register_to_home"
+            app:destination="@+id/navigation_home"/>
+        <action
+            android:id="@+id/register_to_login"
+            app:destination="@+id/login"/>
+    </fragment>
 </navigation>

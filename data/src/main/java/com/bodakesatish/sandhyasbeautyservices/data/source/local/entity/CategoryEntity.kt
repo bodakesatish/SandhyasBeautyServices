@@ -6,9 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = CategoryEntity.TABLE_NAME)
 data class CategoryEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(Columns.ID)
-    val id: Int = 0,
+    @PrimaryKey
+//    @ColumnInfo(Columns.ID)
+//    val id: Int = 0,
+    @ColumnInfo(Columns.FIRESTORE_DOC_ID)
+    val firestoreDocId: String = "",
     @ColumnInfo(Columns.CATEGORY_NAME)
     val categoryName: String
 ) {
@@ -18,7 +20,8 @@ data class CategoryEntity(
     }
 
     internal object Columns {
-        const val ID = "id"
+       // const val ID = "id"
+        const val FIRESTORE_DOC_ID = "firestoreDocId"
         internal const val CATEGORY_NAME = "categoryName"
     }
 }

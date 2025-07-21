@@ -35,7 +35,7 @@ class ServiceListViewModel @Inject constructor(
         Log.d(tag, "$tag->init")
     }
 
-    fun getCategoryList(categoryId: Int) {
+    fun getCategoryList(categoryId: String) {
         Log.d(tag, "$tag->getCategoryList")
         viewModelScope.launch(Dispatchers.IO) {
 

@@ -8,5 +8,5 @@ import javax.inject.Singleton
 class GetCategoryListUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) {
-    operator fun invoke() = categoryRepository.getCategoryList()
+    operator fun invoke(forceToRefresh: Boolean) = categoryRepository.getCategoryList(forceToRefresh)
 }

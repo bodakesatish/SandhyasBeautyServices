@@ -109,7 +109,7 @@ class ServiceListFragment : Fragment() {
 
         val args: ServiceListFragmentArgs by navArgs()
         category = args.category
-        viewModel.getCategoryList(category.id)
+        viewModel.getCategoryList(category.firestoreDocId)
         binding.headerGeneric.tvHeader.text = category.categoryName
         binding.rvServiceList.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)

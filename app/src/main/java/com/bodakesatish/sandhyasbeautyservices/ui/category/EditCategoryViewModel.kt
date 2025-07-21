@@ -7,6 +7,7 @@ import com.bodakesatish.sandhyasbeautyservices.di.DefaultDispatcher
 import com.bodakesatish.sandhyasbeautyservices.di.IoDispatcher
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Category
 import com.bodakesatish.sandhyasbeautyservices.domain.usecases.AddOrUpdateCategoryUseCase
+import com.bodakesatish.sandhyasbeautyservices.domain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,7 @@ data class EditCategoryUiState(
 // 2. Define an enum/sealed class for save results
 sealed class CategorySaveResult {
     object Idle : CategorySaveResult()
-    data class Success(val categoryId: Long) : CategorySaveResult()
+    data class Success(val categoryId: String) : CategorySaveResult()
     data class Error(val message: String) : CategorySaveResult()
 }
 
@@ -46,7 +47,7 @@ class EditCategoryViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(EditCategoryUiState())
     val uiState: StateFlow<EditCategoryUiState> = _uiState.asStateFlow()
 
-    private var editingCategoryId: Int? = null // To store the ID if in edit mode
+    private var editingCategoryId: String? = null // To store the ID if in edit mode
 
     init {
         Log.d(tag, "$tag->init block")
@@ -54,7 +55,7 @@ class EditCategoryViewModel @Inject constructor(
 
     // 4. Method to initialize ViewModel for editing an existing category
     fun loadCategoryForEdit(category: Category) {
-        editingCategoryId = category.id
+        editingCategoryId = category.firestoreDocId
         _uiState.update {
             it.copy(
                 categoryName = category.categoryName,
@@ -97,16 +98,17 @@ class EditCategoryViewModel @Inject constructor(
                 val resultId = withContext(ioDispatcher) { // Use injected IO dispatcher
                     addOrUpdateCategoryUseCase.invoke(
                         Category(
-                            id = editingCategoryId ?: 0, // Use 0 or appropriate default for new category
+                            firestoreDocId = editingCategoryId ?: "", // Use 0 or appropriate default for new category
                             categoryName = currentCategoryName
                         )
                     )
                 }
                 Log.d(tag, "Category saved/updated successfully. ID: $resultId")
                 _uiState.update {
+                    val response = resultId as NetworkResult.Success
                     it.copy(
                         isLoading = false,
-                        saveResult = CategorySaveResult.Success(resultId)
+                        saveResult = CategorySaveResult.Success(response.data)
                     )
                 }
             } catch (e: Exception) {

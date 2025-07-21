@@ -79,6 +79,7 @@ class AppointmentListFragment : Fragment() {
         initListeners()
         initObservers()
         onBackPressed()
+        viewModel.login()
 
     }
 

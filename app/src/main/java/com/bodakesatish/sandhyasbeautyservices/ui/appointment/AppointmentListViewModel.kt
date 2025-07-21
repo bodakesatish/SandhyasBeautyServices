@@ -4,6 +4,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bodakesatish.sandhyasbeautyservices.data.repository.AuthRepository
 import com.bodakesatish.sandhyasbeautyservices.domain.model.AppointmentStatus
 import com.bodakesatish.sandhyasbeautyservices.domain.model.CustomerAppointment
 import com.bodakesatish.sandhyasbeautyservices.domain.model.PaymentStatus
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -50,7 +52,8 @@ enum class QuickDateRange(val displayName: String) {
 
 @HiltViewModel
 class AppointmentDashboardViewModel @Inject constructor(
-    private val getFilteredAppointmentsUseCase: GetFilteredAppointmentListUseCase
+    private val getFilteredAppointmentsUseCase: GetFilteredAppointmentListUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val tag = this.javaClass.simpleName
@@ -407,6 +410,14 @@ class AppointmentDashboardViewModel @Inject constructor(
         // It's possible the exact milliseconds won't match if the "all time" range
         // is set slightly differently. Consider a small tolerance or ensure consistency.
         return startDateMillis == expectedStart && endDateMillis == expectedEnd
+    }
+
+    fun login() {
+        viewModelScope.launch {
+            authRepository.login("sandhyaphapale8@gmail.com", "test1234").collect { result ->
+
+            }
+        }
     }
 
 }
