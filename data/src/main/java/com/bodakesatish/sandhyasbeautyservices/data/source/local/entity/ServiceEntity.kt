@@ -10,7 +10,7 @@ data class ServiceEntity(
     @ColumnInfo(Columns.ID)
     val id: Int = 0,
     @ColumnInfo(Columns.CATEGORY_ID)
-    val categoryId: Int,
+    val categoryId: String,
     @ColumnInfo(Columns.SERVICE_NAME)
     val serviceName: String,
     @ColumnInfo(Columns.NORMAL_PRICE)

@@ -22,7 +22,7 @@ interface ServicesDao {
     fun getServiceList(): Flow<List<ServiceEntity>>
 
     @Query("SELECT * FROM ${ServiceEntity.TABLE_NAME} WHERE ${ServiceEntity.Columns.CATEGORY_ID} = :categoryId")
-    fun getServiceListByCategoryId(categoryId: Int): Flow<List<ServiceEntity>>
+    fun getServiceListByCategoryId(categoryId: String): Flow<List<ServiceEntity>>
 
     @Query("SELECT * FROM ${ServiceEntity.TABLE_NAME} WHERE ${ServiceEntity.Columns.ID} = :serviceId")
     suspend fun getServiceById(serviceId: Int): ServiceEntity?

@@ -183,7 +183,7 @@ class EditServiceViewModel @Inject constructor(
             _uiState.update { it.copy(servicePriceError = null) }
         }
 
-        if (currentState.currentCategory == null || currentState.currentCategory.id == 0) {
+        if (currentState.currentCategory == null || currentState.currentCategory.firestoreDocId == "") {
             // This case should ideally be prevented by UI flow, but good to handle
             _uiState.update { it.copy(saveResult = SaveResult.Error("Category not selected.")) }
             hasError = true
@@ -209,7 +209,7 @@ class EditServiceViewModel @Inject constructor(
                     id = currentState.initialServiceId ?: 0, // 0 or a specific indicator for new
                     serviceName = currentState.serviceName,
                     servicePrice = priceDouble!!, // Already validated not to be null
-                    categoryId = currentState.currentCategory!!.id // Already validated not to be null
+                    categoryId = currentState.currentCategory!!.firestoreDocId // Already validated not to be null
                     // categoryNameFromArgs can be removed if category object is always present
                 )
 

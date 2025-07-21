@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.kapt)
 }
@@ -46,6 +47,10 @@ android {
 dependencies {
 
     implementation(project(":domain"))
+
+    //Firebase
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
 
     // Arch Components
     implementation(libs.androidx.room.runtime)

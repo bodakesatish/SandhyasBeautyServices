@@ -6,7 +6,7 @@ import androidx.room.Relation
 data class CategoryWithServices(
     @Embedded val category: CategoryEntity,
     @Relation(
-        parentColumn = "id",
+        parentColumn = "firestoreDocId",
         entityColumn = "categoryId"
     )
     val services: List<ServiceEntity>
