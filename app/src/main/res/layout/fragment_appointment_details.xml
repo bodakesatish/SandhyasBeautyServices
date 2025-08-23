@@ -473,9 +473,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="View Invoice"
-                        android:visibility="gone"
-                        app:icon="@drawable/ic_receipt"
-                        tools:visibility="gone" /> <!-- Initially gone, show if bill is generated -->
+                        app:icon="@drawable/ic_receipt"/> <!-- Initially gone, show if bill is generated -->
 
 
                 </LinearLayout> <!-- End of content_layout_details -->

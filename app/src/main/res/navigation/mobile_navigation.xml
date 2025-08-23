@@ -9,7 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="com.bodakesatish.sandhyasbeautyservices.ui.appointment.AppointmentListFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_appointment_list" >
 
         <action
             android:id="@+id/action_fragment_appointment_dashboard_to_fragment_new_appointment"

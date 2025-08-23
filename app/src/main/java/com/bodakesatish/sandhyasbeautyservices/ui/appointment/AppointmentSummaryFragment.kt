@@ -1,10 +1,14 @@
 package com.bodakesatish.sandhyasbeautyservices.ui.appointment
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -14,7 +18,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bodakesatish.sandhyasbeautyservices.BillData
+import com.bodakesatish.sandhyasbeautyservices.PdfGeneratorUtil
 import com.bodakesatish.sandhyasbeautyservices.R
+import com.bodakesatish.sandhyasbeautyservices.ServiceItem
 import com.bodakesatish.sandhyasbeautyservices.databinding.FragmentAppointmentDetailsBinding
 import com.bodakesatish.sandhyasbeautyservices.domain.model.Service
 import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDiscountAdapter
@@ -114,9 +121,10 @@ class AppointmentSummaryFragment : Fragment() {
             findNavController().navigate(action)
 //            findNavController().navigate(R.id.navigation_add_services_to_appointment)
         }
-        binding.btnProceedToBilling.setOnClickListener {
+        binding.btnViewInvoice.setOnClickListener {
             // Navigate to Billing Screen (passing appointmentId)
-            // findNavController().navigate(R.id.action_fragmentAppointmentDetails_to_billingFragment, bundleOf("appointmentId" to appointmentId))
+            handleShareBillAsPdf()
+
         }
 
         binding.btnEditBill.setOnClickListener {
@@ -252,5 +260,99 @@ class AppointmentSummaryFragment : Fragment() {
         return NumberFormat.getCurrencyInstance(Locale("en", "IN")).format(amount) // For INR
     }
 
+// Inside your Fragment or Activity (e.g., AppointmentDetailsFragment)
+
+    fun getCurrentBillData(): BillData {
+        // --- Sample Data - Replace with actual data retrieval from your UI elements & ViewModel ---
+
+        // Sample Customer and Appointment Details (from your TextViews)
+        val customerName = binding.tvDetailCustomerName.text.toString() // "Satish Bodake"
+        val appointmentDateTime = binding.tvDetailAppointmentDatetime.text.toString() // "25 Dec 2023, 10:00 AM"
+        val status = binding.tvDetailAppointmentStatus.text.toString() // "Pending Payment" or "Completed"
+
+        // Sample Services (from your ll_services_summary_container or rv_services_for_billing)
+        // If using rv_services_for_billing, you'd iterate through its adapter's data.
+        // For simplicity, let's hardcode a few based on the layout.
+        val services = mutableListOf<ServiceItem>()
+
+        // Example 1: From the static TextView in ll_services_summary_container
+        // You'd need to parse this if it's your only source, or ideally get structured data.
+        // For now, assuming you have structured data for services.
+        services.add(ServiceItem(name = "Haircut", price = 50.00, quantity = 1))
+        services.add(ServiceItem(name = "Hair Coloring", price = 1200.00, quantity = 11))
+        services.add(ServiceItem(name = "Manicure", price = 700.00, quantity = 1, discount = 50.00)) // Example with discount
+
+        // Sample Billing Summary (from your TextViews in card_billing_details)
+        // These should be calculated based on the services and any applied discounts
+        var calculatedSubtotal = 0.0
+        services.forEach { calculatedSubtotal += (it.price * it.quantity) }
+
+        // Assuming otherDiscount is entered or calculated elsewhere
+        val otherDiscountText = binding.tvDetailBillingOtherDiscount.text.toString()
+            .replace("₹", "")
+            .replace("-", "")
+            .trim()
+        val otherDiscount = otherDiscountText.toDoubleOrNull() ?: 0.0
+
+        val totalDiscountOnServices = services.sumOf { it.discount }
+        val calculatedTotalDiscount = totalDiscountOnServices + otherDiscount
+
+        val calculatedGrandTotal = calculatedSubtotal - calculatedTotalDiscount
+
+        // Construct the BillData object
+        return BillData(
+            customerName = customerName,
+            appointmentDateTime = appointmentDateTime,
+            status = status,
+            services = services,
+            subtotal = calculatedSubtotal, // e.g., binding.tvDetailBillingSubtotal.text.toString().replace("₹", "").toDoubleOrNull() ?: 0.0,
+            otherDiscount = otherDiscount,
+            totalDiscount = calculatedTotalDiscount, // e.g., binding.tvDetailBillingTotalDiscount.text.toString().replace("₹", "").replace("-", "").toDoubleOrNull() ?: 0.0,
+            grandTotal = calculatedGrandTotal, // e.g., binding.tvDetailBillingGrandTotal.text.toString().replace("₹", "").toDoubleOrNull() ?: 0.0,
+            companyName = "Sandhya's Beauty Services", // Or from a config/string resource
+            companyAddress = "123 Salon Avenue, Beautytown, ST 45678", // Or from a config/string resource
+            invoiceNumber = "INV-${System.currentTimeMillis()}" // Generate dynamically or from a persistent source
+        )
+    }
+
+
+    private fun handleShareBillAsPdf() {
+        // 1. Gather the current bill data
+        val billData = getCurrentBillData() // Calls the function defined above
+
+        // 2. Create PDF (Consider background thread for complex PDFs)
+        // For this example, running on the main thread for simplicity.
+        // Use lifecycleScope for coroutines if PdfGeneratorUtil.createBillPdf becomes a suspend function
+        lifecycleScope.launch {
+            // If createBillPdf is not a suspend function, you can call it directly.
+            // If it becomes a suspend function (e.g., for I/O):
+            // val pdfUri = withContext(Dispatchers.IO) {
+            //     PdfGeneratorUtil.createBillPdf(requireContext(), billData)
+            // }
+
+            val pdfUri = PdfGeneratorUtil.createBillPdf(requireContext(), billData) // Assuming it's not suspend for now
+
+            if (pdfUri != null) {
+                // 3. Share the generated PDF
+                sharePdf(pdfUri, billData.customerName) // Pass customer name for subject
+            } else {
+                Toast.makeText(requireContext(), "Error: Could not generate PDF bill.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun sharePdf(pdfUri: Uri, customerName: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, pdfUri)
+            putExtra(Intent.EXTRA_SUBJECT, "Invoice for $customerName from Sandhya's Beauty Services")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Crucial for FileProvider
+        }
+        try {
+            startActivity(Intent.createChooser(shareIntent, "Share Bill PDF via"))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), "No application found to share PDF files.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 }
