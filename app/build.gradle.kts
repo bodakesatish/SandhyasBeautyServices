@@ -48,6 +48,18 @@ android {
         viewBinding = true
     }
 
+    // You might need to add packagingOptions for duplicate files from POI dependencies
+    // ...
+    packagingOptions {
+        exclude("META-INF/services/javax.xml.stream.XMLInputFactory")
+        exclude("META-INF/services/javax.xml.stream.XMLOutputFactory")
+        exclude("META-INF/services/javax.xml.stream.XMLEventFactory")
+        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/NOTICE.txt")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/NOTICE")
+        // Add more excludes as needed based on build errors
+    }
 }
 
 dependencies {
@@ -104,6 +116,11 @@ dependencies {
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0") // For InstantTaskExecutorRule
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+
+    // Apache POI for Excel .xlsx files
+    implementation("org.apache.poi:poi:5.3.0")         // Core POI
+    implementation("org.apache.poi:poi-ooxml:5.3.0")   // For .xlsx (XSSF)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

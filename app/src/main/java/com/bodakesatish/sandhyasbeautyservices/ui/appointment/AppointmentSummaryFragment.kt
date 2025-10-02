@@ -18,7 +18,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bodakesatish.sandhyasbeautyservices.AppointmentSummary
 import com.bodakesatish.sandhyasbeautyservices.BillData
+import com.bodakesatish.sandhyasbeautyservices.ExcelExporterUtil
 import com.bodakesatish.sandhyasbeautyservices.PdfGeneratorUtil
 import com.bodakesatish.sandhyasbeautyservices.R
 import com.bodakesatish.sandhyasbeautyservices.ServiceItem
@@ -28,9 +30,11 @@ import com.bodakesatish.sandhyasbeautyservices.ui.appointment.adapter.ServiceDis
 import com.bodakesatish.sandhyasbeautyservices.util.DateHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -136,6 +140,9 @@ class AppointmentSummaryFragment : Fragment() {
                     viewModel.appointmentIdFlow.value
                 )
             findNavController().navigate(action)
+        }
+        binding.btnProceedToBilling.setOnClickListener {
+            handleExportAppointmentsToExcel()
         }
 
         binding.btnDeleteAppointment.setOnClickListener {
@@ -354,5 +361,94 @@ class AppointmentSummaryFragment : Fragment() {
             Toast.makeText(requireContext(), "No application found to share PDF files.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    // Inside your Fragment or Activity where you have the list of appointments
+
+// Example: private lateinit var appointmentListViewModel: AppointmentListViewModel
+// Assume appointmentListViewModel.appointmentSummaries.value contains List<AppointmentSummary>
+
+    private fun handleExportAppointmentsToExcel() {
+       // val summariesToExport: List<AppointmentSummary>? = /* Get your list of appointments here */
+        // For example, from a ViewModel:
+        // val summariesToExport = appointmentListViewModel.appointmentSummaries.value
+
+        // Create some dummy data for now if you don't have live data source
+        val dummySummaries = listOf(
+            AppointmentSummary("A001", "Satish Bodake", "2023-12-25 10:00", "Haircut, Shave", 750.0, "Completed"),
+            AppointmentSummary(
+                "A002",
+                "Jane Doe",
+                "2023-12-26 14:30",
+                "Manicure, Pedicure",
+                1200.0,
+                "Pending"
+            ),
+            AppointmentSummary("A003", "Peter Jones", "2023-12-27 09:00", "Facial", 900.0, "Completed")
+        )
+        // Replace dummySummaries with your actual data source in production
+        // val currentSummaries = appointmentListViewModel.appointmentSummaries.value
+
+
+        if (dummySummaries.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "No appointment data to export.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // IMPORTANT: Perform file operations on a background thread
+        lifecycleScope.launch(Dispatchers.IO) { // Switch to IO dispatcher for file operations
+            val excelFileUri = ExcelExporterUtil.exportAppointmentsToExcel(
+                requireContext(),
+                dummySummaries // Pass your actual list here
+            )
+
+            withContext(Dispatchers.Main) { // Switch back to Main thread for UI updates/Intent
+                if (excelFileUri != null) {
+                    // Option 1: Share the Excel file
+                    shareExcelFile(excelFileUri)
+
+                    // Option 2: Try to open the Excel file directly (less reliable as user might not have an app)
+                    // openExcelFile(excelFileUri)
+
+                    Toast.makeText(requireContext(), "Excel file generated: ${excelFileUri.path}", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to export appointments to Excel.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun shareExcelFile(uri: Uri) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // MIME type for .xlsx
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "Appointment Summaries Export") // Optional
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try {
+            startActivity(Intent.createChooser(shareIntent, "Share Excel File"))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), "No app found to share Excel files.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openExcelFile(uri: Uri) {
+        val viewIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY) // Optional
+        }
+        try {
+            startActivity(Intent.createChooser(viewIntent, "Open Excel File with..."))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), "No app found to open Excel files. Please install an Excel viewer.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+// Call handleExportAppointmentsToExcel() from your button's OnClickListener or menu item selection
+// Example:
+// binding.btnExportToExcel.setOnClickListener {
+//     handleExportAppointmentsToExcel()
+// }
+
 
 }

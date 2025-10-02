@@ -461,10 +461,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Proceed to Billing"
-                        android:visibility="gone"
-                        app:icon="@drawable/ic_payment"
-                        tools:visibility="gone" /> <!-- Initially gone, show if billing is not done -->
+                        android:text="Export to excel"
+                        app:icon="@drawable/ic_payment"/> <!-- Initially gone, show if billing is not done -->
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_view_invoice"
